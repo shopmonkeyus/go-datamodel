@@ -3,6 +3,7 @@ package v3
 
 import (
 	"encoding/json"
+	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -284,18 +285,18 @@ const (
 
 type PhoneNumber struct {
 	CarrierName       *string                         `json:"carrierName"`
+	ID                string                          `gorm:"primaryKey;not null" json:"id"`
 	CompanyId         string                          `gorm:"not null" json:"companyId"`
 	Country           *PhoneNumberCountryEnum         `json:"country"`
 	CreatedDate       time.Time                       `gorm:"column:createdDate;not null" json:"createdDate"`
 	CustomerId        string                          `gorm:"not null" json:"customerId"`
 	Extension         *string                         `json:"extension"`
-	ID                string                          `gorm:"primaryKey;not null" json:"id"`
 	LastVerifiedDate  *time.Time                      `json:"lastVerifiedDate"`
 	LocationId        string                          `gorm:"not null" json:"locationId"`
-	Meta              *Meta                           `gorm:"embedded;column:meta;not null" json:"meta,omitempty"`         // the metadata about the most recent change to the row
-	Metadata          any                             `gorm:"embedded;column:metadata;not null" json:"metadata,omitempty"` // metadata reserved for customers to control
-	MobileCountryCode *string                         `json:"mobileCountryCode"`                                           // if a mobile number, the mobile country code
-	MobileNetworkCode *string                         `json:"mobileNetworkCode"`                                           // if a mobile number, the mobile network code
+	Meta              *Meta                           `gorm:"type:json;embedded;column:meta;not null" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata          any                             `gorm:"type:json" json:"metadata,omitempty"`                           // metadata reserved for customers to control
+	MobileCountryCode *string                         `json:"mobileCountryCode"`                                             // if a mobile number, the mobile country code
+	MobileNetworkCode *string                         `json:"mobileNetworkCode"`                                             // if a mobile number, the mobile network code
 	Number            string                          `gorm:"not null" json:"number"`
 	OptIn             bool                            `gorm:"not null" json:"optIn"`
 	OptInVerifiedDate *time.Time                      `json:"optInVerifiedDate"`
@@ -305,6 +306,8 @@ type PhoneNumber struct {
 	UserDefinedType   *PhoneNumberUserDefinedTypeEnum `json:"userDefinedType"`
 }
 
+var _ Model = (*PhoneNumber)(nil)
+
 // TableName returns the name of the table for this model which GORM will use when using this model
 func (m *PhoneNumber) TableName() string {
 	return "phone_number"
@@ -313,4 +316,14 @@ func (m *PhoneNumber) TableName() string {
 func (m *PhoneNumber) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
+}
+
+// NewPhoneNumber returns a new model instance from a json key/value map
+func NewPhoneNumber(kv map[string]any) (*PhoneNumber, error) {
+	var result PhoneNumber
+	err := mapstructure.Decode(kv, &result)
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
 }

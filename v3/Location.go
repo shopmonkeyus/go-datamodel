@@ -3,6 +3,7 @@ package v3
 
 import (
 	"encoding/json"
+	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -262,17 +263,17 @@ const (
 
 type Location struct {
 	Address1              string              `gorm:"not null" json:"address1"`
-	ID                    string              `gorm:"primaryKey;not null" json:"id"`
 	Address2              *string             `json:"address2"`
+	ID                    string              `gorm:"primaryKey;not null" json:"id"`
 	City                  string              `gorm:"not null" json:"city"`
 	CompanyId             string              `gorm:"not null" json:"companyId"`
 	ContactName           *string             `json:"contactName"` // the location contact name
 	Country               LocationCountryEnum `gorm:"not null" json:"country"`
 	CreatedDate           time.Time           `gorm:"column:createdDate;not null" json:"createdDate"`
-	Email                 *string             `json:"email"`                                                       // the location email for generic inqueries
-	LocationPhoneNumberId *string             `json:"locationPhoneNumberId"`                                       // the location phone number
-	Meta                  *Meta               `gorm:"embedded;column:meta;not null" json:"meta,omitempty"`         // the metadata about the most recent change to the row
-	Metadata              any                 `gorm:"embedded;column:metadata;not null" json:"metadata,omitempty"` // metadata reserved for customers to control
+	Email                 *string             `json:"email"`                                                         // the location email for generic inqueries
+	LocationPhoneNumberId *string             `json:"locationPhoneNumberId"`                                         // the location phone number
+	Meta                  *Meta               `gorm:"type:json;embedded;column:meta;not null" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata              any                 `gorm:"type:json" json:"metadata,omitempty"`                           // metadata reserved for customers to control
 	Name                  string              `gorm:"not null" json:"name"`
 	PostalCode            string              `gorm:"not null" json:"postalCode"`
 	State                 string              `gorm:"not null" json:"state"`
@@ -280,6 +281,8 @@ type Location struct {
 	UpdatedDate           *time.Time          `gorm:"column:updatedDate" json:"updatedDate"`
 	Website               *string             `json:"website"`
 }
+
+var _ Model = (*Location)(nil)
 
 // TableName returns the name of the table for this model which GORM will use when using this model
 func (m *Location) TableName() string {
@@ -289,4 +292,14 @@ func (m *Location) TableName() string {
 func (m *Location) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
+}
+
+// NewLocation returns a new model instance from a json key/value map
+func NewLocation(kv map[string]any) (*Location, error) {
+	var result Location
+	err := mapstructure.Decode(kv, &result)
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
 }

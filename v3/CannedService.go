@@ -3,6 +3,7 @@ package v3
 
 import (
 	"encoding/json"
+	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -57,14 +58,14 @@ const (
 
 type CannedService struct {
 	CalculatedDiscountCents     int64                                  `gorm:"not null" json:"calculatedDiscountCents"`
-	ID                          string                                 `gorm:"primaryKey;not null" json:"id"`
 	CalculatedDiscountPercent   float64                                `gorm:"not null" json:"calculatedDiscountPercent"`
 	CalculatedEpaCents          int64                                  `gorm:"not null" json:"calculatedEpaCents"`
 	CalculatedFeeCents          int64                                  `gorm:"not null" json:"calculatedFeeCents"`
 	CalculatedLaborCents        int64                                  `gorm:"not null" json:"calculatedLaborCents"`
+	CalculatedSubcontractsCents int64                                  `gorm:"not null" json:"calculatedSubcontractsCents"`
+	ID                          string                                 `gorm:"primaryKey;not null" json:"id"`
 	CalculatedPartsCents        int64                                  `gorm:"not null" json:"calculatedPartsCents"`
 	CalculatedShopSuppliesCents int64                                  `gorm:"not null" json:"calculatedShopSuppliesCents"`
-	CalculatedSubcontractsCents int64                                  `gorm:"not null" json:"calculatedSubcontractsCents"`
 	CalculatedTaxCents          int64                                  `gorm:"not null" json:"calculatedTaxCents"`
 	CalculatedTiresCents        int64                                  `gorm:"not null" json:"calculatedTiresCents"`
 	CompanyId                   string                                 `gorm:"not null" json:"companyId"`
@@ -87,8 +88,8 @@ type CannedService struct {
 	HstValueType                CannedServiceHstValueTypeEnum          `gorm:"not null" json:"hstValueType"`
 	LocationId                  string                                 `gorm:"not null" json:"locationId"`
 	LumpSum                     bool                                   `gorm:"not null" json:"lumpSum"`
-	Meta                        *Meta                                  `gorm:"embedded;column:meta;not null" json:"meta,omitempty"`         // the metadata about the most recent change to the row
-	Metadata                    any                                    `gorm:"embedded;column:metadata;not null" json:"metadata,omitempty"` // metadata reserved for customers to control
+	Meta                        *Meta                                  `gorm:"type:json;embedded;column:meta;not null" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata                    any                                    `gorm:"type:json" json:"metadata,omitempty"`                           // metadata reserved for customers to control
 	Name                        string                                 `gorm:"not null" json:"name"`
 	Note                        string                                 `gorm:"not null" json:"note"`
 	PstCents                    int64                                  `gorm:"not null" json:"pstCents"`
@@ -106,6 +107,8 @@ type CannedService struct {
 	UpdatedDate                 *time.Time                             `gorm:"column:updatedDate" json:"updatedDate"`
 }
 
+var _ Model = (*CannedService)(nil)
+
 // TableName returns the name of the table for this model which GORM will use when using this model
 func (m *CannedService) TableName() string {
 	return "canned_service"
@@ -114,4 +117,14 @@ func (m *CannedService) TableName() string {
 func (m *CannedService) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
+}
+
+// NewCannedService returns a new model instance from a json key/value map
+func NewCannedService(kv map[string]any) (*CannedService, error) {
+	var result CannedService
+	err := mapstructure.Decode(kv, &result)
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
 }

@@ -3,6 +3,7 @@ package v3
 
 import (
 	"encoding/json"
+	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -43,8 +44,8 @@ const (
 
 type Message struct {
 	AuthorType     MessageAuthorTypeEnum   `gorm:"not null" json:"authorType"`
-	CompanyId      string                  `gorm:"not null" json:"companyId"`
 	ID             string                  `gorm:"primaryKey;not null" json:"id"`
+	CompanyId      string                  `gorm:"not null" json:"companyId"`
 	ConversationId string                  `gorm:"not null" json:"conversationId"`
 	CreatedDate    time.Time               `gorm:"column:createdDate;not null" json:"createdDate"`
 	CustomerId     *string                 `json:"customerId"` // the id of the customer that authored the message
@@ -52,8 +53,8 @@ type Message struct {
 	EmailStatus    *MessageEmailStatusEnum `json:"emailStatus"`
 	Internal       *bool                   `json:"internal"` // true if internal note, is null if author is a Customer
 	LocationId     string                  `gorm:"not null" json:"locationId"`
-	Meta           *Meta                   `gorm:"embedded;column:meta;not null" json:"meta,omitempty"`         // the metadata about the most recent change to the row
-	Metadata       any                     `gorm:"embedded;column:metadata;not null" json:"metadata,omitempty"` // metadata reserved for customers to control
+	Meta           *Meta                   `gorm:"type:json;embedded;column:meta;not null" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata       any                     `gorm:"type:json" json:"metadata,omitempty"`                           // metadata reserved for customers to control
 	Origin         MessageOriginEnum       `gorm:"not null" json:"origin"`
 	SendEmail      *bool                   `json:"sendEmail"` // if an email should be sent, is null if author is a Customer
 	SendSms        *bool                   `json:"sendSms"`   // if an sms should be sent, is null if author is a Customer
@@ -65,6 +66,8 @@ type Message struct {
 	UserId         *string                 `json:"userId"` // the user who authored the message
 }
 
+var _ Model = (*Message)(nil)
+
 // TableName returns the name of the table for this model which GORM will use when using this model
 func (m *Message) TableName() string {
 	return "message"
@@ -73,4 +76,14 @@ func (m *Message) TableName() string {
 func (m *Message) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
+}
+
+// NewMessage returns a new model instance from a json key/value map
+func NewMessage(kv map[string]any) (*Message, error) {
+	var result Message
+	err := mapstructure.Decode(kv, &result)
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
 }

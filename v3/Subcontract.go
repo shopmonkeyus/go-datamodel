@@ -3,6 +3,7 @@ package v3
 
 import (
 	"encoding/json"
+	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -23,8 +24,8 @@ type Subcontract struct {
 	DiscountPercent   float64                          `gorm:"not null" json:"discountPercent"`
 	DiscountValueType SubcontractDiscountValueTypeEnum `gorm:"not null" json:"discountValueType"`
 	LocationId        string                           `gorm:"not null" json:"locationId"`
-	Meta              *Meta                            `gorm:"embedded;column:meta;not null" json:"meta,omitempty"`         // the metadata about the most recent change to the row
-	Metadata          any                              `gorm:"embedded;column:metadata;not null" json:"metadata,omitempty"` // metadata reserved for customers to control
+	Meta              *Meta                            `gorm:"type:json;embedded;column:meta;not null" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata          any                              `gorm:"type:json" json:"metadata,omitempty"`                           // metadata reserved for customers to control
 	Name              string                           `gorm:"not null" json:"name"`
 	Note              *string                          `json:"note"`
 	OrderId           string                           `gorm:"not null" json:"orderId"`
@@ -38,6 +39,8 @@ type Subcontract struct {
 	VendorId          *string                          `json:"vendorId"`
 }
 
+var _ Model = (*Subcontract)(nil)
+
 // TableName returns the name of the table for this model which GORM will use when using this model
 func (m *Subcontract) TableName() string {
 	return "subcontract"
@@ -46,4 +49,14 @@ func (m *Subcontract) TableName() string {
 func (m *Subcontract) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
+}
+
+// NewSubcontract returns a new model instance from a json key/value map
+func NewSubcontract(kv map[string]any) (*Subcontract, error) {
+	var result Subcontract
+	err := mapstructure.Decode(kv, &result)
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
 }

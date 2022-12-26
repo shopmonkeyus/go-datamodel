@@ -3,6 +3,7 @@ package v3
 
 import (
 	"encoding/json"
+	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -29,6 +30,7 @@ const (
 )
 
 type CannedServiceLabor struct {
+	ID                       string                                  `gorm:"primaryKey;not null" json:"id"`
 	ApplicationId            *int64                                  `json:"applicationId"`
 	CannedServiceId          string                                  `gorm:"not null" json:"cannedServiceId"`
 	CategoryId               *string                                 `json:"categoryId"`
@@ -41,12 +43,11 @@ type CannedServiceLabor struct {
 	DiscountPercent          float64                                 `gorm:"not null" json:"discountPercent"`
 	DiscountValueType        CannedServiceLaborDiscountValueTypeEnum `gorm:"not null" json:"discountValueType"`
 	Hours                    float64                                 `gorm:"not null" json:"hours"`
-	ID                       string                                  `gorm:"primaryKey;not null" json:"id"`
 	LaborMatrixDate          *time.Time                              `json:"laborMatrixDate"` // datetime when laborMatrixId was set, for determining if matrix has been changed
 	LaborMatrixId            *string                                 `json:"laborMatrixId"`
 	LocationId               string                                  `gorm:"not null" json:"locationId"`
-	Meta                     *Meta                                   `gorm:"embedded;column:meta;not null" json:"meta,omitempty"`         // the metadata about the most recent change to the row
-	Metadata                 any                                     `gorm:"embedded;column:metadata;not null" json:"metadata,omitempty"` // metadata reserved for customers to control
+	Meta                     *Meta                                   `gorm:"type:json;embedded;column:meta;not null" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata                 any                                     `gorm:"type:json" json:"metadata,omitempty"`                           // metadata reserved for customers to control
 	Multiplier               float64                                 `gorm:"not null" json:"multiplier"`
 	MultiplierType           CannedServiceLaborMultiplierTypeEnum    `gorm:"not null" json:"multiplierType"`
 	Name                     *string                                 `json:"name"`
@@ -63,6 +64,8 @@ type CannedServiceLabor struct {
 	UpdatedDate              *time.Time                              `gorm:"column:updatedDate" json:"updatedDate"`
 }
 
+var _ Model = (*CannedServiceLabor)(nil)
+
 // TableName returns the name of the table for this model which GORM will use when using this model
 func (m *CannedServiceLabor) TableName() string {
 	return "canned_service_labor"
@@ -71,4 +74,14 @@ func (m *CannedServiceLabor) TableName() string {
 func (m *CannedServiceLabor) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
+}
+
+// NewCannedServiceLabor returns a new model instance from a json key/value map
+func NewCannedServiceLabor(kv map[string]any) (*CannedServiceLabor, error) {
+	var result CannedServiceLabor
+	err := mapstructure.Decode(kv, &result)
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
 }
