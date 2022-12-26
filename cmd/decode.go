@@ -35,7 +35,14 @@ var decodeCmd = &cobra.Command{
 			os.Exit(1)
 		}
 		defer jsonFile.Close()
-		m, err := v3.NewFromModel(name, buf)
+		var enctype v3.EncodingType
+		// sniff the payload and see if its json
+		if string(buf[0:1]) == "{" && string(buf[len(buf)-2:len(buf)-1]) == "}" {
+			enctype = v3.JSONEncoding
+		} else {
+			enctype = v3.MsgPackEncoding
+		}
+		m, err := v3.NewFromModel(name, buf, enctype)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

@@ -3,6 +3,7 @@ package v3
 
 import (
 	"encoding/json"
+	codec "github.com/hashicorp/go-msgpack/v2/codec"
 	"time"
 )
 
@@ -29,10 +30,17 @@ func (m *CustomerLocationConnection) String() string {
 	return string(buf)
 }
 
-// NewCustomerLocationConnection returns a new model instance from a json key/value map
-func NewCustomerLocationConnection(buf []byte) (*CustomerLocationConnection, error) {
+// NewCustomerLocationConnection returns a new model instance from an encoded buffer
+func NewCustomerLocationConnection(buf []byte, enctype EncodingType) (*CustomerLocationConnection, error) {
 	var result CustomerLocationConnection
-	err := json.Unmarshal(buf, &result)
+	var handle codec.Handle
+	if enctype == JSONEncoding {
+		handle = &jsonHandle
+	} else {
+		handle = &msgpackHandle
+	}
+	dec := codec.NewDecoderBytes(buf, handle)
+	err := dec.Decode(&result)
 	if err != nil {
 		return nil, err
 	}

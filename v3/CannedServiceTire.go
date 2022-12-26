@@ -3,6 +3,7 @@ package v3
 
 import (
 	"encoding/json"
+	codec "github.com/hashicorp/go-msgpack/v2/codec"
 	"time"
 )
 
@@ -80,10 +81,17 @@ func (m *CannedServiceTire) String() string {
 	return string(buf)
 }
 
-// NewCannedServiceTire returns a new model instance from a json key/value map
-func NewCannedServiceTire(buf []byte) (*CannedServiceTire, error) {
+// NewCannedServiceTire returns a new model instance from an encoded buffer
+func NewCannedServiceTire(buf []byte, enctype EncodingType) (*CannedServiceTire, error) {
 	var result CannedServiceTire
-	err := json.Unmarshal(buf, &result)
+	var handle codec.Handle
+	if enctype == JSONEncoding {
+		handle = &jsonHandle
+	} else {
+		handle = &msgpackHandle
+	}
+	dec := codec.NewDecoderBytes(buf, handle)
+	err := dec.Decode(&result)
 	if err != nil {
 		return nil, err
 	}

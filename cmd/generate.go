@@ -204,6 +204,19 @@ Where v3 is the output folder to generate the files into.
 
 			initFile.Line()
 
+			initFile.Var().Id("jsonHandle").Qual("github.com/hashicorp/go-msgpack/v2/codec", "JsonHandle")
+			initFile.Var().Id("msgpackHandle").Qual("github.com/hashicorp/go-msgpack/v2/codec", "MsgpackHandle")
+
+			initFile.Line()
+
+			initFile.Type().Id("EncodingType").String()
+			initFile.Const().Defs(
+				jen.Id("JSONEncoding").Op("EncodingType").Op("=").Lit("json"),
+				jen.Id("MsgPackEncoding").Op("=").Lit("msgpack"),
+			)
+
+			initFile.Line()
+
 			params := make([]jen.Code, 0)
 			cases := make([]jen.Code, 0)
 			models := make([]string, 0)
@@ -214,7 +227,7 @@ Where v3 is the output folder to generate the files into.
 
 			for _, name := range models {
 				prop := schema[name]
-				rt := jen.Return(jen.Op("New" + name).Params(jen.Op("buf")))
+				rt := jen.Return(jen.Op("New" + name).Params(jen.Op("buf, enctype")))
 				cases = append(cases, jen.Op("case").Lit(name).Op(",").Lit(prop.DBName).Op(":").Block(rt))
 			}
 
@@ -223,7 +236,7 @@ Where v3 is the output folder to generate the files into.
 			params = append(params, jen.Return(jen.Op("nil,").Qual("errors", "New").Params(jen.Lit("invalid model: ").Op("+").Op("name"))))
 
 			initFile.Comment("NewFromModel will return a model from a model name and JSON as byte buffer")
-			initFile.Func().Id("NewFromModel").Params(jen.Id("name").String().Op(",").Id("buf").Op("[]").Byte()).Op("(Model, error)").Block(params...)
+			initFile.Func().Id("NewFromModel").Params(jen.Id("name").String().Op(",").Id("buf").Op("[]").Byte(), jen.Id("enctype").Op("EncodingType")).Op("(Model, error)").Block(params...)
 		}
 
 		ifn := path.Join(outdir, "init.go")
@@ -335,12 +348,20 @@ Where v3 is the output folder to generate the files into.
 
 			f.Line()
 
-			f.Comment("New" + name + " returns a new model instance from a json key/value map")
+			f.Comment("New" + name + " returns a new model instance from an encoded buffer")
 			f.Func().Id("New"+name).Params(
 				jen.Id("buf").Op("[]").Byte(),
+				jen.Id("enctype").Op("EncodingType"),
 			).Op("(*"+name+", error)").Block(
 				jen.Var().Id("result").Op(name),
-				jen.Id("err").Op(":=").Qual("encoding/json", "Unmarshal").Params(jen.Op("buf"), jen.Op("&result")),
+				jen.Var().Id("handle").Op("codec.Handle"),
+				jen.If(jen.Id("enctype").Op("==").Op("JSONEncoding")).Block(
+					jen.Op("handle").Op("=").Op("&jsonHandle"),
+				).Else().Block(
+					jen.Op("handle").Op("=").Op("&msgpackHandle"),
+				),
+				jen.Id("dec").Op(":=").Qual("github.com/hashicorp/go-msgpack/v2/codec", "NewDecoderBytes").Params(jen.Op("buf"), jen.Op("handle")),
+				jen.Id("err").Op(":=").Op("dec.Decode").Params(jen.Op("&").Op("result")),
 				jen.Op("if err != nil").Block(jen.Return(jen.Op("nil, err"))),
 				jen.Return(jen.Op("&result, nil")),
 			)
