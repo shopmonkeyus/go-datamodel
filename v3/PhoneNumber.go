@@ -284,26 +284,27 @@ const (
 )
 
 type PhoneNumber struct {
-	CarrierName       *string                         `json:"carrierName"`
-	ID                string                          `gorm:"primaryKey;not null" json:"id"`
-	CompanyId         string                          `gorm:"not null" json:"companyId"`
-	Country           *PhoneNumberCountryEnum         `json:"country"`
-	CreatedDate       time.Time                       `gorm:"column:createdDate;not null" json:"createdDate"`
-	CustomerId        string                          `gorm:"not null" json:"customerId"`
-	Extension         *string                         `json:"extension"`
-	LastVerifiedDate  *time.Time                      `json:"lastVerifiedDate"`
-	LocationId        string                          `gorm:"not null" json:"locationId"`
-	Meta              *Meta                           `gorm:"type:json;embedded;column:meta;not null" json:"meta,omitempty"` // the metadata about the most recent change to the row
-	Metadata          any                             `gorm:"type:json" json:"metadata,omitempty"`                           // metadata reserved for customers to control
-	MobileCountryCode *string                         `json:"mobileCountryCode"`                                             // if a mobile number, the mobile country code
-	MobileNetworkCode *string                         `json:"mobileNetworkCode"`                                             // if a mobile number, the mobile network code
-	Number            string                          `gorm:"not null" json:"number"`
-	OptIn             bool                            `gorm:"not null" json:"optIn"`
-	OptInVerifiedDate *time.Time                      `json:"optInVerifiedDate"`
-	Primary           bool                            `gorm:"not null" json:"primary"`
-	Type              *PhoneNumberTypeEnum            `json:"type"`
-	UpdatedDate       *time.Time                      `gorm:"column:updatedDate" json:"updatedDate"`
-	UserDefinedType   *PhoneNumberUserDefinedTypeEnum `json:"userDefinedType"`
+	ID          string     `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate time.Time  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *time.Time `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        *Meta      `gorm:"type:json;embedded;serializer:json;column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata    any        `gorm:"type:json;serializer:json;column:metadata" json:"metadata,omitempty"`                       // metadata reserved for customers to control
+	CompanyID   string     `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID  string     `gorm:"not null;column:locationId" json:"locationId"`
+
+	CarrierName       *string                         `gorm:"column:carrierName" json:"carrierName"`
+	Country           *PhoneNumberCountryEnum         `gorm:"column:country" json:"country"`
+	CustomerID        string                          `gorm:"not null;column:customerId" json:"customerId"`
+	Extension         *string                         `gorm:"column:extension" json:"extension"`
+	LastVerifiedDate  *time.Time                      `gorm:"column:lastVerifiedDate" json:"lastVerifiedDate"`
+	MobileCountryCode *string                         `gorm:"column:mobileCountryCode" json:"mobileCountryCode"` // if a mobile number, the mobile country code
+	MobileNetworkCode *string                         `gorm:"column:mobileNetworkCode" json:"mobileNetworkCode"` // if a mobile number, the mobile network code
+	Number            string                          `gorm:"not null;column:number" json:"number"`
+	OptIn             bool                            `gorm:"not null;column:optIn" json:"optIn"`
+	OptInVerifiedDate *time.Time                      `gorm:"column:optInVerifiedDate" json:"optInVerifiedDate"`
+	Primary           bool                            `gorm:"not null;column:primary" json:"primary"`
+	Type              *PhoneNumberTypeEnum            `gorm:"column:type" json:"type"`
+	UserDefinedType   *PhoneNumberUserDefinedTypeEnum `gorm:"column:userDefinedType" json:"userDefinedType"`
 }
 
 var _ Model = (*PhoneNumber)(nil)

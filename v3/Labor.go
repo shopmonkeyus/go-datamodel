@@ -30,42 +30,43 @@ const (
 )
 
 type Labor struct {
-	ID                       string                     `gorm:"primaryKey;not null" json:"id"`
-	ApplicationId            *int64                     `json:"applicationId"`
-	CategoryId               *string                    `json:"categoryId"`
-	CompanyId                string                     `gorm:"not null" json:"companyId"`
-	Completed                bool                       `gorm:"not null" json:"completed"`
-	CompletedDate            *time.Time                 `json:"completedDate"`
-	CostHours                *float64                   `json:"costHours"`
-	CostRateCents            *int64                     `json:"costRateCents"`
-	CostTotalCents           *int64                     `json:"costTotalCents"`
-	CreatedDate              time.Time                  `gorm:"column:createdDate;not null" json:"createdDate"`
-	DiscountCents            int64                      `gorm:"not null" json:"discountCents"`
-	DiscountPercent          float64                    `gorm:"not null" json:"discountPercent"`
-	DiscountValueType        LaborDiscountValueTypeEnum `gorm:"not null" json:"discountValueType"`
-	Hours                    float64                    `gorm:"not null" json:"hours"`
-	LaborMatrixDate          *time.Time                 `json:"laborMatrixDate"` // datetime when laborMatrixId was set, for determining if matrix has been changed
-	LaborMatrixId            *string                    `json:"laborMatrixId"`
-	LocationId               string                     `gorm:"not null" json:"locationId"`
-	Meta                     *Meta                      `gorm:"type:json;embedded;column:meta;not null" json:"meta,omitempty"` // the metadata about the most recent change to the row
-	Metadata                 any                        `gorm:"type:json" json:"metadata,omitempty"`                           // metadata reserved for customers to control
-	Multiplier               float64                    `gorm:"not null" json:"multiplier"`
-	MultiplierType           LaborMultiplierTypeEnum    `gorm:"not null" json:"multiplierType"`
-	Name                     *string                    `json:"name"`
-	Note                     string                     `gorm:"not null" json:"note"`
-	OrderId                  string                     `gorm:"not null" json:"orderId"`
-	Ordinal                  float64                    `gorm:"not null" json:"ordinal"`
-	RateCents                int64                      `gorm:"not null" json:"rateCents"`
-	RateId                   *string                    `json:"rateId"`
-	ServiceId                string                     `gorm:"not null" json:"serviceId"`
-	ShowHours                bool                       `gorm:"not null" json:"showHours"`
-	ShowNote                 bool                       `gorm:"not null" json:"showNote"`
-	SkillRequired            *LaborSkillRequiredEnum    `json:"skillRequired"`
-	SkillRequiredDescription *string                    `json:"skillRequiredDescription"`
-	SourceItemId             *string                    `json:"sourceItemId"`
-	Taxable                  bool                       `gorm:"not null" json:"taxable"`
-	TechnicianId             *string                    `json:"technicianId"`
-	UpdatedDate              *time.Time                 `gorm:"column:updatedDate" json:"updatedDate"`
+	ID          string     `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate time.Time  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *time.Time `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        *Meta      `gorm:"type:json;embedded;serializer:json;column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata    any        `gorm:"type:json;serializer:json;column:metadata" json:"metadata,omitempty"`                       // metadata reserved for customers to control
+	CompanyID   string     `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID  string     `gorm:"not null;column:locationId" json:"locationId"`
+
+	ApplicationID            *int64                     `gorm:"column:applicationId" json:"applicationId"`
+	CategoryID               *string                    `gorm:"column:categoryId" json:"categoryId"`
+	Completed                bool                       `gorm:"not null;column:completed" json:"completed"`
+	CompletedDate            *time.Time                 `gorm:"column:completedDate" json:"completedDate"`
+	CostHours                *float64                   `gorm:"column:costHours" json:"costHours"`
+	CostRateCents            *int64                     `gorm:"column:costRateCents" json:"costRateCents"`
+	CostTotalCents           *int64                     `gorm:"column:costTotalCents" json:"costTotalCents"`
+	DiscountCents            int64                      `gorm:"not null;column:discountCents" json:"discountCents"`
+	DiscountPercent          float64                    `gorm:"not null;column:discountPercent" json:"discountPercent"`
+	DiscountValueType        LaborDiscountValueTypeEnum `gorm:"not null;column:discountValueType" json:"discountValueType"`
+	Hours                    float64                    `gorm:"not null;column:hours" json:"hours"`
+	LaborMatrixDate          *time.Time                 `gorm:"column:laborMatrixDate" json:"laborMatrixDate"` // datetime when laborMatrixId was set, for determining if matrix has been changed
+	LaborMatrixID            *string                    `gorm:"column:laborMatrixId" json:"laborMatrixId"`
+	Multiplier               float64                    `gorm:"not null;column:multiplier" json:"multiplier"`
+	MultiplierType           LaborMultiplierTypeEnum    `gorm:"not null;column:multiplierType" json:"multiplierType"`
+	Name                     *string                    `gorm:"column:name" json:"name"`
+	Note                     string                     `gorm:"not null;column:note" json:"note"`
+	OrderID                  string                     `gorm:"not null;column:orderId" json:"orderId"`
+	Ordinal                  float64                    `gorm:"not null;column:ordinal" json:"ordinal"`
+	RateCents                int64                      `gorm:"not null;column:rateCents" json:"rateCents"`
+	RateID                   *string                    `gorm:"column:rateId" json:"rateId"`
+	ServiceID                string                     `gorm:"not null;column:serviceId" json:"serviceId"`
+	ShowHours                bool                       `gorm:"not null;column:showHours" json:"showHours"`
+	ShowNote                 bool                       `gorm:"not null;column:showNote" json:"showNote"`
+	SkillRequired            *LaborSkillRequiredEnum    `gorm:"column:skillRequired" json:"skillRequired"`
+	SkillRequiredDescription *string                    `gorm:"column:skillRequiredDescription" json:"skillRequiredDescription"`
+	SourceItemID             *string                    `gorm:"column:sourceItemId" json:"sourceItemId"`
+	Taxable                  bool                       `gorm:"not null;column:taxable" json:"taxable"`
+	TechnicianID             *string                    `gorm:"column:technicianId" json:"technicianId"`
 }
 
 var _ Model = (*Labor)(nil)

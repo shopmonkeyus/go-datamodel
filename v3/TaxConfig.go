@@ -30,38 +30,39 @@ const (
 )
 
 type TaxConfig struct {
-	CompanyId                        string                               `gorm:"not null" json:"companyId"`
-	CreatedDate                      time.Time                            `gorm:"column:createdDate;not null" json:"createdDate"`
-	EpaPercent                       float64                              `gorm:"not null" json:"epaPercent"`
-	EpaTaxable                       bool                                 `gorm:"not null" json:"epaTaxable"`
-	GstPercent                       float64                              `gorm:"not null" json:"gstPercent"`
-	Hash                             string                               `gorm:"not null" json:"hash"`
-	HstPercent                       float64                              `gorm:"not null" json:"hstPercent"`
-	ID                               string                               `gorm:"primaryKey;not null" json:"id"`
-	IncludeEpaOnLabor                bool                                 `gorm:"not null" json:"includeEpaOnLabor"`
-	IncludeEpaOnParts                bool                                 `gorm:"not null" json:"includeEpaOnParts"`
-	LaborShopSupplies                bool                                 `gorm:"not null" json:"laborShopSupplies"`
-	LaborTaxable                     bool                                 `gorm:"not null" json:"laborTaxable"`
-	LocationId                       string                               `gorm:"not null" json:"locationId"`
-	Meta                             *Meta                                `gorm:"type:json;embedded;column:meta;not null" json:"meta,omitempty"` // the metadata about the most recent change to the row
-	Metadata                         any                                  `gorm:"type:json" json:"metadata,omitempty"`                           // metadata reserved for customers to control
-	PartShopSupplies                 bool                                 `gorm:"not null" json:"partShopSupplies"`
-	PartTaxable                      bool                                 `gorm:"not null" json:"partTaxable"`
-	PriceCalculatorVersion           float64                              `gorm:"not null" json:"priceCalculatorVersion"`
-	PstPercent                       float64                              `gorm:"not null" json:"pstPercent"`
-	RateId                           string                               `gorm:"not null" json:"rateId"`
-	ShopSuppliesConfig               TaxConfigShopSuppliesConfigEnum      `gorm:"not null" json:"shopSuppliesConfig"`
-	ShopSuppliesMaxCapCents          int64                                `gorm:"not null" json:"shopSuppliesMaxCapCents"`
-	ShopSuppliesMaxCapServicePercent float64                              `gorm:"not null" json:"shopSuppliesMaxCapServicePercent"`
-	ShopSuppliesServiceCents         int64                                `gorm:"not null" json:"shopSuppliesServiceCents"`
-	ShopSuppliesServicePercent       float64                              `gorm:"not null" json:"shopSuppliesServicePercent"`
-	ShopSuppliesServiceType          TaxConfigShopSuppliesServiceTypeEnum `gorm:"not null" json:"shopSuppliesServiceType"`
-	ShopSuppliesTaxable              bool                                 `gorm:"not null" json:"shopSuppliesTaxable"`
-	SubcontractTaxable               bool                                 `gorm:"not null" json:"subcontractTaxable"`
-	TaxPercent                       float64                              `gorm:"not null" json:"taxPercent"`
-	TaxSystem                        TaxConfigTaxSystemEnum               `gorm:"not null" json:"taxSystem"`
-	UpdatedDate                      *time.Time                           `gorm:"column:updatedDate" json:"updatedDate"`
-	Version                          int64                                `gorm:"not null" json:"version"`
+	ID          string     `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate time.Time  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *time.Time `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        *Meta      `gorm:"type:json;embedded;serializer:json;column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata    any        `gorm:"type:json;serializer:json;column:metadata" json:"metadata,omitempty"`                       // metadata reserved for customers to control
+	CompanyID   string     `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID  string     `gorm:"not null;column:locationId" json:"locationId"`
+
+	EpaPercent                       float64                              `gorm:"not null;column:epaPercent" json:"epaPercent"`
+	EpaTaxable                       bool                                 `gorm:"not null;column:epaTaxable" json:"epaTaxable"`
+	GstPercent                       float64                              `gorm:"not null;column:gstPercent" json:"gstPercent"`
+	Hash                             string                               `gorm:"not null;column:hash" json:"hash"`
+	HstPercent                       float64                              `gorm:"not null;column:hstPercent" json:"hstPercent"`
+	IncludeEpaOnLabor                bool                                 `gorm:"not null;column:includeEpaOnLabor" json:"includeEpaOnLabor"`
+	IncludeEpaOnParts                bool                                 `gorm:"not null;column:includeEpaOnParts" json:"includeEpaOnParts"`
+	LaborShopSupplies                bool                                 `gorm:"not null;column:laborShopSupplies" json:"laborShopSupplies"`
+	LaborTaxable                     bool                                 `gorm:"not null;column:laborTaxable" json:"laborTaxable"`
+	PartShopSupplies                 bool                                 `gorm:"not null;column:partShopSupplies" json:"partShopSupplies"`
+	PartTaxable                      bool                                 `gorm:"not null;column:partTaxable" json:"partTaxable"`
+	PriceCalculatorVersion           float64                              `gorm:"not null;column:priceCalculatorVersion" json:"priceCalculatorVersion"`
+	PstPercent                       float64                              `gorm:"not null;column:pstPercent" json:"pstPercent"`
+	RateID                           string                               `gorm:"not null;column:rateId" json:"rateId"`
+	ShopSuppliesConfig               TaxConfigShopSuppliesConfigEnum      `gorm:"not null;column:shopSuppliesConfig" json:"shopSuppliesConfig"`
+	ShopSuppliesMaxCapCents          int64                                `gorm:"not null;column:shopSuppliesMaxCapCents" json:"shopSuppliesMaxCapCents"`
+	ShopSuppliesMaxCapServicePercent float64                              `gorm:"not null;column:shopSuppliesMaxCapServicePercent" json:"shopSuppliesMaxCapServicePercent"`
+	ShopSuppliesServiceCents         int64                                `gorm:"not null;column:shopSuppliesServiceCents" json:"shopSuppliesServiceCents"`
+	ShopSuppliesServicePercent       float64                              `gorm:"not null;column:shopSuppliesServicePercent" json:"shopSuppliesServicePercent"`
+	ShopSuppliesServiceType          TaxConfigShopSuppliesServiceTypeEnum `gorm:"not null;column:shopSuppliesServiceType" json:"shopSuppliesServiceType"`
+	ShopSuppliesTaxable              bool                                 `gorm:"not null;column:shopSuppliesTaxable" json:"shopSuppliesTaxable"`
+	SubcontractTaxable               bool                                 `gorm:"not null;column:subcontractTaxable" json:"subcontractTaxable"`
+	TaxPercent                       float64                              `gorm:"not null;column:taxPercent" json:"taxPercent"`
+	TaxSystem                        TaxConfigTaxSystemEnum               `gorm:"not null;column:taxSystem" json:"taxSystem"`
+	Version                          int64                                `gorm:"not null;column:version" json:"version"`
 }
 
 var _ Model = (*TaxConfig)(nil)

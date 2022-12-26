@@ -25,22 +25,23 @@ const (
 )
 
 type InspectionItem struct {
-	Approved            bool                                  `gorm:"not null" json:"approved"`
-	AuthorizationStatus InspectionItemAuthorizationStatusEnum `gorm:"not null" json:"authorizationStatus"`
-	CompanyId           string                                `gorm:"not null" json:"companyId"`
-	CreatedDate         time.Time                             `gorm:"column:createdDate;not null" json:"createdDate"`
-	ID                  string                                `gorm:"primaryKey;not null" json:"id"`
-	InspectionDate      *time.Time                            `json:"inspectionDate"`
-	InspectionId        string                                `gorm:"not null" json:"inspectionId"`
-	InspectorUserId     *string                               `json:"inspectorUserId"`
-	LocationId          string                                `gorm:"not null" json:"locationId"`
-	Message             string                                `gorm:"not null" json:"message"`
-	Meta                *Meta                                 `gorm:"type:json;embedded;column:meta;not null" json:"meta,omitempty"` // the metadata about the most recent change to the row
-	Metadata            any                                   `gorm:"type:json" json:"metadata,omitempty"`                           // metadata reserved for customers to control
-	Name                string                                `gorm:"not null" json:"name"`
-	Ordinal             float64                               `gorm:"not null" json:"ordinal"`
-	Status              *InspectionItemStatusEnum             `json:"status"`
-	UpdatedDate         *time.Time                            `gorm:"column:updatedDate" json:"updatedDate"`
+	ID          string     `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate time.Time  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *time.Time `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        *Meta      `gorm:"type:json;embedded;serializer:json;column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata    any        `gorm:"type:json;serializer:json;column:metadata" json:"metadata,omitempty"`                       // metadata reserved for customers to control
+	CompanyID   string     `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID  string     `gorm:"not null;column:locationId" json:"locationId"`
+
+	Approved            bool                                  `gorm:"not null;column:approved" json:"approved"`
+	AuthorizationStatus InspectionItemAuthorizationStatusEnum `gorm:"not null;column:authorizationStatus" json:"authorizationStatus"`
+	InspectionDate      *time.Time                            `gorm:"column:inspectionDate" json:"inspectionDate"`
+	InspectionID        string                                `gorm:"not null;column:inspectionId" json:"inspectionId"`
+	InspectorUserID     *string                               `gorm:"column:inspectorUserId" json:"inspectorUserId"`
+	Message             string                                `gorm:"not null;column:message" json:"message"`
+	Name                string                                `gorm:"not null;column:name" json:"name"`
+	Ordinal             float64                               `gorm:"not null;column:ordinal" json:"ordinal"`
+	Status              *InspectionItemStatusEnum             `gorm:"column:status" json:"status"`
 }
 
 var _ Model = (*InspectionItem)(nil)

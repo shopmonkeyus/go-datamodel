@@ -41,33 +41,34 @@ const (
 )
 
 type Payment struct {
-	Amount               int64                      `gorm:"not null" json:"amount"`
-	ID                   string                     `gorm:"primaryKey;not null" json:"id"`
-	Bulk                 bool                       `gorm:"not null" json:"bulk"`
-	CardConfirmation     *string                    `json:"cardConfirmation"`
-	CardDigits           *int64                     `json:"cardDigits"`
-	CardName             *string                    `json:"cardName"`
-	CardType             *string                    `json:"cardType"`
-	ChargeFromPublicPage bool                       `gorm:"not null" json:"chargeFromPublicPage"`
-	CollectionType       PaymentCollectionTypeEnum  `gorm:"not null" json:"collectionType"`
-	CompanyId            string                     `gorm:"not null" json:"companyId"`
-	CreatedDate          time.Time                  `gorm:"column:createdDate;not null" json:"createdDate"`
-	DebitCard            bool                       `gorm:"not null" json:"debitCard"`
-	Deposit              bool                       `gorm:"not null" json:"deposit"`
-	LocationId           string                     `gorm:"not null" json:"locationId"`
-	Meta                 *Meta                      `gorm:"type:json;embedded;column:meta;not null" json:"meta,omitempty"` // the metadata about the most recent change to the row
-	Metadata             any                        `gorm:"type:json" json:"metadata,omitempty"`                           // metadata reserved for customers to control
-	Note                 string                     `gorm:"not null" json:"note"`
-	OrderId              string                     `gorm:"not null" json:"orderId"`
-	PayerId              *string                    `json:"payerId"`
-	PaymentType          PaymentPaymentTypeEnum     `gorm:"not null" json:"paymentType"`
-	Provider             *PaymentProviderEnum       `json:"provider"`
-	ProviderData         any                        `gorm:"type:json" json:"providerData"`
-	ReceiptNumber        int64                      `gorm:"not null" json:"receiptNumber"`
-	StatementId          string                     `gorm:"not null" json:"statementId"`
-	TransactionType      PaymentTransactionTypeEnum `gorm:"not null" json:"transactionType"`
-	UpdatedDate          *time.Time                 `gorm:"column:updatedDate" json:"updatedDate"`
-	Userdata             any                        `gorm:"type:json" json:"userdata"`
+	ID          string     `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate time.Time  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *time.Time `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        *Meta      `gorm:"type:json;embedded;serializer:json;column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata    any        `gorm:"type:json;serializer:json;column:metadata" json:"metadata,omitempty"`                       // metadata reserved for customers to control
+	CompanyID   string     `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID  string     `gorm:"not null;column:locationId" json:"locationId"`
+
+	Amount               int64                      `gorm:"not null;column:amount" json:"amount"`
+	Bulk                 bool                       `gorm:"not null;column:bulk" json:"bulk"`
+	CardConfirmation     *string                    `gorm:"column:cardConfirmation" json:"cardConfirmation"`
+	CardDigits           *int64                     `gorm:"column:cardDigits" json:"cardDigits"`
+	CardName             *string                    `gorm:"column:cardName" json:"cardName"`
+	CardType             *string                    `gorm:"column:cardType" json:"cardType"`
+	ChargeFromPublicPage bool                       `gorm:"not null;column:chargeFromPublicPage" json:"chargeFromPublicPage"`
+	CollectionType       PaymentCollectionTypeEnum  `gorm:"not null;column:collectionType" json:"collectionType"`
+	DebitCard            bool                       `gorm:"not null;column:debitCard" json:"debitCard"`
+	Deposit              bool                       `gorm:"not null;column:deposit" json:"deposit"`
+	Note                 string                     `gorm:"not null;column:note" json:"note"`
+	OrderID              string                     `gorm:"not null;column:orderId" json:"orderId"`
+	PayerID              *string                    `gorm:"column:payerId" json:"payerId"`
+	PaymentType          PaymentPaymentTypeEnum     `gorm:"not null;column:paymentType" json:"paymentType"`
+	Provider             *PaymentProviderEnum       `gorm:"column:provider" json:"provider"`
+	ProviderData         any                        `gorm:"type:json;serializer:json;column:providerData" json:"providerData"`
+	ReceiptNumber        int64                      `gorm:"not null;column:receiptNumber" json:"receiptNumber"`
+	StatementID          string                     `gorm:"not null;column:statementId" json:"statementId"`
+	TransactionType      PaymentTransactionTypeEnum `gorm:"not null;column:transactionType" json:"transactionType"`
+	Userdata             any                        `gorm:"type:json;serializer:json;column:userdata" json:"userdata"`
 }
 
 var _ Model = (*Payment)(nil)

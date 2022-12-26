@@ -30,43 +30,44 @@ const (
 )
 
 type Tire struct {
-	BinLocation           *string                   `json:"binLocation"`
-	BrandId               *string                   `json:"brandId"`
-	CategoryId            *string                   `json:"categoryId"`
-	CompanyId             string                    `gorm:"not null" json:"companyId"`
-	CreatedDate           time.Time                 `gorm:"column:createdDate;not null" json:"createdDate"`
-	DiscountCents         int64                     `gorm:"not null" json:"discountCents"`
-	DiscountPercent       float64                   `gorm:"not null" json:"discountPercent"`
-	DiscountValueType     TireDiscountValueTypeEnum `gorm:"not null" json:"discountValueType"`
-	FederalExciseTaxCents int64                     `gorm:"not null" json:"federalExciseTaxCents"`
-	ID                    string                    `gorm:"primaryKey;not null" json:"id"`
-	LocationId            string                    `gorm:"not null" json:"locationId"`
-	Meta                  *Meta                     `gorm:"type:json;embedded;column:meta;not null" json:"meta,omitempty"` // the metadata about the most recent change to the row
-	Metadata              any                       `gorm:"type:json" json:"metadata,omitempty"`                           // metadata reserved for customers to control
-	Model                 *string                   `json:"model"`
-	Name                  string                    `gorm:"not null" json:"name"`
-	Note                  *string                   `json:"note"`
-	OrderId               string                    `gorm:"not null" json:"orderId"`
-	Ordinal               float64                   `gorm:"not null" json:"ordinal"`
-	PartNumber            *string                   `json:"partNumber"`
-	PricingMatrixDate     *time.Time                `json:"pricingMatrixDate"` // datetime when pricingMatrixId was set, for determining if matrix has been changed api_schema(calculated)
-	PricingMatrixId       *string                   `json:"pricingMatrixId"`
-	Quantity              int64                     `gorm:"not null" json:"quantity"`
-	ReduceInventoryCount  bool                      `gorm:"not null" json:"reduceInventoryCount"`
-	RetailCostCents       int64                     `gorm:"not null" json:"retailCostCents"`
-	Seasonality           *TireSeasonalityEnum      `json:"seasonality"`
-	ServiceId             string                    `gorm:"not null" json:"serviceId"`
-	ShowNote              bool                      `gorm:"not null" json:"showNote"`
-	ShowPartNumber        bool                      `gorm:"not null" json:"showPartNumber"`
-	ShowPriceAndQuantity  bool                      `gorm:"not null" json:"showPriceAndQuantity"`
-	Size                  *string                   `json:"size"`
-	SizeFormat            TireSizeFormatEnum        `gorm:"not null" json:"sizeFormat"`
-	SourceItemId          *string                   `json:"sourceItemId"`
-	Taxable               bool                      `gorm:"not null" json:"taxable"`
-	UpdatedDate           *time.Time                `gorm:"column:updatedDate" json:"updatedDate"`
-	VendorId              *string                   `json:"vendorId"`
-	WasteTireFee          int64                     `gorm:"not null" json:"wasteTireFee"`
-	WholesaleCostCents    *int64                    `json:"wholesaleCostCents"`
+	ID          string     `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate time.Time  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *time.Time `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        *Meta      `gorm:"type:json;embedded;serializer:json;column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata    any        `gorm:"type:json;serializer:json;column:metadata" json:"metadata,omitempty"`                       // metadata reserved for customers to control
+	CompanyID   string     `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID  string     `gorm:"not null;column:locationId" json:"locationId"`
+
+	BinLocation           *string                   `gorm:"column:binLocation" json:"binLocation"`
+	BrandID               *string                   `gorm:"column:brandId" json:"brandId"`
+	CategoryID            *string                   `gorm:"column:categoryId" json:"categoryId"`
+	DiscountCents         int64                     `gorm:"not null;column:discountCents" json:"discountCents"`
+	DiscountPercent       float64                   `gorm:"not null;column:discountPercent" json:"discountPercent"`
+	DiscountValueType     TireDiscountValueTypeEnum `gorm:"not null;column:discountValueType" json:"discountValueType"`
+	FederalExciseTaxCents int64                     `gorm:"not null;column:federalExciseTaxCents" json:"federalExciseTaxCents"`
+	Model                 *string                   `gorm:"column:model" json:"model"`
+	Name                  string                    `gorm:"not null;column:name" json:"name"`
+	Note                  *string                   `gorm:"column:note" json:"note"`
+	OrderID               string                    `gorm:"not null;column:orderId" json:"orderId"`
+	Ordinal               float64                   `gorm:"not null;column:ordinal" json:"ordinal"`
+	PartNumber            *string                   `gorm:"column:partNumber" json:"partNumber"`
+	PricingMatrixDate     *time.Time                `gorm:"column:pricingMatrixDate" json:"pricingMatrixDate"` // datetime when pricingMatrixId was set, for determining if matrix has been changed api_schema(calculated)
+	PricingMatrixID       *string                   `gorm:"column:pricingMatrixId" json:"pricingMatrixId"`
+	Quantity              int64                     `gorm:"not null;column:quantity" json:"quantity"`
+	ReduceInventoryCount  bool                      `gorm:"not null;column:reduceInventoryCount" json:"reduceInventoryCount"`
+	RetailCostCents       int64                     `gorm:"not null;column:retailCostCents" json:"retailCostCents"`
+	Seasonality           *TireSeasonalityEnum      `gorm:"column:seasonality" json:"seasonality"`
+	ServiceID             string                    `gorm:"not null;column:serviceId" json:"serviceId"`
+	ShowNote              bool                      `gorm:"not null;column:showNote" json:"showNote"`
+	ShowPartNumber        bool                      `gorm:"not null;column:showPartNumber" json:"showPartNumber"`
+	ShowPriceAndQuantity  bool                      `gorm:"not null;column:showPriceAndQuantity" json:"showPriceAndQuantity"`
+	Size                  *string                   `gorm:"column:size" json:"size"`
+	SizeFormat            TireSizeFormatEnum        `gorm:"not null;column:sizeFormat" json:"sizeFormat"`
+	SourceItemID          *string                   `gorm:"column:sourceItemId" json:"sourceItemId"`
+	Taxable               bool                      `gorm:"not null;column:taxable" json:"taxable"`
+	VendorID              *string                   `gorm:"column:vendorId" json:"vendorId"`
+	WasteTireFee          int64                     `gorm:"not null;column:wasteTireFee" json:"wasteTireFee"`
+	WholesaleCostCents    *int64                    `gorm:"column:wholesaleCostCents" json:"wholesaleCostCents"`
 }
 
 var _ Model = (*Tire)(nil)

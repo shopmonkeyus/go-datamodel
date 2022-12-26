@@ -8,13 +8,14 @@ import (
 )
 
 type LabelPartConnection struct {
-	CompanyId   string     `gorm:"not null" json:"companyId"`
-	CreatedDate time.Time  `gorm:"column:createdDate;not null" json:"createdDate"`
-	LabelId     string     `gorm:"not null" json:"labelId"`
-	Meta        *Meta      `gorm:"type:json;embedded;column:meta;not null" json:"meta,omitempty"` // the metadata about the most recent change to the row
-	Metadata    any        `gorm:"type:json" json:"metadata,omitempty"`                           // metadata reserved for customers to control
-	PartId      string     `gorm:"not null" json:"partId"`
-	UpdatedDate *time.Time `gorm:"column:updatedDate" json:"updatedDate"`
+	CreatedDate time.Time  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *time.Time `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        *Meta      `gorm:"type:json;embedded;serializer:json;column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata    any        `gorm:"type:json;serializer:json;column:metadata" json:"metadata,omitempty"`                       // metadata reserved for customers to control
+	CompanyID   string     `gorm:"not null;column:companyId" json:"companyId"`
+
+	LabelID string `gorm:"not null;column:labelId" json:"labelId"`
+	PartID  string `gorm:"not null;column:partId" json:"partId"`
 }
 
 var _ Model = (*LabelPartConnection)(nil)

@@ -9,16 +9,17 @@ import (
 
 // user is a model for users that have access to the system
 type User struct {
-	ID           string     `gorm:"primaryKey;not null" json:"id"`
-	CompanyId    string     `gorm:"not null" json:"companyId"`
-	CreatedDate  time.Time  `gorm:"column:createdDate;not null" json:"createdDate"`
-	CustomFields any        `gorm:"type:json" json:"customFields"` // custom field values
-	FirstName    *string    `json:"firstName"`
-	LastName     *string    `json:"lastName"`
-	LocationId   *string    `json:"locationId"`
-	Meta         *Meta      `gorm:"type:json;embedded;column:meta;not null" json:"meta,omitempty"` // the metadata about the most recent change to the row
-	Metadata     any        `gorm:"type:json" json:"metadata,omitempty"`                           // metadata reserved for customers to control
-	UpdatedDate  *time.Time `gorm:"column:updatedDate" json:"updatedDate"`
+	ID           string     `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate  time.Time  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate  *time.Time `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta         *Meta      `gorm:"type:json;embedded;serializer:json;column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata     any        `gorm:"type:json;serializer:json;column:metadata" json:"metadata,omitempty"`                       // metadata reserved for customers to control
+	CompanyID    string     `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID   *string    `gorm:"column:locationId" json:"locationId"`
+	CustomFields any        `gorm:"type:json;serializer:json;column:customFields" json:"customFields"` // custom field values
+
+	FirstName *string `gorm:"column:firstName" json:"firstName"`
+	LastName  *string `gorm:"column:lastName" json:"lastName"`
 }
 
 var _ Model = (*User)(nil)

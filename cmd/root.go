@@ -6,6 +6,7 @@ import (
 	"os"
 	"path"
 	"sort"
+	"strings"
 
 	"github.com/dave/jennifer/jen"
 	"github.com/iancoleman/strcase"
@@ -41,12 +42,40 @@ func stringContains(a []string, x string) bool {
 	return false
 }
 
+func stringFind(a []string, x string) int {
+	for i, n := range a {
+		if x == n {
+			return i
+		}
+	}
+	return -1
+}
+
+func ensurePosition(a []string, element string, position int) int {
+	index := stringFind(a, element)
+	if index < 0 {
+		return position - 1
+	}
+	if index > 0 && index != position {
+		cur := a[position]
+		a[index] = cur
+		a[position] = element
+	}
+	return position
+}
+
 func identifier(val string) string {
 	switch val {
 	case "id":
 		return "ID"
+	case "url":
+		return "URL"
 	}
-	return strcase.ToCamel(val)
+	newval := strcase.ToCamel(val)
+	if strings.HasSuffix(newval, "Id") {
+		return newval[0:len(newval)-2] + "ID"
+	}
+	return newval
 }
 
 func toType(file *jen.File, modelName string, stmt *jen.Statement, name string, property Property, tags map[string]string) *jen.Statement {
@@ -102,13 +131,13 @@ func toType(file *jen.File, modelName string, stmt *jen.Statement, name string, 
 		}
 	}
 	if name == "meta" || name == "metadata" {
-		tags["gorm"] = "type:json;embedded;column:" + name
+		tags["gorm"] = "type:json;embedded;serializer:json;column:" + name
 		tags["json"] = name + ",omitempty"
 		if name == "meta" {
 			return _stmt.Op("*").Id("Meta")
 		}
 	}
-	tags["gorm"] = "type:json"
+	tags["gorm"] = "type:json;serializer:json"
 	return _stmt.Any()
 }
 
@@ -213,26 +242,48 @@ Where v3 is the output folder to generate the files into.
 				keys = append(keys, key)
 			}
 
-			sort.SliceStable(keys, func(i, j int) bool {
-				if keys[i] == keys[j] {
-					return false
+			// re-order these common fields after sorting the remaining
+			// columns by alphabetical
+			pos := ensurePosition(keys, "id", 0)
+			pos = ensurePosition(keys, "createdDate", pos+1)
+			pos = ensurePosition(keys, "updatedDate", pos+1)
+			pos = ensurePosition(keys, "meta", pos+1)
+			pos = ensurePosition(keys, "metadata", pos+1)
+			pos = ensurePosition(keys, "companyId", pos+1)
+			pos = ensurePosition(keys, "locationId", pos+1)
+			pos = ensurePosition(keys, "customFields", pos+1)
+
+			// figure out all the keys not included in the special list above
+			oldkeys := make([]string, 0)
+			for _, k := range keys {
+				switch k {
+				case "id", "createdDate", "updatedDate", "meta", "metadata", "companyId", "locationId", "customFields":
+					continue
+				default:
+					oldkeys = append(oldkeys, k)
 				}
-				// make the primary key first
-				if keys[i] == "id" {
-					return true
-				}
-				return keys[i] < keys[j]
+			}
+
+			// sort the remainder of the keys
+			sort.SliceStable(oldkeys, func(i, j int) bool {
+				return oldkeys[i] < oldkeys[j]
 			})
+
+			// add the old keys after our last special keys
+			for i, k := range oldkeys {
+				newindex := pos + i + 1
+				keys[newindex] = k
+			}
 
 			fields := make([]jen.Code, 0)
 
-			for _, key := range keys {
+			for i, key := range keys {
 				prop := model.Properties[key]
 				tags := map[string]string{"json": key}
 				field := toType(f, name, jen.Id(identifier(key)), key, prop, tags)
 				required := stringContains(model.Required, key)
+				gorm := tags["gorm"]
 				if required && (prop.Nullable == nil || !*prop.Nullable) {
-					gorm := tags["gorm"]
 					if gorm == "" {
 						gorm = "not null"
 					} else {
@@ -240,9 +291,17 @@ Where v3 is the output folder to generate the files into.
 					}
 					tags["gorm"] = gorm
 				}
+				if gorm != "" {
+					gorm += ";"
+				}
+				gorm += "column:" + key
+				tags["gorm"] = gorm
 				field = field.Tag(tags)
 				if prop.Description != "" {
 					field = field.Comment(prop.Description)
+				}
+				if pos == i {
+					field = field.Line() // put a line break after our last special fields
 				}
 				fields = append(fields, field)
 			}
