@@ -3,7 +3,6 @@ package v3
 
 import (
 	"encoding/json"
-	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -35,9 +34,9 @@ func (m *TpiScanInspection) String() string {
 }
 
 // NewTpiScanInspection returns a new model instance from a json key/value map
-func NewTpiScanInspection(kv map[string]any) (*TpiScanInspection, error) {
+func NewTpiScanInspection(buf []byte) (*TpiScanInspection, error) {
 	var result TpiScanInspection
-	err := mapstructure.Decode(kv, &result)
+	err := json.Unmarshal(buf, &result)
 	if err != nil {
 		return nil, err
 	}

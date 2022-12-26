@@ -3,7 +3,6 @@ package v3
 
 import (
 	"encoding/json"
-	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -44,9 +43,9 @@ func (m *CoreCharge) String() string {
 }
 
 // NewCoreCharge returns a new model instance from a json key/value map
-func NewCoreCharge(kv map[string]any) (*CoreCharge, error) {
+func NewCoreCharge(buf []byte) (*CoreCharge, error) {
 	var result CoreCharge
-	err := mapstructure.Decode(kv, &result)
+	err := json.Unmarshal(buf, &result)
 	if err != nil {
 		return nil, err
 	}

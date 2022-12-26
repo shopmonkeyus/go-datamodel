@@ -3,7 +3,6 @@ package v3
 
 import (
 	"encoding/json"
-	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -330,9 +329,9 @@ func (m *Customer) String() string {
 }
 
 // NewCustomer returns a new model instance from a json key/value map
-func NewCustomer(kv map[string]any) (*Customer, error) {
+func NewCustomer(buf []byte) (*Customer, error) {
 	var result Customer
-	err := mapstructure.Decode(kv, &result)
+	err := json.Unmarshal(buf, &result)
 	if err != nil {
 		return nil, err
 	}

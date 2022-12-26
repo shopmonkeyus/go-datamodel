@@ -3,7 +3,6 @@ package v3
 
 import (
 	"encoding/json"
-	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -41,9 +40,9 @@ func (m *LaborMatrix) String() string {
 }
 
 // NewLaborMatrix returns a new model instance from a json key/value map
-func NewLaborMatrix(kv map[string]any) (*LaborMatrix, error) {
+func NewLaborMatrix(buf []byte) (*LaborMatrix, error) {
 	var result LaborMatrix
-	err := mapstructure.Decode(kv, &result)
+	err := json.Unmarshal(buf, &result)
 	if err != nil {
 		return nil, err
 	}

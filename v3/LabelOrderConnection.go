@@ -3,7 +3,6 @@ package v3
 
 import (
 	"encoding/json"
-	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -31,9 +30,9 @@ func (m *LabelOrderConnection) String() string {
 }
 
 // NewLabelOrderConnection returns a new model instance from a json key/value map
-func NewLabelOrderConnection(kv map[string]any) (*LabelOrderConnection, error) {
+func NewLabelOrderConnection(buf []byte) (*LabelOrderConnection, error) {
 	var result LabelOrderConnection
-	err := mapstructure.Decode(kv, &result)
+	err := json.Unmarshal(buf, &result)
 	if err != nil {
 		return nil, err
 	}

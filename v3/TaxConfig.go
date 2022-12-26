@@ -3,7 +3,6 @@ package v3
 
 import (
 	"encoding/json"
-	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -78,9 +77,9 @@ func (m *TaxConfig) String() string {
 }
 
 // NewTaxConfig returns a new model instance from a json key/value map
-func NewTaxConfig(kv map[string]any) (*TaxConfig, error) {
+func NewTaxConfig(buf []byte) (*TaxConfig, error) {
 	var result TaxConfig
-	err := mapstructure.Decode(kv, &result)
+	err := json.Unmarshal(buf, &result)
 	if err != nil {
 		return nil, err
 	}

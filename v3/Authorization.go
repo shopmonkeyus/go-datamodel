@@ -3,7 +3,6 @@ package v3
 
 import (
 	"encoding/json"
-	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -48,9 +47,9 @@ func (m *Authorization) String() string {
 }
 
 // NewAuthorization returns a new model instance from a json key/value map
-func NewAuthorization(kv map[string]any) (*Authorization, error) {
+func NewAuthorization(buf []byte) (*Authorization, error) {
 	var result Authorization
-	err := mapstructure.Decode(kv, &result)
+	err := json.Unmarshal(buf, &result)
 	if err != nil {
 		return nil, err
 	}

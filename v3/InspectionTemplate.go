@@ -3,7 +3,6 @@ package v3
 
 import (
 	"encoding/json"
-	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -37,9 +36,9 @@ func (m *InspectionTemplate) String() string {
 }
 
 // NewInspectionTemplate returns a new model instance from a json key/value map
-func NewInspectionTemplate(kv map[string]any) (*InspectionTemplate, error) {
+func NewInspectionTemplate(buf []byte) (*InspectionTemplate, error) {
 	var result InspectionTemplate
-	err := mapstructure.Decode(kv, &result)
+	err := json.Unmarshal(buf, &result)
 	if err != nil {
 		return nil, err
 	}
