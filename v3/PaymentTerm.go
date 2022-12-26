@@ -8,19 +8,20 @@ import (
 )
 
 type PaymentTerm struct {
-	CompanyId       string     `gorm:"not null" json:"companyId"`
-	ID              string     `gorm:"primaryKey;not null" json:"id"`
-	CreatedDate     time.Time  `gorm:"column:createdDate;not null" json:"createdDate"`
-	CustomerDefault bool       `gorm:"not null" json:"customerDefault"` // if it is the default for new customers
-	DueInDays       float64    `gorm:"not null" json:"dueInDays"`
-	Editable        bool       `gorm:"not null" json:"editable"`     // if it is not a built-in payment term (eg. On Receipt)
-	FleetDefault    bool       `gorm:"not null" json:"fleetDefault"` // if it is the default for new fleets
-	LocationId      string     `gorm:"not null" json:"locationId"`
-	Meta            *Meta      `gorm:"type:json;embedded;column:meta;not null" json:"meta,omitempty"` // the metadata about the most recent change to the row
-	Metadata        any        `gorm:"type:json" json:"metadata,omitempty"`                           // metadata reserved for customers to control
-	Name            string     `gorm:"not null" json:"name"`
-	Note            string     `gorm:"not null" json:"note"`
-	UpdatedDate     *time.Time `gorm:"column:updatedDate" json:"updatedDate"`
+	ID          string     `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate time.Time  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *time.Time `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        *Meta      `gorm:"type:json;embedded;serializer:json;column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata    any        `gorm:"type:json;serializer:json;column:metadata" json:"metadata,omitempty"`                       // metadata reserved for customers to control
+	CompanyID   string     `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID  string     `gorm:"not null;column:locationId" json:"locationId"`
+
+	CustomerDefault bool    `gorm:"not null;column:customerDefault" json:"customerDefault"` // if it is the default for new customers
+	DueInDays       float64 `gorm:"not null;column:dueInDays" json:"dueInDays"`
+	Editable        bool    `gorm:"not null;column:editable" json:"editable"`         // if it is not a built-in payment term (eg. On Receipt)
+	FleetDefault    bool    `gorm:"not null;column:fleetDefault" json:"fleetDefault"` // if it is the default for new fleets
+	Name            string  `gorm:"not null;column:name" json:"name"`
+	Note            string  `gorm:"not null;column:note" json:"note"`
 }
 
 var _ Model = (*PaymentTerm)(nil)

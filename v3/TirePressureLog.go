@@ -8,19 +8,20 @@ import (
 )
 
 type TirePressureLog struct {
-	ID          string     `gorm:"primaryKey;not null" json:"id"`
-	CompanyId   string     `gorm:"not null" json:"companyId"`
-	CreatedDate time.Time  `gorm:"column:createdDate;not null" json:"createdDate"`
-	FrontLeft   *float64   `json:"frontLeft"`
-	FrontRight  *float64   `json:"frontRight"`
-	LocationId  string     `gorm:"not null" json:"locationId"`
-	Meta        *Meta      `gorm:"type:json;embedded;column:meta;not null" json:"meta,omitempty"` // the metadata about the most recent change to the row
-	Metadata    any        `gorm:"type:json" json:"metadata,omitempty"`                           // metadata reserved for customers to control
-	OrderId     string     `gorm:"not null" json:"orderId"`
-	RearLeft    *float64   `json:"rearLeft"`
-	RearRight   *float64   `json:"rearRight"`
-	UpdatedDate *time.Time `gorm:"column:updatedDate" json:"updatedDate"`
-	VehicleId   string     `gorm:"not null" json:"vehicleId"`
+	ID          string     `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate time.Time  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *time.Time `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        *Meta      `gorm:"type:json;embedded;serializer:json;column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata    any        `gorm:"type:json;serializer:json;column:metadata" json:"metadata,omitempty"`                       // metadata reserved for customers to control
+	CompanyID   string     `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID  string     `gorm:"not null;column:locationId" json:"locationId"`
+
+	FrontLeft  *float64 `gorm:"column:frontLeft" json:"frontLeft"`
+	FrontRight *float64 `gorm:"column:frontRight" json:"frontRight"`
+	OrderID    string   `gorm:"not null;column:orderId" json:"orderId"`
+	RearLeft   *float64 `gorm:"column:rearLeft" json:"rearLeft"`
+	RearRight  *float64 `gorm:"column:rearRight" json:"rearRight"`
+	VehicleID  string   `gorm:"not null;column:vehicleId" json:"vehicleId"`
 }
 
 var _ Model = (*TirePressureLog)(nil)

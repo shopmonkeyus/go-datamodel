@@ -335,44 +335,45 @@ const (
 )
 
 type Vehicle struct {
-	AppointmentCount     int64                          `gorm:"not null" json:"appointmentCount"`
-	Color                *VehicleColorEnum              `json:"color"`
-	CompanyId            string                         `gorm:"not null" json:"companyId"`
-	CreatedDate          time.Time                      `gorm:"column:createdDate;not null" json:"createdDate"`
-	CustomFields         any                            `gorm:"type:json" json:"customFields"` // custom field values
-	DeferredServiceCount int64                          `gorm:"not null" json:"deferredServiceCount"`
-	Drivetrain           *VehicleDrivetrainEnum         `json:"drivetrain"`
-	Engine               *string                        `json:"engine"`
-	ID                   string                         `gorm:"primaryKey;not null" json:"id"`
-	LicensePlate         *string                        `json:"licensePlate"`
-	LicensePlateCountry  VehicleLicensePlateCountryEnum `gorm:"not null" json:"licensePlateCountry"`
-	LicensePlateState    *string                        `json:"licensePlateState"`
-	Make                 *string                        `json:"make"`
-	MakeId               *int64                         `json:"makeId"` // vcdb make id
-	MessageCount         int64                          `gorm:"not null" json:"messageCount"`
-	Meta                 *Meta                          `gorm:"type:json;embedded;column:meta;not null" json:"meta,omitempty"` // the metadata about the most recent change to the row
-	Metadata             any                            `gorm:"type:json" json:"metadata,omitempty"`                           // metadata reserved for customers to control
-	Mileage              *int64                         `json:"mileage"`
-	MileageLogCount      int64                          `gorm:"not null" json:"mileageLogCount"`
-	MileageUnit          VehicleMileageUnitEnum         `gorm:"not null" json:"mileageUnit"`
-	Model                *string                        `json:"model"`
-	ModelId              *int64                         `json:"modelId"` // vcdb model id
-	Note                 string                         `gorm:"not null" json:"note"`
-	Odometer             bool                           `gorm:"not null" json:"odometer"`
-	OrderCount           int64                          `gorm:"not null" json:"orderCount"`
-	OwnerCount           int64                          `gorm:"not null" json:"ownerCount"`
-	ProductionDate       *string                        `json:"productionDate"`
-	Size                 VehicleSizeEnum                `gorm:"not null" json:"size"`
-	Submodel             *string                        `json:"submodel"`
-	SubmodelId           *int64                         `json:"submodelId"` // vcdb submodel id
-	TirePressureLogCount int64                          `gorm:"not null" json:"tirePressureLogCount"`
-	Transmission         *VehicleTransmissionEnum       `json:"transmission"`
-	Type                 *VehicleTypeEnum               `json:"type"`
-	Unit                 *string                        `json:"unit"`
-	UpdatedDate          *time.Time                     `gorm:"column:updatedDate" json:"updatedDate"`
-	VcdbVehicleId        *string                        `json:"vcdbVehicleId"`
-	Vin                  *string                        `json:"vin"`
-	Year                 *int64                         `json:"year"`
+	ID           string     `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate  time.Time  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate  *time.Time `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta         *Meta      `gorm:"type:json;embedded;serializer:json;column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata     any        `gorm:"type:json;serializer:json;column:metadata" json:"metadata,omitempty"`                       // metadata reserved for customers to control
+	CompanyID    string     `gorm:"not null;column:companyId" json:"companyId"`
+	CustomFields any        `gorm:"type:json;serializer:json;column:customFields" json:"customFields"` // custom field values
+
+	AppointmentCount     int64                          `gorm:"not null;column:appointmentCount" json:"appointmentCount"`
+	Color                *VehicleColorEnum              `gorm:"column:color" json:"color"`
+	DeferredServiceCount int64                          `gorm:"not null;column:deferredServiceCount" json:"deferredServiceCount"`
+	Drivetrain           *VehicleDrivetrainEnum         `gorm:"column:drivetrain" json:"drivetrain"`
+	Engine               *string                        `gorm:"column:engine" json:"engine"`
+	LicensePlate         *string                        `gorm:"column:licensePlate" json:"licensePlate"`
+	LicensePlateCountry  VehicleLicensePlateCountryEnum `gorm:"not null;column:licensePlateCountry" json:"licensePlateCountry"`
+	LicensePlateState    *string                        `gorm:"column:licensePlateState" json:"licensePlateState"`
+	Make                 *string                        `gorm:"column:make" json:"make"`
+	MakeID               *int64                         `gorm:"column:makeId" json:"makeId"` // vcdb make id
+	MessageCount         int64                          `gorm:"not null;column:messageCount" json:"messageCount"`
+	Mileage              *int64                         `gorm:"column:mileage" json:"mileage"`
+	MileageLogCount      int64                          `gorm:"not null;column:mileageLogCount" json:"mileageLogCount"`
+	MileageUnit          VehicleMileageUnitEnum         `gorm:"not null;column:mileageUnit" json:"mileageUnit"`
+	Model                *string                        `gorm:"column:model" json:"model"`
+	ModelID              *int64                         `gorm:"column:modelId" json:"modelId"` // vcdb model id
+	Note                 string                         `gorm:"not null;column:note" json:"note"`
+	Odometer             bool                           `gorm:"not null;column:odometer" json:"odometer"`
+	OrderCount           int64                          `gorm:"not null;column:orderCount" json:"orderCount"`
+	OwnerCount           int64                          `gorm:"not null;column:ownerCount" json:"ownerCount"`
+	ProductionDate       *string                        `gorm:"column:productionDate" json:"productionDate"`
+	Size                 VehicleSizeEnum                `gorm:"not null;column:size" json:"size"`
+	Submodel             *string                        `gorm:"column:submodel" json:"submodel"`
+	SubmodelID           *int64                         `gorm:"column:submodelId" json:"submodelId"` // vcdb submodel id
+	TirePressureLogCount int64                          `gorm:"not null;column:tirePressureLogCount" json:"tirePressureLogCount"`
+	Transmission         *VehicleTransmissionEnum       `gorm:"column:transmission" json:"transmission"`
+	Type                 *VehicleTypeEnum               `gorm:"column:type" json:"type"`
+	Unit                 *string                        `gorm:"column:unit" json:"unit"`
+	VcdbVehicleID        *string                        `gorm:"column:vcdbVehicleId" json:"vcdbVehicleId"`
+	Vin                  *string                        `gorm:"column:vin" json:"vin"`
+	Year                 *int64                         `gorm:"column:year" json:"year"`
 }
 
 var _ Model = (*Vehicle)(nil)

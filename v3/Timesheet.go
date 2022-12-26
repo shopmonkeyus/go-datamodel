@@ -38,29 +38,30 @@ const (
 )
 
 type Timesheet struct {
-	Activity         TimesheetActivityEnum          `gorm:"not null" json:"activity"`
-	ClockIn          time.Time                      `gorm:"not null" json:"clockIn"`
-	ClockInPlatform  *TimesheetClockInPlatformEnum  `json:"clockInPlatform"`
-	ClockOut         *time.Time                     `json:"clockOut"`
-	ClockOutPlatform *TimesheetClockOutPlatformEnum `json:"clockOutPlatform"`
-	CompanyId        string                         `gorm:"not null" json:"companyId"`
-	CreatedDate      time.Time                      `gorm:"column:createdDate;not null" json:"createdDate"`
-	Duration         *float64                       `json:"duration"`                 // the amount of time clocked (in milliseconds)
-	FlatRate         bool                           `gorm:"not null" json:"flatRate"` // if the technician uses a flat rate
-	ID               string                         `gorm:"primaryKey;not null" json:"id"`
-	InProgress       bool                           `gorm:"not null" json:"inProgress"`
-	LaborId          *string                        `json:"laborId"`
-	LocationId       string                         `gorm:"not null" json:"locationId"`
-	Meta             *Meta                          `gorm:"type:json;embedded;column:meta;not null" json:"meta,omitempty"` // the metadata about the most recent change to the row
-	Metadata         any                            `gorm:"type:json" json:"metadata,omitempty"`                           // metadata reserved for customers to control
-	Note             string                         `gorm:"not null" json:"note"`
-	Number           int64                          `gorm:"not null" json:"number"`
-	OrderId          *string                        `json:"orderId"`
-	RateCents        *int64                         `json:"rateCents"`
-	ServiceId        *string                        `json:"serviceId"`
-	TechnicianId     string                         `gorm:"not null" json:"technicianId"`
-	Type             TimesheetTypeEnum              `gorm:"not null" json:"type"`
-	UpdatedDate      *time.Time                     `gorm:"column:updatedDate" json:"updatedDate"`
+	ID          string     `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate time.Time  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *time.Time `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        *Meta      `gorm:"type:json;embedded;serializer:json;column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata    any        `gorm:"type:json;serializer:json;column:metadata" json:"metadata,omitempty"`                       // metadata reserved for customers to control
+	CompanyID   string     `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID  string     `gorm:"not null;column:locationId" json:"locationId"`
+
+	Activity         TimesheetActivityEnum          `gorm:"not null;column:activity" json:"activity"`
+	ClockIn          time.Time                      `gorm:"not null;column:clockIn" json:"clockIn"`
+	ClockInPlatform  *TimesheetClockInPlatformEnum  `gorm:"column:clockInPlatform" json:"clockInPlatform"`
+	ClockOut         *time.Time                     `gorm:"column:clockOut" json:"clockOut"`
+	ClockOutPlatform *TimesheetClockOutPlatformEnum `gorm:"column:clockOutPlatform" json:"clockOutPlatform"`
+	Duration         *float64                       `gorm:"column:duration" json:"duration"`          // the amount of time clocked (in milliseconds)
+	FlatRate         bool                           `gorm:"not null;column:flatRate" json:"flatRate"` // if the technician uses a flat rate
+	InProgress       bool                           `gorm:"not null;column:inProgress" json:"inProgress"`
+	LaborID          *string                        `gorm:"column:laborId" json:"laborId"`
+	Note             string                         `gorm:"not null;column:note" json:"note"`
+	Number           int64                          `gorm:"not null;column:number" json:"number"`
+	OrderID          *string                        `gorm:"column:orderId" json:"orderId"`
+	RateCents        *int64                         `gorm:"column:rateCents" json:"rateCents"`
+	ServiceID        *string                        `gorm:"column:serviceId" json:"serviceId"`
+	TechnicianID     string                         `gorm:"not null;column:technicianId" json:"technicianId"`
+	Type             TimesheetTypeEnum              `gorm:"not null;column:type" json:"type"`
 }
 
 var _ Model = (*Timesheet)(nil)

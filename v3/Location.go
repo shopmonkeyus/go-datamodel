@@ -262,24 +262,25 @@ const (
 )
 
 type Location struct {
-	Address1              string              `gorm:"not null" json:"address1"`
-	Address2              *string             `json:"address2"`
-	ID                    string              `gorm:"primaryKey;not null" json:"id"`
-	City                  string              `gorm:"not null" json:"city"`
-	CompanyId             string              `gorm:"not null" json:"companyId"`
-	ContactName           *string             `json:"contactName"` // the location contact name
-	Country               LocationCountryEnum `gorm:"not null" json:"country"`
-	CreatedDate           time.Time           `gorm:"column:createdDate;not null" json:"createdDate"`
-	Email                 *string             `json:"email"`                                                         // the location email for generic inqueries
-	LocationPhoneNumberId *string             `json:"locationPhoneNumberId"`                                         // the location phone number
-	Meta                  *Meta               `gorm:"type:json;embedded;column:meta;not null" json:"meta,omitempty"` // the metadata about the most recent change to the row
-	Metadata              any                 `gorm:"type:json" json:"metadata,omitempty"`                           // metadata reserved for customers to control
-	Name                  string              `gorm:"not null" json:"name"`
-	PostalCode            string              `gorm:"not null" json:"postalCode"`
-	State                 string              `gorm:"not null" json:"state"`
-	Timezone              string              `gorm:"not null" json:"timezone"`
-	UpdatedDate           *time.Time          `gorm:"column:updatedDate" json:"updatedDate"`
-	Website               *string             `json:"website"`
+	ID          string     `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate time.Time  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *time.Time `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        *Meta      `gorm:"type:json;embedded;serializer:json;column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata    any        `gorm:"type:json;serializer:json;column:metadata" json:"metadata,omitempty"`                       // metadata reserved for customers to control
+	CompanyID   string     `gorm:"not null;column:companyId" json:"companyId"`
+
+	Address1              string              `gorm:"not null;column:address1" json:"address1"`
+	Address2              *string             `gorm:"column:address2" json:"address2"`
+	City                  string              `gorm:"not null;column:city" json:"city"`
+	ContactName           *string             `gorm:"column:contactName" json:"contactName"` // the location contact name
+	Country               LocationCountryEnum `gorm:"not null;column:country" json:"country"`
+	Email                 *string             `gorm:"column:email" json:"email"`                                 // the location email for generic inqueries
+	LocationPhoneNumberID *string             `gorm:"column:locationPhoneNumberId" json:"locationPhoneNumberId"` // the location phone number
+	Name                  string              `gorm:"not null;column:name" json:"name"`
+	PostalCode            string              `gorm:"not null;column:postalCode" json:"postalCode"`
+	State                 string              `gorm:"not null;column:state" json:"state"`
+	Timezone              string              `gorm:"not null;column:timezone" json:"timezone"`
+	Website               *string             `gorm:"column:website" json:"website"`
 }
 
 var _ Model = (*Location)(nil)

@@ -28,24 +28,25 @@ const (
 )
 
 type PurchaseOrder struct {
-	CompanyId       string                     `gorm:"not null" json:"companyId"`
-	CreatedDate     time.Time                  `gorm:"column:createdDate;not null" json:"createdDate"`
-	ID              string                     `gorm:"primaryKey;not null" json:"id"`
-	FullfiledDate   *time.Time                 `json:"fullfiledDate"`
-	InvoiceNumber   *string                    `json:"invoiceNumber"`
-	LocationId      string                     `gorm:"not null" json:"locationId"`
-	Meta            *Meta                      `gorm:"type:json;embedded;column:meta;not null" json:"meta,omitempty"` // the metadata about the most recent change to the row
-	Metadata        any                        `gorm:"type:json" json:"metadata,omitempty"`                           // metadata reserved for customers to control
-	Note            *string                    `json:"note"`
-	Number          string                     `gorm:"not null" json:"number"`
-	OrderId         *string                    `json:"orderId"`
-	OrderedDate     *time.Time                 `json:"orderedDate"`
-	Provider        *PurchaseOrderProviderEnum `json:"provider"`
-	ProviderData    any                        `gorm:"type:json" json:"providerData"`
-	Session         any                        `gorm:"type:json" json:"session"`
-	Status          PurchaseOrderStatusEnum    `gorm:"not null" json:"status"`
-	TotalPriceCents int64                      `gorm:"not null" json:"totalPriceCents"`
-	UpdatedDate     *time.Time                 `gorm:"column:updatedDate" json:"updatedDate"`
+	ID          string     `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate time.Time  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *time.Time `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        *Meta      `gorm:"type:json;embedded;serializer:json;column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata    any        `gorm:"type:json;serializer:json;column:metadata" json:"metadata,omitempty"`                       // metadata reserved for customers to control
+	CompanyID   string     `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID  string     `gorm:"not null;column:locationId" json:"locationId"`
+
+	FullfiledDate   *time.Time                 `gorm:"column:fullfiledDate" json:"fullfiledDate"`
+	InvoiceNumber   *string                    `gorm:"column:invoiceNumber" json:"invoiceNumber"`
+	Note            *string                    `gorm:"column:note" json:"note"`
+	Number          string                     `gorm:"not null;column:number" json:"number"`
+	OrderID         *string                    `gorm:"column:orderId" json:"orderId"`
+	OrderedDate     *time.Time                 `gorm:"column:orderedDate" json:"orderedDate"`
+	Provider        *PurchaseOrderProviderEnum `gorm:"column:provider" json:"provider"`
+	ProviderData    any                        `gorm:"type:json;serializer:json;column:providerData" json:"providerData"`
+	Session         any                        `gorm:"type:json;serializer:json;column:session" json:"session"`
+	Status          PurchaseOrderStatusEnum    `gorm:"not null;column:status" json:"status"`
+	TotalPriceCents int64                      `gorm:"not null;column:totalPriceCents" json:"totalPriceCents"`
 }
 
 var _ Model = (*PurchaseOrder)(nil)

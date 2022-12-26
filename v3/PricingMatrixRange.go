@@ -8,17 +8,18 @@ import (
 )
 
 type PricingMatrixRange struct {
-	CompanyId       string     `gorm:"not null" json:"companyId"`
-	CreatedDate     time.Time  `gorm:"column:createdDate;not null" json:"createdDate"`
-	ID              string     `gorm:"primaryKey;not null" json:"id"`
-	EndCents        *int64     `json:"endCents"`
-	MarginPercent   float64    `gorm:"not null" json:"marginPercent"`
-	MarkupPercent   float64    `gorm:"not null" json:"markupPercent"`
-	Meta            *Meta      `gorm:"type:json;embedded;column:meta;not null" json:"meta,omitempty"` // the metadata about the most recent change to the row
-	Metadata        any        `gorm:"type:json" json:"metadata,omitempty"`                           // metadata reserved for customers to control
-	PricingMatrixId string     `gorm:"not null" json:"pricingMatrixId"`
-	StartCents      int64      `gorm:"not null" json:"startCents"`
-	UpdatedDate     *time.Time `gorm:"column:updatedDate" json:"updatedDate"`
+	ID          string     `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate time.Time  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *time.Time `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        *Meta      `gorm:"type:json;embedded;serializer:json;column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata    any        `gorm:"type:json;serializer:json;column:metadata" json:"metadata,omitempty"`                       // metadata reserved for customers to control
+	CompanyID   string     `gorm:"not null;column:companyId" json:"companyId"`
+
+	EndCents        *int64  `gorm:"column:endCents" json:"endCents"`
+	MarginPercent   float64 `gorm:"not null;column:marginPercent" json:"marginPercent"`
+	MarkupPercent   float64 `gorm:"not null;column:markupPercent" json:"markupPercent"`
+	PricingMatrixID string  `gorm:"not null;column:pricingMatrixId" json:"pricingMatrixId"`
+	StartCents      int64   `gorm:"not null;column:startCents" json:"startCents"`
 }
 
 var _ Model = (*PricingMatrixRange)(nil)

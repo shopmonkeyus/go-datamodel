@@ -16,73 +16,74 @@ const (
 )
 
 type Order struct {
-	AppointmentDates       []string                  `gorm:"not null" json:"appointmentDates"`
-	Archived               bool                      `gorm:"not null" json:"archived"`
-	AssignedTechnicianIds  []string                  `gorm:"not null" json:"assignedTechnicianIds"`
-	Authorized             bool                      `gorm:"not null" json:"authorized"`
-	AuthorizedDate         *time.Time                `json:"authorizedDate"`
-	CompanyId              string                    `gorm:"not null" json:"companyId"`
-	Complaint              *string                   `json:"complaint"`
-	CompletedDate          *time.Time                `json:"completedDate"`
-	ConversationId         string                    `gorm:"not null" json:"conversationId"`
-	CreatedDate            time.Time                 `gorm:"column:createdDate;not null" json:"createdDate"`
-	GstCents               int64                     `gorm:"not null" json:"gstCents"`
-	ID                     string                    `gorm:"primaryKey;not null" json:"id"`
-	CustomFields           any                       `gorm:"type:json" json:"customFields"` // custom field values
-	CustomerId             *string                   `json:"customerId"`
-	DeferredServiceCount   int64                     `gorm:"not null" json:"deferredServiceCount"`
-	Deleted                bool                      `gorm:"not null" json:"deleted"` // if the record has been deleted
-	DeletedDate            *time.Time                `json:"deletedDate"`             // the date that the record was deleted or null if not deleted
-	DeletedReason          *string                   `json:"deletedReason"`           // the reason that the record was deleted
-	DeletedUserId          *string                   `json:"deletedUserId"`           // the user that deleted the record or null if not deleted
-	DiscountCents          int64                     `gorm:"not null" json:"discountCents"`
-	DiscountPercent        float64                   `gorm:"not null" json:"discountPercent"`
-	DueDate                *time.Time                `json:"dueDate"`
-	EmailId                *string                   `json:"emailId"` // id of the email to use instead of the customer's default email
-	EpaCents               int64                     `gorm:"not null" json:"epaCents"`
-	FeesCents              int64                     `gorm:"not null" json:"feesCents"`
-	GeneratedName          *string                   `json:"generatedName"`
-	GeneratedVehicleName   *string                   `json:"generatedVehicleName"` // "[year] [make] [model] [submodel]" pulled from the vehicle, if any
-	HstCents               int64                     `gorm:"not null" json:"hstCents"`
-	InspectionCount        int64                     `gorm:"not null" json:"inspectionCount"`
-	InspectionStatus       OrderInspectionStatusEnum `gorm:"not null" json:"inspectionStatus"`
-	Invoiced               bool                      `gorm:"not null" json:"invoiced"`
-	InvoicedDate           *time.Time                `json:"invoicedDate"`
-	LaborCents             int64                     `gorm:"not null" json:"laborCents"`
-	LocationId             string                    `gorm:"not null" json:"locationId"`
-	MessageCount           int64                     `gorm:"not null" json:"messageCount"`
-	Meta                   *Meta                     `gorm:"type:json;embedded;column:meta;not null" json:"meta,omitempty"` // the metadata about the most recent change to the row
-	Metadata               any                       `gorm:"type:json" json:"metadata,omitempty"`                           // metadata reserved for customers to control
-	MileageIn              *int64                    `json:"mileageIn"`
-	MileageOut             *int64                    `json:"mileageOut"`
-	Name                   *string                   `json:"name"`
-	Number                 int64                     `gorm:"not null" json:"number"`
-	OrderCreatedDate       time.Time                 `gorm:"not null" json:"orderCreatedDate"` // allow user to override created date
-	Paid                   bool                      `gorm:"not null" json:"paid"`
-	PaidCostCents          int64                     `gorm:"not null" json:"paidCostCents"`
-	PartsCents             int64                     `gorm:"not null" json:"partsCents"`
-	PhoneNumberId          *string                   `json:"phoneNumberId"` // id of the phone number to use instead of the customer's default number
-	Profitability          any                       `gorm:"type:json" json:"profitability"`
-	PstCents               int64                     `gorm:"not null" json:"pstCents"`
-	PublicId               string                    `gorm:"not null" json:"publicId"`
-	PurchaseOrderNumber    *string                   `json:"purchaseOrderNumber"`
-	ReadOnly               bool                      `gorm:"not null" json:"readOnly"` // if this order should not be editable in the UI
-	ReadOnlyReason         *string                   `json:"readOnlyReason"`           // a friendly explanation of why (eg. "migrated from previous system")
-	Recommendation         *string                   `json:"recommendation"`
-	RemainingCostCents     *int64                    `json:"remainingCostCents"`
-	SentToCarfax           bool                      `gorm:"not null" json:"sentToCarfax"`
-	ServiceWriterId        *string                   `json:"serviceWriterId"`
-	ShopSuppliesCents      int64                     `gorm:"not null" json:"shopSuppliesCents"`
-	ShopUnreadMessageCount int64                     `gorm:"not null" json:"shopUnreadMessageCount"`
-	SubcontractsCents      int64                     `gorm:"not null" json:"subcontractsCents"`
-	TaxCents               int64                     `gorm:"not null" json:"taxCents"`
-	TaxConfigId            string                    `gorm:"not null" json:"taxConfigId"`
-	TiresCents             int64                     `gorm:"not null" json:"tiresCents"`
-	TotalCostCents         int64                     `gorm:"not null" json:"totalCostCents"`
-	UpdatedDate            *time.Time                `gorm:"column:updatedDate" json:"updatedDate"`
-	VehicleId              *string                   `json:"vehicleId"`
-	WorkflowStatusId       string                    `gorm:"not null" json:"workflowStatusId"`
-	WorkflowStatusPosition float64                   `gorm:"not null" json:"workflowStatusPosition"`
+	ID           string     `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate  time.Time  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate  *time.Time `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta         *Meta      `gorm:"type:json;embedded;serializer:json;column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata     any        `gorm:"type:json;serializer:json;column:metadata" json:"metadata,omitempty"`                       // metadata reserved for customers to control
+	CompanyID    string     `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID   string     `gorm:"not null;column:locationId" json:"locationId"`
+	CustomFields any        `gorm:"type:json;serializer:json;column:customFields" json:"customFields"` // custom field values
+
+	AppointmentDates       []string                  `gorm:"not null;column:appointmentDates" json:"appointmentDates"`
+	Archived               bool                      `gorm:"not null;column:archived" json:"archived"`
+	AssignedTechnicianIds  []string                  `gorm:"not null;column:assignedTechnicianIds" json:"assignedTechnicianIds"`
+	Authorized             bool                      `gorm:"not null;column:authorized" json:"authorized"`
+	AuthorizedDate         *time.Time                `gorm:"column:authorizedDate" json:"authorizedDate"`
+	Complaint              *string                   `gorm:"column:complaint" json:"complaint"`
+	CompletedDate          *time.Time                `gorm:"column:completedDate" json:"completedDate"`
+	ConversationID         string                    `gorm:"not null;column:conversationId" json:"conversationId"`
+	CustomerID             *string                   `gorm:"column:customerId" json:"customerId"`
+	DeferredServiceCount   int64                     `gorm:"not null;column:deferredServiceCount" json:"deferredServiceCount"`
+	Deleted                bool                      `gorm:"not null;column:deleted" json:"deleted"`    // if the record has been deleted
+	DeletedDate            *time.Time                `gorm:"column:deletedDate" json:"deletedDate"`     // the date that the record was deleted or null if not deleted
+	DeletedReason          *string                   `gorm:"column:deletedReason" json:"deletedReason"` // the reason that the record was deleted
+	DeletedUserID          *string                   `gorm:"column:deletedUserId" json:"deletedUserId"` // the user that deleted the record or null if not deleted
+	DiscountCents          int64                     `gorm:"not null;column:discountCents" json:"discountCents"`
+	DiscountPercent        float64                   `gorm:"not null;column:discountPercent" json:"discountPercent"`
+	DueDate                *time.Time                `gorm:"column:dueDate" json:"dueDate"`
+	EmailID                *string                   `gorm:"column:emailId" json:"emailId"` // id of the email to use instead of the customer's default email
+	EpaCents               int64                     `gorm:"not null;column:epaCents" json:"epaCents"`
+	FeesCents              int64                     `gorm:"not null;column:feesCents" json:"feesCents"`
+	GeneratedName          *string                   `gorm:"column:generatedName" json:"generatedName"`
+	GeneratedVehicleName   *string                   `gorm:"column:generatedVehicleName" json:"generatedVehicleName"` // "[year] [make] [model] [submodel]" pulled from the vehicle, if any
+	GstCents               int64                     `gorm:"not null;column:gstCents" json:"gstCents"`
+	HstCents               int64                     `gorm:"not null;column:hstCents" json:"hstCents"`
+	InspectionCount        int64                     `gorm:"not null;column:inspectionCount" json:"inspectionCount"`
+	InspectionStatus       OrderInspectionStatusEnum `gorm:"not null;column:inspectionStatus" json:"inspectionStatus"`
+	Invoiced               bool                      `gorm:"not null;column:invoiced" json:"invoiced"`
+	InvoicedDate           *time.Time                `gorm:"column:invoicedDate" json:"invoicedDate"`
+	LaborCents             int64                     `gorm:"not null;column:laborCents" json:"laborCents"`
+	MessageCount           int64                     `gorm:"not null;column:messageCount" json:"messageCount"`
+	MileageIn              *int64                    `gorm:"column:mileageIn" json:"mileageIn"`
+	MileageOut             *int64                    `gorm:"column:mileageOut" json:"mileageOut"`
+	Name                   *string                   `gorm:"column:name" json:"name"`
+	Number                 int64                     `gorm:"not null;column:number" json:"number"`
+	OrderCreatedDate       time.Time                 `gorm:"not null;column:orderCreatedDate" json:"orderCreatedDate"` // allow user to override created date
+	Paid                   bool                      `gorm:"not null;column:paid" json:"paid"`
+	PaidCostCents          int64                     `gorm:"not null;column:paidCostCents" json:"paidCostCents"`
+	PartsCents             int64                     `gorm:"not null;column:partsCents" json:"partsCents"`
+	PhoneNumberID          *string                   `gorm:"column:phoneNumberId" json:"phoneNumberId"` // id of the phone number to use instead of the customer's default number
+	Profitability          any                       `gorm:"type:json;serializer:json;column:profitability" json:"profitability"`
+	PstCents               int64                     `gorm:"not null;column:pstCents" json:"pstCents"`
+	PublicID               string                    `gorm:"not null;column:publicId" json:"publicId"`
+	PurchaseOrderNumber    *string                   `gorm:"column:purchaseOrderNumber" json:"purchaseOrderNumber"`
+	ReadOnly               bool                      `gorm:"not null;column:readOnly" json:"readOnly"`    // if this order should not be editable in the UI
+	ReadOnlyReason         *string                   `gorm:"column:readOnlyReason" json:"readOnlyReason"` // a friendly explanation of why (eg. "migrated from previous system")
+	Recommendation         *string                   `gorm:"column:recommendation" json:"recommendation"`
+	RemainingCostCents     *int64                    `gorm:"column:remainingCostCents" json:"remainingCostCents"`
+	SentToCarfax           bool                      `gorm:"not null;column:sentToCarfax" json:"sentToCarfax"`
+	ServiceWriterID        *string                   `gorm:"column:serviceWriterId" json:"serviceWriterId"`
+	ShopSuppliesCents      int64                     `gorm:"not null;column:shopSuppliesCents" json:"shopSuppliesCents"`
+	ShopUnreadMessageCount int64                     `gorm:"not null;column:shopUnreadMessageCount" json:"shopUnreadMessageCount"`
+	SubcontractsCents      int64                     `gorm:"not null;column:subcontractsCents" json:"subcontractsCents"`
+	TaxCents               int64                     `gorm:"not null;column:taxCents" json:"taxCents"`
+	TaxConfigID            string                    `gorm:"not null;column:taxConfigId" json:"taxConfigId"`
+	TiresCents             int64                     `gorm:"not null;column:tiresCents" json:"tiresCents"`
+	TotalCostCents         int64                     `gorm:"not null;column:totalCostCents" json:"totalCostCents"`
+	VehicleID              *string                   `gorm:"column:vehicleId" json:"vehicleId"`
+	WorkflowStatusID       string                    `gorm:"not null;column:workflowStatusId" json:"workflowStatusId"`
+	WorkflowStatusPosition float64                   `gorm:"not null;column:workflowStatusPosition" json:"workflowStatusPosition"`
 }
 
 var _ Model = (*Order)(nil)
