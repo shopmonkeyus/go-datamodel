@@ -3,7 +3,6 @@ package v3
 
 import (
 	"encoding/json"
-	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -33,9 +32,9 @@ func (m *Conversation) String() string {
 }
 
 // NewConversation returns a new model instance from a json key/value map
-func NewConversation(kv map[string]any) (*Conversation, error) {
+func NewConversation(buf []byte) (*Conversation, error) {
 	var result Conversation
-	err := mapstructure.Decode(kv, &result)
+	err := json.Unmarshal(buf, &result)
 	if err != nil {
 		return nil, err
 	}

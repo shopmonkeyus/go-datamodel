@@ -3,7 +3,6 @@ package v3
 
 import (
 	"encoding/json"
-	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -33,9 +32,9 @@ func (m *PricingMatrix) String() string {
 }
 
 // NewPricingMatrix returns a new model instance from a json key/value map
-func NewPricingMatrix(kv map[string]any) (*PricingMatrix, error) {
+func NewPricingMatrix(buf []byte) (*PricingMatrix, error) {
 	var result PricingMatrix
-	err := mapstructure.Decode(kv, &result)
+	err := json.Unmarshal(buf, &result)
 	if err != nil {
 		return nil, err
 	}

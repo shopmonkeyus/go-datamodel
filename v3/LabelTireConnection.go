@@ -3,7 +3,6 @@ package v3
 
 import (
 	"encoding/json"
-	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -31,9 +30,9 @@ func (m *LabelTireConnection) String() string {
 }
 
 // NewLabelTireConnection returns a new model instance from a json key/value map
-func NewLabelTireConnection(kv map[string]any) (*LabelTireConnection, error) {
+func NewLabelTireConnection(buf []byte) (*LabelTireConnection, error) {
 	var result LabelTireConnection
-	err := mapstructure.Decode(kv, &result)
+	err := json.Unmarshal(buf, &result)
 	if err != nil {
 		return nil, err
 	}

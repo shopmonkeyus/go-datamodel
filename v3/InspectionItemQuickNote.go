@@ -3,7 +3,6 @@ package v3
 
 import (
 	"encoding/json"
-	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -34,9 +33,9 @@ func (m *InspectionItemQuickNote) String() string {
 }
 
 // NewInspectionItemQuickNote returns a new model instance from a json key/value map
-func NewInspectionItemQuickNote(kv map[string]any) (*InspectionItemQuickNote, error) {
+func NewInspectionItemQuickNote(buf []byte) (*InspectionItemQuickNote, error) {
 	var result InspectionItemQuickNote
-	err := mapstructure.Decode(kv, &result)
+	err := json.Unmarshal(buf, &result)
 	if err != nil {
 		return nil, err
 	}

@@ -3,7 +3,6 @@ package v3
 
 import (
 	"encoding/json"
-	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -32,9 +31,9 @@ func (m *ReferralSource) String() string {
 }
 
 // NewReferralSource returns a new model instance from a json key/value map
-func NewReferralSource(kv map[string]any) (*ReferralSource, error) {
+func NewReferralSource(buf []byte) (*ReferralSource, error) {
 	var result ReferralSource
-	err := mapstructure.Decode(kv, &result)
+	err := json.Unmarshal(buf, &result)
 	if err != nil {
 		return nil, err
 	}

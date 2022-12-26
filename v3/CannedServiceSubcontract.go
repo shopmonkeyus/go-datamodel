@@ -3,7 +3,6 @@ package v3
 
 import (
 	"encoding/json"
-	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -52,9 +51,9 @@ func (m *CannedServiceSubcontract) String() string {
 }
 
 // NewCannedServiceSubcontract returns a new model instance from a json key/value map
-func NewCannedServiceSubcontract(kv map[string]any) (*CannedServiceSubcontract, error) {
+func NewCannedServiceSubcontract(buf []byte) (*CannedServiceSubcontract, error) {
 	var result CannedServiceSubcontract
-	err := mapstructure.Decode(kv, &result)
+	err := json.Unmarshal(buf, &result)
 	if err != nil {
 		return nil, err
 	}

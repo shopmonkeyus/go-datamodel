@@ -3,7 +3,6 @@ package v3
 
 import (
 	"encoding/json"
-	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -33,9 +32,9 @@ func (m *InventoryCategory) String() string {
 }
 
 // NewInventoryCategory returns a new model instance from a json key/value map
-func NewInventoryCategory(kv map[string]any) (*InventoryCategory, error) {
+func NewInventoryCategory(buf []byte) (*InventoryCategory, error) {
 	var result InventoryCategory
-	err := mapstructure.Decode(kv, &result)
+	err := json.Unmarshal(buf, &result)
 	if err != nil {
 		return nil, err
 	}

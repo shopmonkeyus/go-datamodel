@@ -3,7 +3,6 @@ package v3
 
 import (
 	"encoding/json"
-	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -31,9 +30,9 @@ func (m *LabelLaborConnection) String() string {
 }
 
 // NewLabelLaborConnection returns a new model instance from a json key/value map
-func NewLabelLaborConnection(kv map[string]any) (*LabelLaborConnection, error) {
+func NewLabelLaborConnection(buf []byte) (*LabelLaborConnection, error) {
 	var result LabelLaborConnection
-	err := mapstructure.Decode(kv, &result)
+	err := json.Unmarshal(buf, &result)
 	if err != nil {
 		return nil, err
 	}

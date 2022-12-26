@@ -3,7 +3,6 @@ package v3
 
 import (
 	"encoding/json"
-	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -31,9 +30,9 @@ func (m *VehicleLocationConnection) String() string {
 }
 
 // NewVehicleLocationConnection returns a new model instance from a json key/value map
-func NewVehicleLocationConnection(kv map[string]any) (*VehicleLocationConnection, error) {
+func NewVehicleLocationConnection(buf []byte) (*VehicleLocationConnection, error) {
 	var result VehicleLocationConnection
-	err := mapstructure.Decode(kv, &result)
+	err := json.Unmarshal(buf, &result)
 	if err != nil {
 		return nil, err
 	}

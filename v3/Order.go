@@ -3,7 +3,6 @@ package v3
 
 import (
 	"encoding/json"
-	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -99,9 +98,9 @@ func (m *Order) String() string {
 }
 
 // NewOrder returns a new model instance from a json key/value map
-func NewOrder(kv map[string]any) (*Order, error) {
+func NewOrder(buf []byte) (*Order, error) {
 	var result Order
-	err := mapstructure.Decode(kv, &result)
+	err := json.Unmarshal(buf, &result)
 	if err != nil {
 		return nil, err
 	}

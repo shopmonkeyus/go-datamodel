@@ -3,7 +3,6 @@ package v3
 
 import (
 	"encoding/json"
-	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -46,9 +45,9 @@ func (m *InventoryPart) String() string {
 }
 
 // NewInventoryPart returns a new model instance from a json key/value map
-func NewInventoryPart(kv map[string]any) (*InventoryPart, error) {
+func NewInventoryPart(buf []byte) (*InventoryPart, error) {
 	var result InventoryPart
-	err := mapstructure.Decode(kv, &result)
+	err := json.Unmarshal(buf, &result)
 	if err != nil {
 		return nil, err
 	}

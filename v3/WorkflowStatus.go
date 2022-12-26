@@ -3,7 +3,6 @@ package v3
 
 import (
 	"encoding/json"
-	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -36,9 +35,9 @@ func (m *WorkflowStatus) String() string {
 }
 
 // NewWorkflowStatus returns a new model instance from a json key/value map
-func NewWorkflowStatus(kv map[string]any) (*WorkflowStatus, error) {
+func NewWorkflowStatus(buf []byte) (*WorkflowStatus, error) {
 	var result WorkflowStatus
-	err := mapstructure.Decode(kv, &result)
+	err := json.Unmarshal(buf, &result)
 	if err != nil {
 		return nil, err
 	}
