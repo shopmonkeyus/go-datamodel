@@ -206,8 +206,14 @@ Where v3 is the output folder to generate the files into.
 
 			params := make([]jen.Code, 0)
 			cases := make([]jen.Code, 0)
+			models := make([]string, 0)
+			for name := range schema {
+				models = append(models, name)
+			}
+			sort.Strings(models)
 
-			for name, prop := range schema {
+			for _, name := range models {
+				prop := schema[name]
 				rt := jen.Return(jen.Op("New" + name).Params(jen.Op("buf")))
 				cases = append(cases, jen.Op("case").Lit(name).Op(",").Lit(prop.DBName).Op(":").Block(rt))
 			}
@@ -216,7 +222,7 @@ Where v3 is the output folder to generate the files into.
 			params = append(params, jen.Line())
 			params = append(params, jen.Return(jen.Op("nil,").Qual("errors", "New").Params(jen.Lit("invalid model: ").Op("+").Op("name"))))
 
-			initFile.Comment("NewFromModel will return a model from a model name and keyvalue map as JSON")
+			initFile.Comment("NewFromModel will return a model from a model name and JSON as byte buffer")
 			initFile.Func().Id("NewFromModel").Params(jen.Id("name").String().Op(",").Id("buf").Op("[]").Byte()).Op("(Model, error)").Block(params...)
 		}
 
