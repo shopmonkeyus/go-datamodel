@@ -3,6 +3,7 @@ package v3
 
 import (
 	"encoding/json"
+	codec "github.com/hashicorp/go-msgpack/v2/codec"
 	"time"
 )
 
@@ -32,10 +33,17 @@ func (m *InspectionItemQuickNote) String() string {
 	return string(buf)
 }
 
-// NewInspectionItemQuickNote returns a new model instance from a json key/value map
-func NewInspectionItemQuickNote(buf []byte) (*InspectionItemQuickNote, error) {
+// NewInspectionItemQuickNote returns a new model instance from an encoded buffer
+func NewInspectionItemQuickNote(buf []byte, enctype EncodingType) (*InspectionItemQuickNote, error) {
 	var result InspectionItemQuickNote
-	err := json.Unmarshal(buf, &result)
+	var handle codec.Handle
+	if enctype == JSONEncoding {
+		handle = &jsonHandle
+	} else {
+		handle = &msgpackHandle
+	}
+	dec := codec.NewDecoderBytes(buf, handle)
+	err := dec.Decode(&result)
 	if err != nil {
 		return nil, err
 	}

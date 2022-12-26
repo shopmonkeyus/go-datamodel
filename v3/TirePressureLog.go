@@ -3,6 +3,7 @@ package v3
 
 import (
 	"encoding/json"
+	codec "github.com/hashicorp/go-msgpack/v2/codec"
 	"time"
 )
 
@@ -35,10 +36,17 @@ func (m *TirePressureLog) String() string {
 	return string(buf)
 }
 
-// NewTirePressureLog returns a new model instance from a json key/value map
-func NewTirePressureLog(buf []byte) (*TirePressureLog, error) {
+// NewTirePressureLog returns a new model instance from an encoded buffer
+func NewTirePressureLog(buf []byte, enctype EncodingType) (*TirePressureLog, error) {
 	var result TirePressureLog
-	err := json.Unmarshal(buf, &result)
+	var handle codec.Handle
+	if enctype == JSONEncoding {
+		handle = &jsonHandle
+	} else {
+		handle = &msgpackHandle
+	}
+	dec := codec.NewDecoderBytes(buf, handle)
+	err := dec.Decode(&result)
 	if err != nil {
 		return nil, err
 	}

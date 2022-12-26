@@ -3,6 +3,7 @@ package v3
 
 import (
 	"encoding/json"
+	codec "github.com/hashicorp/go-msgpack/v2/codec"
 	"time"
 )
 
@@ -29,10 +30,17 @@ func (m *LabelCustomerConnection) String() string {
 	return string(buf)
 }
 
-// NewLabelCustomerConnection returns a new model instance from a json key/value map
-func NewLabelCustomerConnection(buf []byte) (*LabelCustomerConnection, error) {
+// NewLabelCustomerConnection returns a new model instance from an encoded buffer
+func NewLabelCustomerConnection(buf []byte, enctype EncodingType) (*LabelCustomerConnection, error) {
 	var result LabelCustomerConnection
-	err := json.Unmarshal(buf, &result)
+	var handle codec.Handle
+	if enctype == JSONEncoding {
+		handle = &jsonHandle
+	} else {
+		handle = &msgpackHandle
+	}
+	dec := codec.NewDecoderBytes(buf, handle)
+	err := dec.Decode(&result)
 	if err != nil {
 		return nil, err
 	}

@@ -3,6 +3,7 @@ package v3
 
 import (
 	"encoding/json"
+	codec "github.com/hashicorp/go-msgpack/v2/codec"
 	"time"
 )
 
@@ -35,10 +36,17 @@ func (m *InspectionTemplate) String() string {
 	return string(buf)
 }
 
-// NewInspectionTemplate returns a new model instance from a json key/value map
-func NewInspectionTemplate(buf []byte) (*InspectionTemplate, error) {
+// NewInspectionTemplate returns a new model instance from an encoded buffer
+func NewInspectionTemplate(buf []byte, enctype EncodingType) (*InspectionTemplate, error) {
 	var result InspectionTemplate
-	err := json.Unmarshal(buf, &result)
+	var handle codec.Handle
+	if enctype == JSONEncoding {
+		handle = &jsonHandle
+	} else {
+		handle = &msgpackHandle
+	}
+	dec := codec.NewDecoderBytes(buf, handle)
+	err := dec.Decode(&result)
 	if err != nil {
 		return nil, err
 	}
