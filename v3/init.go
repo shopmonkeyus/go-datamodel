@@ -27,7 +27,7 @@ const (
 	MsgPackEncoding              = "msgpack"
 )
 
-// NewFromModel will return a model from a model name and JSON as byte buffer
+// NewFromModel will return a model from a model name and buffer encoded as EncodingType
 func NewFromModel(name string, buf []byte, enctype EncodingType) (Model, error) {
 	switch name {
 	case "Appointment", "appointment":

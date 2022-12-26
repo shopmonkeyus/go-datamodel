@@ -235,7 +235,7 @@ Where v3 is the output folder to generate the files into.
 			params = append(params, jen.Line())
 			params = append(params, jen.Return(jen.Op("nil,").Qual("errors", "New").Params(jen.Lit("invalid model: ").Op("+").Op("name"))))
 
-			initFile.Comment("NewFromModel will return a model from a model name and JSON as byte buffer")
+			initFile.Comment("NewFromModel will return a model from a model name and buffer encoded as EncodingType")
 			initFile.Func().Id("NewFromModel").Params(jen.Id("name").String().Op(",").Id("buf").Op("[]").Byte(), jen.Id("enctype").Op("EncodingType")).Op("(Model, error)").Block(params...)
 		}
 
