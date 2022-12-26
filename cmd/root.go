@@ -32,6 +32,15 @@ type Model struct {
 	DBName      string              `json:"dbName"`
 }
 
+func stringContains(a []string, x string) bool {
+	for _, n := range a {
+		if x == n {
+			return true
+		}
+	}
+	return false
+}
+
 func identifier(val string) string {
 	switch val {
 	case "id":
@@ -93,12 +102,13 @@ func toType(file *jen.File, modelName string, stmt *jen.Statement, name string, 
 		}
 	}
 	if name == "meta" || name == "metadata" {
-		tags["gorm"] = "embedded;column:" + name
+		tags["gorm"] = "type:json;embedded;column:" + name
 		tags["json"] = name + ",omitempty"
 		if name == "meta" {
 			return _stmt.Op("*").Id("Meta")
 		}
 	}
+	tags["gorm"] = "type:json"
 	return _stmt.Any()
 }
 
@@ -156,6 +166,30 @@ Where v3 is the output folder to generate the files into.
 				jen.Id("SessionID").Op("*").String().Tag(map[string]string{"json": "sessionId,omitempty"}),
 				jen.Id("Version").Op("*").Int64().Tag(map[string]string{"json": "version,omitempty"}),
 			)
+
+			initFile.Line()
+
+			initFile.Type().Id("Model").Interface(
+				jen.Id("TableName").Params().String(),
+				jen.Id("String").Params().String(),
+			)
+
+			initFile.Line()
+
+			params := make([]jen.Code, 0)
+			cases := make([]jen.Code, 0)
+
+			for name, prop := range schema {
+				rt := jen.Return(jen.Op("New" + name).Params(jen.Op("kv")))
+				cases = append(cases, jen.Op("case").Lit(name).Op(",").Lit(prop.DBName).Op(":").Block(rt))
+			}
+
+			params = append(params, jen.Op("switch").Id("name").Block(cases...))
+			params = append(params, jen.Line())
+			params = append(params, jen.Return(jen.Op("nil,").Qual("errors", "New").Params(jen.Lit("invalid model: ").Op("+").Op("name"))))
+
+			initFile.Comment("NewFromModel will return a model from a model name and keyvalue map as JSON")
+			initFile.Func().Id("NewFromModel").Params(jen.Id("name").String().Op(",").Id("kv").Map(jen.String()).Any()).Op("(Model, error)").Block(params...)
 		}
 
 		ifn := path.Join(outdir, "init.go")
@@ -196,7 +230,8 @@ Where v3 is the output folder to generate the files into.
 				prop := model.Properties[key]
 				tags := map[string]string{"json": key}
 				field := toType(f, name, jen.Id(identifier(key)), key, prop, tags)
-				if prop.Nullable == nil {
+				required := stringContains(model.Required, key)
+				if required && (prop.Nullable == nil || !*prop.Nullable) {
 					gorm := tags["gorm"]
 					if gorm == "" {
 						gorm = "not null"
@@ -216,6 +251,8 @@ Where v3 is the output folder to generate the files into.
 				fields...,
 			)
 
+			f.Var().Op("_").Id("Model").Op("=").Params(jen.Op("*" + name)).Params(jen.Nil())
+
 			f.Comment("TableName returns the name of the table for this model which GORM will use when using this model")
 			f.Func().Params(
 				jen.Id("m").Op("*").Id(name),
@@ -230,6 +267,18 @@ Where v3 is the output folder to generate the files into.
 			).Id("String").Params().String().Block(
 				jen.Id("buf").Op(",").Id("_").Op(":=").Qual("encoding/json", "Marshal").Params(jen.Id("m")),
 				jen.Return(jen.String().Params(jen.Id("buf"))),
+			)
+
+			f.Line()
+
+			f.Comment("New" + name + " returns a new model instance from a json key/value map")
+			f.Func().Id("New"+name).Params(
+				jen.Id("kv").Map(jen.String()).Any(),
+			).Op("(*"+name+", error)").Block(
+				jen.Var().Id("result").Op(name),
+				jen.Id("err").Op(":=").Qual("github.com/mitchellh/mapstructure", "Decode").Params(jen.Op("kv"), jen.Op("&result")),
+				jen.Op("if err != nil").Block(jen.Return(jen.Op("nil, err"))),
+				jen.Return(jen.Op("&result, nil")),
 			)
 
 			fn := path.Join(outdir, name+".go")

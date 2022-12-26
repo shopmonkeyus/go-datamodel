@@ -3,6 +3,7 @@ package v3
 
 import (
 	"encoding/json"
+	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -277,15 +278,15 @@ const (
 
 type Customer struct {
 	Address1               *string                             `json:"address1"`
-	Address2               *string                             `json:"address2"`
 	AppointmentCount       int64                               `gorm:"not null" json:"appointmentCount"`
-	CompanyId              string                              `gorm:"not null" json:"companyId"`
 	ID                     string                              `gorm:"primaryKey;not null" json:"id"`
+	Address2               *string                             `json:"address2"`
 	City                   *string                             `json:"city"`
+	CompanyId              string                              `gorm:"not null" json:"companyId"`
 	CompanyName            *string                             `json:"companyName"`
 	Country                *CustomerCountryEnum                `json:"country"`
 	CreatedDate            time.Time                           `gorm:"column:createdDate;not null" json:"createdDate"`
-	CustomFields           any                                 `gorm:"not null" json:"customFields"` // custom field values
+	CustomFields           any                                 `gorm:"type:json" json:"customFields"` // custom field values
 	CustomerType           CustomerCustomerTypeEnum            `gorm:"not null" json:"customerType"`
 	DeferredServiceCount   int64                               `gorm:"not null" json:"deferredServiceCount"`
 	DiscountStatus         bool                                `gorm:"not null" json:"discountStatus"`
@@ -298,8 +299,8 @@ type Customer struct {
 	LastTimeOrderWorked    *time.Time                          `json:"lastTimeOrderWorked"`
 	MarketingOptIn         bool                                `gorm:"not null" json:"marketingOptIn"`
 	MessageCount           int64                               `gorm:"not null" json:"messageCount"`
-	Meta                   *Meta                               `gorm:"embedded;column:meta;not null" json:"meta,omitempty"`         // the metadata about the most recent change to the row
-	Metadata               any                                 `gorm:"embedded;column:metadata;not null" json:"metadata,omitempty"` // metadata reserved for customers to control
+	Meta                   *Meta                               `gorm:"type:json;embedded;column:meta;not null" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata               any                                 `gorm:"type:json" json:"metadata,omitempty"`                           // metadata reserved for customers to control
 	NormalizedFirstName    *string                             `json:"normalizedFirstName"`
 	NormalizedLastName     *string                             `json:"normalizedLastName"`
 	Note                   string                              `gorm:"not null" json:"note"`
@@ -315,6 +316,8 @@ type Customer struct {
 	UpdatedDate            *time.Time                          `gorm:"column:updatedDate" json:"updatedDate"`
 }
 
+var _ Model = (*Customer)(nil)
+
 // TableName returns the name of the table for this model which GORM will use when using this model
 func (m *Customer) TableName() string {
 	return "customer"
@@ -323,4 +326,14 @@ func (m *Customer) TableName() string {
 func (m *Customer) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
+}
+
+// NewCustomer returns a new model instance from a json key/value map
+func NewCustomer(kv map[string]any) (*Customer, error) {
+	var result Customer
+	err := mapstructure.Decode(kv, &result)
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
 }

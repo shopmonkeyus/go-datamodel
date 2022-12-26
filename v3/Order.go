@@ -3,6 +3,7 @@ package v3
 
 import (
 	"encoding/json"
+	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -20,13 +21,14 @@ type Order struct {
 	AssignedTechnicianIds  []string                  `gorm:"not null" json:"assignedTechnicianIds"`
 	Authorized             bool                      `gorm:"not null" json:"authorized"`
 	AuthorizedDate         *time.Time                `json:"authorizedDate"`
-	ID                     string                    `gorm:"primaryKey;not null" json:"id"`
 	CompanyId              string                    `gorm:"not null" json:"companyId"`
 	Complaint              *string                   `json:"complaint"`
 	CompletedDate          *time.Time                `json:"completedDate"`
 	ConversationId         string                    `gorm:"not null" json:"conversationId"`
 	CreatedDate            time.Time                 `gorm:"column:createdDate;not null" json:"createdDate"`
-	CustomFields           any                       `gorm:"not null" json:"customFields"` // custom field values
+	GstCents               int64                     `gorm:"not null" json:"gstCents"`
+	ID                     string                    `gorm:"primaryKey;not null" json:"id"`
+	CustomFields           any                       `gorm:"type:json" json:"customFields"` // custom field values
 	CustomerId             *string                   `json:"customerId"`
 	DeferredServiceCount   int64                     `gorm:"not null" json:"deferredServiceCount"`
 	Deleted                bool                      `gorm:"not null" json:"deleted"` // if the record has been deleted
@@ -41,7 +43,6 @@ type Order struct {
 	FeesCents              int64                     `gorm:"not null" json:"feesCents"`
 	GeneratedName          *string                   `json:"generatedName"`
 	GeneratedVehicleName   *string                   `json:"generatedVehicleName"` // "[year] [make] [model] [submodel]" pulled from the vehicle, if any
-	GstCents               int64                     `gorm:"not null" json:"gstCents"`
 	HstCents               int64                     `gorm:"not null" json:"hstCents"`
 	InspectionCount        int64                     `gorm:"not null" json:"inspectionCount"`
 	InspectionStatus       OrderInspectionStatusEnum `gorm:"not null" json:"inspectionStatus"`
@@ -50,8 +51,8 @@ type Order struct {
 	LaborCents             int64                     `gorm:"not null" json:"laborCents"`
 	LocationId             string                    `gorm:"not null" json:"locationId"`
 	MessageCount           int64                     `gorm:"not null" json:"messageCount"`
-	Meta                   *Meta                     `gorm:"embedded;column:meta;not null" json:"meta,omitempty"`         // the metadata about the most recent change to the row
-	Metadata               any                       `gorm:"embedded;column:metadata;not null" json:"metadata,omitempty"` // metadata reserved for customers to control
+	Meta                   *Meta                     `gorm:"type:json;embedded;column:meta;not null" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata               any                       `gorm:"type:json" json:"metadata,omitempty"`                           // metadata reserved for customers to control
 	MileageIn              *int64                    `json:"mileageIn"`
 	MileageOut             *int64                    `json:"mileageOut"`
 	Name                   *string                   `json:"name"`
@@ -61,7 +62,7 @@ type Order struct {
 	PaidCostCents          int64                     `gorm:"not null" json:"paidCostCents"`
 	PartsCents             int64                     `gorm:"not null" json:"partsCents"`
 	PhoneNumberId          *string                   `json:"phoneNumberId"` // id of the phone number to use instead of the customer's default number
-	Profitability          any                       `gorm:"not null" json:"profitability"`
+	Profitability          any                       `gorm:"type:json" json:"profitability"`
 	PstCents               int64                     `gorm:"not null" json:"pstCents"`
 	PublicId               string                    `gorm:"not null" json:"publicId"`
 	PurchaseOrderNumber    *string                   `json:"purchaseOrderNumber"`
@@ -84,6 +85,8 @@ type Order struct {
 	WorkflowStatusPosition float64                   `gorm:"not null" json:"workflowStatusPosition"`
 }
 
+var _ Model = (*Order)(nil)
+
 // TableName returns the name of the table for this model which GORM will use when using this model
 func (m *Order) TableName() string {
 	return "order"
@@ -92,4 +95,14 @@ func (m *Order) TableName() string {
 func (m *Order) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
+}
+
+// NewOrder returns a new model instance from a json key/value map
+func NewOrder(kv map[string]any) (*Order, error) {
+	var result Order
+	err := mapstructure.Decode(kv, &result)
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
 }

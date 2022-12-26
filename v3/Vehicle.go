@@ -3,6 +3,7 @@ package v3
 
 import (
 	"encoding/json"
+	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -334,23 +335,23 @@ const (
 )
 
 type Vehicle struct {
-	ID                   string                         `gorm:"primaryKey;not null" json:"id"`
 	AppointmentCount     int64                          `gorm:"not null" json:"appointmentCount"`
 	Color                *VehicleColorEnum              `json:"color"`
 	CompanyId            string                         `gorm:"not null" json:"companyId"`
 	CreatedDate          time.Time                      `gorm:"column:createdDate;not null" json:"createdDate"`
-	CustomFields         any                            `gorm:"not null" json:"customFields"` // custom field values
+	CustomFields         any                            `gorm:"type:json" json:"customFields"` // custom field values
 	DeferredServiceCount int64                          `gorm:"not null" json:"deferredServiceCount"`
 	Drivetrain           *VehicleDrivetrainEnum         `json:"drivetrain"`
 	Engine               *string                        `json:"engine"`
+	ID                   string                         `gorm:"primaryKey;not null" json:"id"`
 	LicensePlate         *string                        `json:"licensePlate"`
 	LicensePlateCountry  VehicleLicensePlateCountryEnum `gorm:"not null" json:"licensePlateCountry"`
 	LicensePlateState    *string                        `json:"licensePlateState"`
 	Make                 *string                        `json:"make"`
 	MakeId               *int64                         `json:"makeId"` // vcdb make id
 	MessageCount         int64                          `gorm:"not null" json:"messageCount"`
-	Meta                 *Meta                          `gorm:"embedded;column:meta;not null" json:"meta,omitempty"`         // the metadata about the most recent change to the row
-	Metadata             any                            `gorm:"embedded;column:metadata;not null" json:"metadata,omitempty"` // metadata reserved for customers to control
+	Meta                 *Meta                          `gorm:"type:json;embedded;column:meta;not null" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata             any                            `gorm:"type:json" json:"metadata,omitempty"`                           // metadata reserved for customers to control
 	Mileage              *int64                         `json:"mileage"`
 	MileageLogCount      int64                          `gorm:"not null" json:"mileageLogCount"`
 	MileageUnit          VehicleMileageUnitEnum         `gorm:"not null" json:"mileageUnit"`
@@ -374,6 +375,8 @@ type Vehicle struct {
 	Year                 *int64                         `json:"year"`
 }
 
+var _ Model = (*Vehicle)(nil)
+
 // TableName returns the name of the table for this model which GORM will use when using this model
 func (m *Vehicle) TableName() string {
 	return "vehicle"
@@ -382,4 +385,14 @@ func (m *Vehicle) TableName() string {
 func (m *Vehicle) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
+}
+
+// NewVehicle returns a new model instance from a json key/value map
+func NewVehicle(kv map[string]any) (*Vehicle, error) {
+	var result Vehicle
+	err := mapstructure.Decode(kv, &result)
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
 }

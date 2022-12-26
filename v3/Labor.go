@@ -3,6 +3,7 @@ package v3
 
 import (
 	"encoding/json"
+	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -29,14 +30,14 @@ const (
 )
 
 type Labor struct {
+	ID                       string                     `gorm:"primaryKey;not null" json:"id"`
 	ApplicationId            *int64                     `json:"applicationId"`
 	CategoryId               *string                    `json:"categoryId"`
 	CompanyId                string                     `gorm:"not null" json:"companyId"`
-	CostRateCents            *int64                     `json:"costRateCents"`
-	ID                       string                     `gorm:"primaryKey;not null" json:"id"`
 	Completed                bool                       `gorm:"not null" json:"completed"`
 	CompletedDate            *time.Time                 `json:"completedDate"`
 	CostHours                *float64                   `json:"costHours"`
+	CostRateCents            *int64                     `json:"costRateCents"`
 	CostTotalCents           *int64                     `json:"costTotalCents"`
 	CreatedDate              time.Time                  `gorm:"column:createdDate;not null" json:"createdDate"`
 	DiscountCents            int64                      `gorm:"not null" json:"discountCents"`
@@ -46,8 +47,8 @@ type Labor struct {
 	LaborMatrixDate          *time.Time                 `json:"laborMatrixDate"` // datetime when laborMatrixId was set, for determining if matrix has been changed
 	LaborMatrixId            *string                    `json:"laborMatrixId"`
 	LocationId               string                     `gorm:"not null" json:"locationId"`
-	Meta                     *Meta                      `gorm:"embedded;column:meta;not null" json:"meta,omitempty"`         // the metadata about the most recent change to the row
-	Metadata                 any                        `gorm:"embedded;column:metadata;not null" json:"metadata,omitempty"` // metadata reserved for customers to control
+	Meta                     *Meta                      `gorm:"type:json;embedded;column:meta;not null" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata                 any                        `gorm:"type:json" json:"metadata,omitempty"`                           // metadata reserved for customers to control
 	Multiplier               float64                    `gorm:"not null" json:"multiplier"`
 	MultiplierType           LaborMultiplierTypeEnum    `gorm:"not null" json:"multiplierType"`
 	Name                     *string                    `json:"name"`
@@ -67,6 +68,8 @@ type Labor struct {
 	UpdatedDate              *time.Time                 `gorm:"column:updatedDate" json:"updatedDate"`
 }
 
+var _ Model = (*Labor)(nil)
+
 // TableName returns the name of the table for this model which GORM will use when using this model
 func (m *Labor) TableName() string {
 	return "labor"
@@ -75,4 +78,14 @@ func (m *Labor) TableName() string {
 func (m *Labor) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
+}
+
+// NewLabor returns a new model instance from a json key/value map
+func NewLabor(kv map[string]any) (*Labor, error) {
+	var result Labor
+	err := mapstructure.Decode(kv, &result)
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
 }

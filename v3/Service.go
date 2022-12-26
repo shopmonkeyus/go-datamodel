@@ -3,6 +3,7 @@ package v3
 
 import (
 	"encoding/json"
+	mapstructure "github.com/mitchellh/mapstructure"
 	"time"
 )
 
@@ -104,8 +105,8 @@ type Service struct {
 	HstValueType                ServiceHstValueTypeEnum          `gorm:"not null" json:"hstValueType"`
 	LocationId                  string                           `gorm:"not null" json:"locationId"`
 	LumpSum                     bool                             `gorm:"not null" json:"lumpSum"`
-	Meta                        *Meta                            `gorm:"embedded;column:meta;not null" json:"meta,omitempty"`         // the metadata about the most recent change to the row
-	Metadata                    any                              `gorm:"embedded;column:metadata;not null" json:"metadata,omitempty"` // metadata reserved for customers to control
+	Meta                        *Meta                            `gorm:"type:json;embedded;column:meta;not null" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata                    any                              `gorm:"type:json" json:"metadata,omitempty"`                           // metadata reserved for customers to control
 	Name                        string                           `gorm:"not null" json:"name"`
 	Note                        string                           `gorm:"not null" json:"note"`
 	OrderId                     string                           `gorm:"not null" json:"orderId"`
@@ -128,6 +129,8 @@ type Service struct {
 	UpdatedDate                 *time.Time                       `gorm:"column:updatedDate" json:"updatedDate"`
 }
 
+var _ Model = (*Service)(nil)
+
 // TableName returns the name of the table for this model which GORM will use when using this model
 func (m *Service) TableName() string {
 	return "service"
@@ -136,4 +139,14 @@ func (m *Service) TableName() string {
 func (m *Service) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
+}
+
+// NewService returns a new model instance from a json key/value map
+func NewService(kv map[string]any) (*Service, error) {
+	var result Service
+	err := mapstructure.Decode(kv, &result)
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
 }
