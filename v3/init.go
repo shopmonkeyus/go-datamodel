@@ -6,12 +6,6 @@ import (
 	codec "github.com/hashicorp/go-msgpack/v2/codec"
 )
 
-type Meta struct {
-	UserID    *string `json:"userId,omitempty"`
-	SessionID *string `json:"sessionId,omitempty"`
-	Version   *int64  `json:"version,omitempty"`
-}
-
 type Model interface {
 	TableName() string
 	String() string

@@ -4,25 +4,26 @@ package v3
 import (
 	"encoding/json"
 	codec "github.com/hashicorp/go-msgpack/v2/codec"
+	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 	"time"
 )
 
 type TpiScan struct {
-	ID          string     `gorm:"primaryKey;not null;column:id" json:"id"`
-	CreatedDate time.Time  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
-	UpdatedDate *time.Time `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta        *Meta      `gorm:"type:json;embedded;serializer:json;column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
-	Metadata    any        `gorm:"type:json;serializer:json;column:metadata" json:"metadata,omitempty"`                       // metadata reserved for customers to control
-	CompanyID   string     `gorm:"not null;column:companyId" json:"companyId"`
-	LocationID  string     `gorm:"not null;column:locationId" json:"locationId"`
+	ID          string          `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate time.Time       `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *time.Time      `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        datatypes.Meta  `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
+	Metadata    *datatypes.JSON `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	CompanyID   string          `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID  string          `gorm:"not null;column:locationId" json:"locationId"`
 
-	IsAlignmentRecommended bool      `gorm:"not null;column:isAlignmentRecommended" json:"isAlignmentRecommended"`
-	IsRotationRecommended  bool      `gorm:"not null;column:isRotationRecommended" json:"isRotationRecommended"`
-	PdfUrl                 string    `gorm:"not null;column:pdfUrl" json:"pdfUrl"`
-	ScanDate               time.Time `gorm:"not null;column:scanDate" json:"scanDate"`
-	ScannedBy              *string   `gorm:"column:scannedBy" json:"scannedBy"`
-	VehicleConditions      []string  `gorm:"not null;column:vehicleConditions" json:"vehicleConditions"`
-	VehicleID              *string   `gorm:"column:vehicleId" json:"vehicleId"`
+	IsAlignmentRecommended bool                  `gorm:"not null;column:isAlignmentRecommended" json:"isAlignmentRecommended"`
+	IsRotationRecommended  bool                  `gorm:"not null;column:isRotationRecommended" json:"isRotationRecommended"`
+	PdfUrl                 string                `gorm:"not null;column:pdfUrl" json:"pdfUrl"`
+	ScanDate               time.Time             `gorm:"not null;column:scanDate" json:"scanDate"`
+	ScannedBy              *string               `gorm:"column:scannedBy" json:"scannedBy"`
+	VehicleConditions      datatypes.StringArray `gorm:"not null;column:vehicleConditions" json:"vehicleConditions"`
+	VehicleID              *string               `gorm:"column:vehicleId" json:"vehicleId"`
 }
 
 var _ Model = (*TpiScan)(nil)

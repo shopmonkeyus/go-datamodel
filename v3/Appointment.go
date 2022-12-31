@@ -4,6 +4,7 @@ package v3
 import (
 	"encoding/json"
 	codec "github.com/hashicorp/go-msgpack/v2/codec"
+	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 	"time"
 )
 
@@ -17,13 +18,13 @@ const (
 )
 
 type Appointment struct {
-	ID          string     `gorm:"primaryKey;not null;column:id" json:"id"`
-	CreatedDate time.Time  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
-	UpdatedDate *time.Time `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta        *Meta      `gorm:"type:json;embedded;serializer:json;column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
-	Metadata    any        `gorm:"type:json;serializer:json;column:metadata" json:"metadata,omitempty"`                       // metadata reserved for customers to control
-	CompanyID   string     `gorm:"not null;column:companyId" json:"companyId"`
-	LocationID  string     `gorm:"not null;column:locationId" json:"locationId"`
+	ID          string          `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate time.Time       `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *time.Time      `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        datatypes.Meta  `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
+	Metadata    *datatypes.JSON `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	CompanyID   string          `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID  string          `gorm:"not null;column:locationId" json:"locationId"`
 
 	AllDay                   bool                                     `gorm:"not null;column:allDay" json:"allDay"`
 	CancelationNote          *string                                  `gorm:"column:cancelationNote" json:"cancelationNote"` // if the appointment was canceled
@@ -44,7 +45,7 @@ type Appointment struct {
 	SendConfirmation         bool                                     `gorm:"not null;column:sendConfirmation" json:"sendConfirmation"` // Send confirmation notification at the moment of saving the appointment
 	SendReminder             bool                                     `gorm:"not null;column:sendReminder" json:"sendReminder"`         // Send reminder will send a notification one day before the apponintment. This would need some sort of scheduling mecanism to fire at the right time.
 	StartDate                *time.Time                               `gorm:"column:startDate" json:"startDate"`                        // start date and time of the appointment
-	TechnicianIds            []string                                 `gorm:"not null;column:technicianIds" json:"technicianIds"`
+	TechnicianIds            datatypes.StringArray                    `gorm:"not null;column:technicianIds" json:"technicianIds"`
 	UseEmail                 bool                                     `gorm:"not null;column:useEmail" json:"useEmail"` // In case we want to use email to send confirmation and/or reminder
 	UseSMS                   bool                                     `gorm:"not null;column:useSMS" json:"useSMS"`     // In case we want to use email to send confirmation and/or reminder
 	VehicleID                *string                                  `gorm:"column:vehicleId" json:"vehicleId"`
