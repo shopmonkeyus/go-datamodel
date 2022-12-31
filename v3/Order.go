@@ -4,6 +4,7 @@ package v3
 import (
 	"encoding/json"
 	codec "github.com/hashicorp/go-msgpack/v2/codec"
+	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 	"time"
 )
 
@@ -16,18 +17,18 @@ const (
 )
 
 type Order struct {
-	ID           string     `gorm:"primaryKey;not null;column:id" json:"id"`
-	CreatedDate  time.Time  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
-	UpdatedDate  *time.Time `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta         *Meta      `gorm:"type:json;embedded;serializer:json;column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
-	Metadata     any        `gorm:"type:json;serializer:json;column:metadata" json:"metadata,omitempty"`                       // metadata reserved for customers to control
-	CompanyID    string     `gorm:"not null;column:companyId" json:"companyId"`
-	LocationID   string     `gorm:"not null;column:locationId" json:"locationId"`
-	CustomFields any        `gorm:"type:json;serializer:json;column:customFields" json:"customFields"` // custom field values
+	ID           string          `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate  time.Time       `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate  *time.Time      `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta         datatypes.Meta  `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
+	Metadata     *datatypes.JSON `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	CompanyID    string          `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID   string          `gorm:"not null;column:locationId" json:"locationId"`
+	CustomFields datatypes.JSON  `gorm:"column:customFields" json:"customFields"` // custom field values
 
-	AppointmentDates       []string                  `gorm:"not null;column:appointmentDates" json:"appointmentDates"`
+	AppointmentDates       datatypes.StringArray     `gorm:"not null;column:appointmentDates" json:"appointmentDates"`
 	Archived               bool                      `gorm:"not null;column:archived" json:"archived"`
-	AssignedTechnicianIds  []string                  `gorm:"not null;column:assignedTechnicianIds" json:"assignedTechnicianIds"`
+	AssignedTechnicianIds  datatypes.StringArray     `gorm:"not null;column:assignedTechnicianIds" json:"assignedTechnicianIds"`
 	Authorized             bool                      `gorm:"not null;column:authorized" json:"authorized"`
 	AuthorizedDate         *time.Time                `gorm:"column:authorizedDate" json:"authorizedDate"`
 	Complaint              *string                   `gorm:"column:complaint" json:"complaint"`
@@ -64,7 +65,7 @@ type Order struct {
 	PaidCostCents          int64                     `gorm:"not null;column:paidCostCents" json:"paidCostCents"`
 	PartsCents             int64                     `gorm:"not null;column:partsCents" json:"partsCents"`
 	PhoneNumberID          *string                   `gorm:"column:phoneNumberId" json:"phoneNumberId"` // id of the phone number to use instead of the customer's default number
-	Profitability          any                       `gorm:"type:json;serializer:json;column:profitability" json:"profitability"`
+	Profitability          datatypes.JSON            `gorm:"column:profitability" json:"profitability"`
 	PstCents               int64                     `gorm:"not null;column:pstCents" json:"pstCents"`
 	PublicID               string                    `gorm:"not null;column:publicId" json:"publicId"`
 	PurchaseOrderNumber    *string                   `gorm:"column:purchaseOrderNumber" json:"purchaseOrderNumber"`

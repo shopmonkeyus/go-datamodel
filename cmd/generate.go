@@ -80,8 +80,12 @@ func identifier(val string) string {
 
 func toType(file *jen.File, modelName string, stmt *jen.Statement, name string, property Property, tags map[string]string) *jen.Statement {
 	_stmt := stmt
+
+	var isNullable bool
+
 	if property.Nullable != nil && *property.Nullable {
 		_stmt = _stmt.Op("*")
+		isNullable = true
 	}
 
 	switch property.Type {
@@ -124,21 +128,27 @@ func toType(file *jen.File, modelName string, stmt *jen.Statement, name string, 
 		if property.Items != nil {
 			switch (*property.Items).Type {
 			case "string":
-				return _stmt.Op("[]").String()
+				if isNullable {
+					return stmt.Qual("github.com/shopmonkeyus/go-datamodel/datatypes", "NullableStringArray")
+				}
+				return stmt.Qual("github.com/shopmonkeyus/go-datamodel/datatypes", "StringArray")
 			case "number":
-				return _stmt.Op("[]").Float64()
+				if isNullable {
+					return stmt.Qual("github.com/shopmonkeyus/go-datamodel/datatypes", "NullableNumberArray")
+				}
+				return stmt.Qual("github.com/shopmonkeyus/go-datamodel/datatypes", "NumberArray")
 			}
 		}
 	}
 	if name == "meta" || name == "metadata" {
-		tags["gorm"] = "type:json;embedded;serializer:json;column:" + name
+		tags["gorm"] = "column:" + name
 		tags["json"] = name + ",omitempty"
 		if name == "meta" {
-			return _stmt.Op("*").Id("Meta")
+			return _stmt.Qual("github.com/shopmonkeyus/go-datamodel/datatypes", "Meta")
 		}
+		return _stmt.Op("*").Qual("github.com/shopmonkeyus/go-datamodel/datatypes", "JSON")
 	}
-	tags["gorm"] = "type:json;serializer:json"
-	return _stmt.Any()
+	return stmt.Qual("github.com/shopmonkeyus/go-datamodel/datatypes", "JSON")
 }
 
 var generateCmd = &cobra.Command{
@@ -189,13 +199,6 @@ Where v3 is the output folder to generate the files into.
 		initFile.Line()
 
 		{
-			initFile.Type().Id("Meta").Struct(
-				jen.Id("UserID").Op("*").String().Tag(map[string]string{"json": "userId,omitempty"}),
-				jen.Id("SessionID").Op("*").String().Tag(map[string]string{"json": "sessionId,omitempty"}),
-				jen.Id("Version").Op("*").Int64().Tag(map[string]string{"json": "version,omitempty"}),
-			)
-
-			initFile.Line()
 
 			initFile.Type().Id("Model").Interface(
 				jen.Id("TableName").Params().String(),
