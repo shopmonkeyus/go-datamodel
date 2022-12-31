@@ -225,6 +225,23 @@ Where v3 is the output folder to generate the files into.
 			}
 			sort.Strings(models)
 
+			initFile.Comment("// ModelNames is an array of all the models defined in this package")
+			namesf := initFile.Var().Id("ModelNames").Op("=").Op("[]string{\n")
+			initFile.Line()
+
+			initFile.Comment("// ModelInstances is an array of an empty object for each model in this package")
+			intf := initFile.Var().Id("ModelInstances").Op("=").Op("[]interface{}{\n")
+
+			for _, name := range models {
+				namesf.Op(`"` + name + `",` + "\n")
+				intf.Op("&" + name + "{},\n")
+			}
+			namesf.Op("}")
+			initFile.Line()
+			intf.Op("}")
+
+			initFile.Line()
+
 			for _, name := range models {
 				prop := schema[name]
 				rt := jen.Return(jen.Op("New" + name).Params(jen.Op("buf, enctype")))
