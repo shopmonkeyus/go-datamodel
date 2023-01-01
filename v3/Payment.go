@@ -3,52 +3,51 @@ package v3
 
 import (
 	"encoding/json"
-	codec "github.com/hashicorp/go-msgpack/v2/codec"
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
-	"time"
 )
 
 type PaymentCollectionTypeEnum string
 
 const (
 	PaymentCollectionTypeManual   PaymentCollectionTypeEnum = "Manual"
-	PaymentCollectionTypeOnline                             = "Online"
-	PaymentCollectionTypeInPerson                           = "InPerson"
+	PaymentCollectionTypeOnline   PaymentCollectionTypeEnum = "Online"
+	PaymentCollectionTypeInPerson PaymentCollectionTypeEnum = "InPerson"
 )
 
 type PaymentPaymentTypeEnum string
 
 const (
 	PaymentPaymentTypeCheck PaymentPaymentTypeEnum = "Check"
-	PaymentPaymentTypeCash                         = "Cash"
-	PaymentPaymentTypeCard                         = "Card"
-	PaymentPaymentTypeOther                        = "Other"
+	PaymentPaymentTypeCash  PaymentPaymentTypeEnum = "Cash"
+	PaymentPaymentTypeCard  PaymentPaymentTypeEnum = "Card"
+	PaymentPaymentTypeOther PaymentPaymentTypeEnum = "Other"
 )
 
 type PaymentProviderEnum string
 
 const (
 	PaymentProviderManual    PaymentProviderEnum = "Manual"
-	PaymentProviderFirstMile                     = "FirstMile"
-	PaymentProviderStripe                        = "Stripe"
+	PaymentProviderFirstMile PaymentProviderEnum = "FirstMile"
+	PaymentProviderStripe    PaymentProviderEnum = "Stripe"
+	PaymentProvider          PaymentProviderEnum = ""
 )
 
 type PaymentTransactionTypeEnum string
 
 const (
 	PaymentTransactionTypeCharge   PaymentTransactionTypeEnum = "Charge"
-	PaymentTransactionTypeRefund                              = "Refund"
-	PaymentTransactionTypeTransfer                            = "Transfer"
+	PaymentTransactionTypeRefund   PaymentTransactionTypeEnum = "Refund"
+	PaymentTransactionTypeTransfer PaymentTransactionTypeEnum = "Transfer"
 )
 
 type Payment struct {
-	ID          string          `gorm:"primaryKey;not null;column:id" json:"id"`
-	CreatedDate time.Time       `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
-	UpdatedDate *time.Time      `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta        datatypes.Meta  `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata    *datatypes.JSON `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
-	CompanyID   string          `gorm:"not null;column:companyId" json:"companyId"`
-	LocationID  string          `gorm:"not null;column:locationId" json:"locationId"`
+	ID          string              `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        datatypes.Meta      `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
+	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID  string              `gorm:"not null;column:locationId" json:"locationId"`
 
 	Amount               int64                      `gorm:"not null;column:amount" json:"amount"`
 	Bulk                 bool                       `gorm:"not null;column:bulk" json:"bulk"`
@@ -79,22 +78,34 @@ func (m *Payment) TableName() string {
 	return "payment"
 }
 
+// String returns a string representation as JSON for this model
 func (m *Payment) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
 }
 
 // NewPayment returns a new model instance from an encoded buffer
-func NewPayment(buf []byte, enctype EncodingType) (*Payment, error) {
+func NewPayment(buf []byte) (*Payment, error) {
 	var result Payment
-	var handle codec.Handle
-	if enctype == JSONEncoding {
-		handle = &jsonHandle
-	} else {
-		handle = &msgpackHandle
+	err := json.Unmarshal(buf, &result)
+	if err != nil {
+		return nil, err
 	}
-	dec := codec.NewDecoderBytes(buf, handle)
-	err := dec.Decode(&result)
+	return &result, nil
+}
+
+// NewPaymentFromChangeEvent returns a new model instance from an encoded buffer as change event
+func NewPaymentFromChangeEvent(buf []byte, gzip bool) (*datatypes.ChangeEvent[Payment], error) {
+	var result datatypes.ChangeEvent[Payment]
+	var decompressed = buf
+	if gzip {
+		dec, err := datatypes.Gunzip(buf)
+		if err != nil {
+			return nil, err
+		}
+		decompressed = dec
+	}
+	err := json.Unmarshal(decompressed, &result)
 	if err != nil {
 		return nil, err
 	}

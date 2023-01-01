@@ -3,36 +3,35 @@ package v3
 
 import (
 	"encoding/json"
-	codec "github.com/hashicorp/go-msgpack/v2/codec"
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
-	"time"
 )
 
 type FeeFeeTypeEnum string
 
 const (
 	FeeFeeTypePercentLineItem FeeFeeTypeEnum = "PercentLineItem"
-	FeeFeeTypePercentService                 = "PercentService"
-	FeeFeeTypeFixedCents                     = "FixedCents"
+	FeeFeeTypePercentService  FeeFeeTypeEnum = "PercentService"
+	FeeFeeTypeFixedCents      FeeFeeTypeEnum = "FixedCents"
 )
 
 type FeeLineItemEntityEnum string
 
 const (
 	FeeLineItemEntityLabor       FeeLineItemEntityEnum = "Labor"
-	FeeLineItemEntityPart                              = "Part"
-	FeeLineItemEntitySubcontract                       = "Subcontract"
-	FeeLineItemEntityTire                              = "Tire"
+	FeeLineItemEntityPart        FeeLineItemEntityEnum = "Part"
+	FeeLineItemEntitySubcontract FeeLineItemEntityEnum = "Subcontract"
+	FeeLineItemEntityTire        FeeLineItemEntityEnum = "Tire"
+	FeeLineItemEntity            FeeLineItemEntityEnum = ""
 )
 
 type Fee struct {
-	ID          string          `gorm:"primaryKey;not null;column:id" json:"id"`
-	CreatedDate time.Time       `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
-	UpdatedDate *time.Time      `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta        datatypes.Meta  `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata    *datatypes.JSON `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
-	CompanyID   string          `gorm:"not null;column:companyId" json:"companyId"`
-	LocationID  string          `gorm:"not null;column:locationId" json:"locationId"`
+	ID          string              `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        datatypes.Meta      `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
+	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID  string              `gorm:"not null;column:locationId" json:"locationId"`
 
 	AmountCents    int64                  `gorm:"not null;column:amountCents" json:"amountCents"`
 	CategoryID     *string                `gorm:"column:categoryId" json:"categoryId"`
@@ -58,22 +57,34 @@ func (m *Fee) TableName() string {
 	return "fee"
 }
 
+// String returns a string representation as JSON for this model
 func (m *Fee) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
 }
 
 // NewFee returns a new model instance from an encoded buffer
-func NewFee(buf []byte, enctype EncodingType) (*Fee, error) {
+func NewFee(buf []byte) (*Fee, error) {
 	var result Fee
-	var handle codec.Handle
-	if enctype == JSONEncoding {
-		handle = &jsonHandle
-	} else {
-		handle = &msgpackHandle
+	err := json.Unmarshal(buf, &result)
+	if err != nil {
+		return nil, err
 	}
-	dec := codec.NewDecoderBytes(buf, handle)
-	err := dec.Decode(&result)
+	return &result, nil
+}
+
+// NewFeeFromChangeEvent returns a new model instance from an encoded buffer as change event
+func NewFeeFromChangeEvent(buf []byte, gzip bool) (*datatypes.ChangeEvent[Fee], error) {
+	var result datatypes.ChangeEvent[Fee]
+	var decompressed = buf
+	if gzip {
+		dec, err := datatypes.Gunzip(buf)
+		if err != nil {
+			return nil, err
+		}
+		decompressed = dec
+	}
+	err := json.Unmarshal(decompressed, &result)
 	if err != nil {
 		return nil, err
 	}

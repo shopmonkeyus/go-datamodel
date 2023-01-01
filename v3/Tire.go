@@ -3,41 +3,40 @@ package v3
 
 import (
 	"encoding/json"
-	codec "github.com/hashicorp/go-msgpack/v2/codec"
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
-	"time"
 )
 
 type TireDiscountValueTypeEnum string
 
 const (
 	TireDiscountValueTypePercent    TireDiscountValueTypeEnum = "Percent"
-	TireDiscountValueTypeFixedCents                           = "FixedCents"
+	TireDiscountValueTypeFixedCents TireDiscountValueTypeEnum = "FixedCents"
 )
 
 type TireSeasonalityEnum string
 
 const (
 	TireSeasonalitySummer     TireSeasonalityEnum = "Summer"
-	TireSeasonalityWinter                         = "Winter"
-	TireSeasonalityAllSeasons                     = "AllSeasons"
+	TireSeasonalityWinter     TireSeasonalityEnum = "Winter"
+	TireSeasonalityAllSeasons TireSeasonalityEnum = "AllSeasons"
+	TireSeasonality           TireSeasonalityEnum = ""
 )
 
 type TireSizeFormatEnum string
 
 const (
 	TireSizeFormatConventional TireSizeFormatEnum = "Conventional"
-	TireSizeFormatOffRoadSAE                      = "OffRoadSAE"
+	TireSizeFormatOffRoadSAE   TireSizeFormatEnum = "OffRoadSAE"
 )
 
 type Tire struct {
-	ID          string          `gorm:"primaryKey;not null;column:id" json:"id"`
-	CreatedDate time.Time       `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
-	UpdatedDate *time.Time      `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta        datatypes.Meta  `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata    *datatypes.JSON `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
-	CompanyID   string          `gorm:"not null;column:companyId" json:"companyId"`
-	LocationID  string          `gorm:"not null;column:locationId" json:"locationId"`
+	ID          string              `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        datatypes.Meta      `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
+	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID  string              `gorm:"not null;column:locationId" json:"locationId"`
 
 	BinLocation           *string                   `gorm:"column:binLocation" json:"binLocation"`
 	BrandID               *string                   `gorm:"column:brandId" json:"brandId"`
@@ -52,7 +51,7 @@ type Tire struct {
 	OrderID               string                    `gorm:"not null;column:orderId" json:"orderId"`
 	Ordinal               float64                   `gorm:"not null;column:ordinal" json:"ordinal"`
 	PartNumber            *string                   `gorm:"column:partNumber" json:"partNumber"`
-	PricingMatrixDate     *time.Time                `gorm:"column:pricingMatrixDate" json:"pricingMatrixDate"` // datetime when pricingMatrixId was set, for determining if matrix has been changed api_schema(calculated)
+	PricingMatrixDate     *datatypes.DateTime       `gorm:"column:pricingMatrixDate" json:"pricingMatrixDate"` // datetime when pricingMatrixId was set, for determining if matrix has been changed api_schema(calculated)
 	PricingMatrixID       *string                   `gorm:"column:pricingMatrixId" json:"pricingMatrixId"`
 	Quantity              int64                     `gorm:"not null;column:quantity" json:"quantity"`
 	ReduceInventoryCount  bool                      `gorm:"not null;column:reduceInventoryCount" json:"reduceInventoryCount"`
@@ -78,22 +77,34 @@ func (m *Tire) TableName() string {
 	return "tire"
 }
 
+// String returns a string representation as JSON for this model
 func (m *Tire) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
 }
 
 // NewTire returns a new model instance from an encoded buffer
-func NewTire(buf []byte, enctype EncodingType) (*Tire, error) {
+func NewTire(buf []byte) (*Tire, error) {
 	var result Tire
-	var handle codec.Handle
-	if enctype == JSONEncoding {
-		handle = &jsonHandle
-	} else {
-		handle = &msgpackHandle
+	err := json.Unmarshal(buf, &result)
+	if err != nil {
+		return nil, err
 	}
-	dec := codec.NewDecoderBytes(buf, handle)
-	err := dec.Decode(&result)
+	return &result, nil
+}
+
+// NewTireFromChangeEvent returns a new model instance from an encoded buffer as change event
+func NewTireFromChangeEvent(buf []byte, gzip bool) (*datatypes.ChangeEvent[Tire], error) {
+	var result datatypes.ChangeEvent[Tire]
+	var decompressed = buf
+	if gzip {
+		dec, err := datatypes.Gunzip(buf)
+		if err != nil {
+			return nil, err
+		}
+		decompressed = dec
+	}
+	err := json.Unmarshal(decompressed, &result)
 	if err != nil {
 		return nil, err
 	}

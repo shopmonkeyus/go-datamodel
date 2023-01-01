@@ -3,46 +3,45 @@ package v3
 
 import (
 	"encoding/json"
-	codec "github.com/hashicorp/go-msgpack/v2/codec"
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
-	"time"
 )
 
 type LaborDiscountValueTypeEnum string
 
 const (
 	LaborDiscountValueTypePercent    LaborDiscountValueTypeEnum = "Percent"
-	LaborDiscountValueTypeFixedCents                            = "FixedCents"
+	LaborDiscountValueTypeFixedCents LaborDiscountValueTypeEnum = "FixedCents"
 )
 
 type LaborMultiplierTypeEnum string
 
 const (
 	LaborMultiplierTypeHours LaborMultiplierTypeEnum = "Hours"
-	LaborMultiplierTypeRate                          = "Rate"
+	LaborMultiplierTypeRate  LaborMultiplierTypeEnum = "Rate"
 )
 
 type LaborSkillRequiredEnum string
 
 const (
 	LaborSkillRequiredGeneral     LaborSkillRequiredEnum = "General"
-	LaborSkillRequiredMaintenance                        = "Maintenance"
-	LaborSkillRequiredPrecision                          = "Precision"
+	LaborSkillRequiredMaintenance LaborSkillRequiredEnum = "Maintenance"
+	LaborSkillRequiredPrecision   LaborSkillRequiredEnum = "Precision"
+	LaborSkillRequired            LaborSkillRequiredEnum = ""
 )
 
 type Labor struct {
-	ID          string          `gorm:"primaryKey;not null;column:id" json:"id"`
-	CreatedDate time.Time       `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
-	UpdatedDate *time.Time      `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta        datatypes.Meta  `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata    *datatypes.JSON `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
-	CompanyID   string          `gorm:"not null;column:companyId" json:"companyId"`
-	LocationID  string          `gorm:"not null;column:locationId" json:"locationId"`
+	ID          string              `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        datatypes.Meta      `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
+	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID  string              `gorm:"not null;column:locationId" json:"locationId"`
 
 	ApplicationID            *int64                     `gorm:"column:applicationId" json:"applicationId"`
 	CategoryID               *string                    `gorm:"column:categoryId" json:"categoryId"`
 	Completed                bool                       `gorm:"not null;column:completed" json:"completed"`
-	CompletedDate            *time.Time                 `gorm:"column:completedDate" json:"completedDate"`
+	CompletedDate            *datatypes.DateTime        `gorm:"column:completedDate" json:"completedDate"`
 	CostHours                *float64                   `gorm:"column:costHours" json:"costHours"`
 	CostRateCents            *int64                     `gorm:"column:costRateCents" json:"costRateCents"`
 	CostTotalCents           *int64                     `gorm:"column:costTotalCents" json:"costTotalCents"`
@@ -50,7 +49,7 @@ type Labor struct {
 	DiscountPercent          float64                    `gorm:"not null;column:discountPercent" json:"discountPercent"`
 	DiscountValueType        LaborDiscountValueTypeEnum `gorm:"not null;column:discountValueType" json:"discountValueType"`
 	Hours                    float64                    `gorm:"not null;column:hours" json:"hours"`
-	LaborMatrixDate          *time.Time                 `gorm:"column:laborMatrixDate" json:"laborMatrixDate"` // datetime when laborMatrixId was set, for determining if matrix has been changed
+	LaborMatrixDate          *datatypes.DateTime        `gorm:"column:laborMatrixDate" json:"laborMatrixDate"` // datetime when laborMatrixId was set, for determining if matrix has been changed
 	LaborMatrixID            *string                    `gorm:"column:laborMatrixId" json:"laborMatrixId"`
 	Multiplier               float64                    `gorm:"not null;column:multiplier" json:"multiplier"`
 	MultiplierType           LaborMultiplierTypeEnum    `gorm:"not null;column:multiplierType" json:"multiplierType"`
@@ -77,22 +76,34 @@ func (m *Labor) TableName() string {
 	return "labor"
 }
 
+// String returns a string representation as JSON for this model
 func (m *Labor) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
 }
 
 // NewLabor returns a new model instance from an encoded buffer
-func NewLabor(buf []byte, enctype EncodingType) (*Labor, error) {
+func NewLabor(buf []byte) (*Labor, error) {
 	var result Labor
-	var handle codec.Handle
-	if enctype == JSONEncoding {
-		handle = &jsonHandle
-	} else {
-		handle = &msgpackHandle
+	err := json.Unmarshal(buf, &result)
+	if err != nil {
+		return nil, err
 	}
-	dec := codec.NewDecoderBytes(buf, handle)
-	err := dec.Decode(&result)
+	return &result, nil
+}
+
+// NewLaborFromChangeEvent returns a new model instance from an encoded buffer as change event
+func NewLaborFromChangeEvent(buf []byte, gzip bool) (*datatypes.ChangeEvent[Labor], error) {
+	var result datatypes.ChangeEvent[Labor]
+	var decompressed = buf
+	if gzip {
+		dec, err := datatypes.Gunzip(buf)
+		if err != nil {
+			return nil, err
+		}
+		decompressed = dec
+	}
+	err := json.Unmarshal(decompressed, &result)
 	if err != nil {
 		return nil, err
 	}

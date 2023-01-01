@@ -3,46 +3,45 @@ package v3
 
 import (
 	"encoding/json"
-	codec "github.com/hashicorp/go-msgpack/v2/codec"
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
-	"time"
 )
 
 type PurchaseOrderProviderEnum string
 
 const (
 	PurchaseOrderProviderPartsTech PurchaseOrderProviderEnum = "PartsTech"
-	PurchaseOrderProviderNexpart                             = "Nexpart"
-	PurchaseOrderProviderEpicor                              = "Epicor"
-	PurchaseOrderProviderWorldpac                            = "Worldpac"
-	PurchaseOrderProviderATD                                 = "ATD"
+	PurchaseOrderProviderNexpart   PurchaseOrderProviderEnum = "Nexpart"
+	PurchaseOrderProviderEpicor    PurchaseOrderProviderEnum = "Epicor"
+	PurchaseOrderProviderWorldpac  PurchaseOrderProviderEnum = "Worldpac"
+	PurchaseOrderProviderATD       PurchaseOrderProviderEnum = "ATD"
+	PurchaseOrderProvider          PurchaseOrderProviderEnum = ""
 )
 
 type PurchaseOrderStatusEnum string
 
 const (
 	PurchaseOrderStatusDraft     PurchaseOrderStatusEnum = "Draft"
-	PurchaseOrderStatusOrdered                           = "Ordered"
-	PurchaseOrderStatusReceived                          = "Received"
-	PurchaseOrderStatusFullfiled                         = "Fullfiled"
-	PurchaseOrderStatusCancelled                         = "Cancelled"
+	PurchaseOrderStatusOrdered   PurchaseOrderStatusEnum = "Ordered"
+	PurchaseOrderStatusReceived  PurchaseOrderStatusEnum = "Received"
+	PurchaseOrderStatusFullfiled PurchaseOrderStatusEnum = "Fullfiled"
+	PurchaseOrderStatusCancelled PurchaseOrderStatusEnum = "Cancelled"
 )
 
 type PurchaseOrder struct {
-	ID          string          `gorm:"primaryKey;not null;column:id" json:"id"`
-	CreatedDate time.Time       `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
-	UpdatedDate *time.Time      `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta        datatypes.Meta  `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata    *datatypes.JSON `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
-	CompanyID   string          `gorm:"not null;column:companyId" json:"companyId"`
-	LocationID  string          `gorm:"not null;column:locationId" json:"locationId"`
+	ID          string              `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        datatypes.Meta      `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
+	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID  string              `gorm:"not null;column:locationId" json:"locationId"`
 
-	FullfiledDate   *time.Time                 `gorm:"column:fullfiledDate" json:"fullfiledDate"`
+	FullfiledDate   *datatypes.DateTime        `gorm:"column:fullfiledDate" json:"fullfiledDate"`
 	InvoiceNumber   *string                    `gorm:"column:invoiceNumber" json:"invoiceNumber"`
 	Note            *string                    `gorm:"column:note" json:"note"`
 	Number          string                     `gorm:"not null;column:number" json:"number"`
 	OrderID         *string                    `gorm:"column:orderId" json:"orderId"`
-	OrderedDate     *time.Time                 `gorm:"column:orderedDate" json:"orderedDate"`
+	OrderedDate     *datatypes.DateTime        `gorm:"column:orderedDate" json:"orderedDate"`
 	Provider        *PurchaseOrderProviderEnum `gorm:"column:provider" json:"provider"`
 	ProviderData    datatypes.JSON             `gorm:"column:providerData" json:"providerData"`
 	Session         datatypes.JSON             `gorm:"column:session" json:"session"`
@@ -57,22 +56,34 @@ func (m *PurchaseOrder) TableName() string {
 	return "purchase_order"
 }
 
+// String returns a string representation as JSON for this model
 func (m *PurchaseOrder) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
 }
 
 // NewPurchaseOrder returns a new model instance from an encoded buffer
-func NewPurchaseOrder(buf []byte, enctype EncodingType) (*PurchaseOrder, error) {
+func NewPurchaseOrder(buf []byte) (*PurchaseOrder, error) {
 	var result PurchaseOrder
-	var handle codec.Handle
-	if enctype == JSONEncoding {
-		handle = &jsonHandle
-	} else {
-		handle = &msgpackHandle
+	err := json.Unmarshal(buf, &result)
+	if err != nil {
+		return nil, err
 	}
-	dec := codec.NewDecoderBytes(buf, handle)
-	err := dec.Decode(&result)
+	return &result, nil
+}
+
+// NewPurchaseOrderFromChangeEvent returns a new model instance from an encoded buffer as change event
+func NewPurchaseOrderFromChangeEvent(buf []byte, gzip bool) (*datatypes.ChangeEvent[PurchaseOrder], error) {
+	var result datatypes.ChangeEvent[PurchaseOrder]
+	var decompressed = buf
+	if gzip {
+		dec, err := datatypes.Gunzip(buf)
+		if err != nil {
+			return nil, err
+		}
+		decompressed = dec
+	}
+	err := json.Unmarshal(decompressed, &result)
 	if err != nil {
 		return nil, err
 	}

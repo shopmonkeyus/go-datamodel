@@ -3,26 +3,24 @@ package v3
 
 import (
 	"encoding/json"
-	codec "github.com/hashicorp/go-msgpack/v2/codec"
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
-	"time"
 )
 
 type SubcontractDiscountValueTypeEnum string
 
 const (
 	SubcontractDiscountValueTypePercent    SubcontractDiscountValueTypeEnum = "Percent"
-	SubcontractDiscountValueTypeFixedCents                                  = "FixedCents"
+	SubcontractDiscountValueTypeFixedCents SubcontractDiscountValueTypeEnum = "FixedCents"
 )
 
 type Subcontract struct {
-	ID          string          `gorm:"primaryKey;not null;column:id" json:"id"`
-	CreatedDate time.Time       `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
-	UpdatedDate *time.Time      `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta        datatypes.Meta  `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata    *datatypes.JSON `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
-	CompanyID   string          `gorm:"not null;column:companyId" json:"companyId"`
-	LocationID  string          `gorm:"not null;column:locationId" json:"locationId"`
+	ID          string              `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        datatypes.Meta      `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
+	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID  string              `gorm:"not null;column:locationId" json:"locationId"`
 
 	CategoryID        *string                          `gorm:"column:categoryId" json:"categoryId"`
 	CostCents         int64                            `gorm:"not null;column:costCents" json:"costCents"`
@@ -48,22 +46,34 @@ func (m *Subcontract) TableName() string {
 	return "subcontract"
 }
 
+// String returns a string representation as JSON for this model
 func (m *Subcontract) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
 }
 
 // NewSubcontract returns a new model instance from an encoded buffer
-func NewSubcontract(buf []byte, enctype EncodingType) (*Subcontract, error) {
+func NewSubcontract(buf []byte) (*Subcontract, error) {
 	var result Subcontract
-	var handle codec.Handle
-	if enctype == JSONEncoding {
-		handle = &jsonHandle
-	} else {
-		handle = &msgpackHandle
+	err := json.Unmarshal(buf, &result)
+	if err != nil {
+		return nil, err
 	}
-	dec := codec.NewDecoderBytes(buf, handle)
-	err := dec.Decode(&result)
+	return &result, nil
+}
+
+// NewSubcontractFromChangeEvent returns a new model instance from an encoded buffer as change event
+func NewSubcontractFromChangeEvent(buf []byte, gzip bool) (*datatypes.ChangeEvent[Subcontract], error) {
+	var result datatypes.ChangeEvent[Subcontract]
+	var decompressed = buf
+	if gzip {
+		dec, err := datatypes.Gunzip(buf)
+		if err != nil {
+			return nil, err
+		}
+		decompressed = dec
+	}
+	err := json.Unmarshal(decompressed, &result)
 	if err != nil {
 		return nil, err
 	}

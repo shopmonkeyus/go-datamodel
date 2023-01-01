@@ -3,84 +3,83 @@ package v3
 
 import (
 	"encoding/json"
-	codec "github.com/hashicorp/go-msgpack/v2/codec"
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
-	"time"
 )
 
 type ServiceAuthorizationStatusEnum string
 
 const (
 	ServiceAuthorizationStatusNotAuthorized ServiceAuthorizationStatusEnum = "NotAuthorized"
-	ServiceAuthorizationStatusAuthorized                                   = "Authorized"
-	ServiceAuthorizationStatusDeclined                                     = "Declined"
+	ServiceAuthorizationStatusAuthorized    ServiceAuthorizationStatusEnum = "Authorized"
+	ServiceAuthorizationStatusDeclined      ServiceAuthorizationStatusEnum = "Declined"
 )
 
 type ServiceDeferredReasonEnum string
 
 const (
 	ServiceDeferredReasonArchived              ServiceDeferredReasonEnum = "Archived"
-	ServiceDeferredReasonDeclined                                        = "Declined"
-	ServiceDeferredReasonInvoicedNotAuthorized                           = "InvoicedNotAuthorized"
+	ServiceDeferredReasonDeclined              ServiceDeferredReasonEnum = "Declined"
+	ServiceDeferredReasonInvoicedNotAuthorized ServiceDeferredReasonEnum = "InvoicedNotAuthorized"
+	ServiceDeferredReason                      ServiceDeferredReasonEnum = ""
 )
 
 type ServiceDiscountValueTypeEnum string
 
 const (
 	ServiceDiscountValueTypePercent    ServiceDiscountValueTypeEnum = "Percent"
-	ServiceDiscountValueTypeFixedCents                              = "FixedCents"
+	ServiceDiscountValueTypeFixedCents ServiceDiscountValueTypeEnum = "FixedCents"
 )
 
 type ServiceEpaValueTypeEnum string
 
 const (
 	ServiceEpaValueTypePercent    ServiceEpaValueTypeEnum = "Percent"
-	ServiceEpaValueTypeFixedCents                         = "FixedCents"
+	ServiceEpaValueTypeFixedCents ServiceEpaValueTypeEnum = "FixedCents"
 )
 
 type ServiceGstValueTypeEnum string
 
 const (
 	ServiceGstValueTypePercent    ServiceGstValueTypeEnum = "Percent"
-	ServiceGstValueTypeFixedCents                         = "FixedCents"
+	ServiceGstValueTypeFixedCents ServiceGstValueTypeEnum = "FixedCents"
 )
 
 type ServiceHstValueTypeEnum string
 
 const (
 	ServiceHstValueTypePercent    ServiceHstValueTypeEnum = "Percent"
-	ServiceHstValueTypeFixedCents                         = "FixedCents"
+	ServiceHstValueTypeFixedCents ServiceHstValueTypeEnum = "FixedCents"
 )
 
 type ServicePstValueTypeEnum string
 
 const (
 	ServicePstValueTypePercent    ServicePstValueTypeEnum = "Percent"
-	ServicePstValueTypeFixedCents                         = "FixedCents"
+	ServicePstValueTypeFixedCents ServicePstValueTypeEnum = "FixedCents"
 )
 
 type ServiceShopSuppliesValueTypeEnum string
 
 const (
 	ServiceShopSuppliesValueTypePercent    ServiceShopSuppliesValueTypeEnum = "Percent"
-	ServiceShopSuppliesValueTypeFixedCents                                  = "FixedCents"
+	ServiceShopSuppliesValueTypeFixedCents ServiceShopSuppliesValueTypeEnum = "FixedCents"
 )
 
 type ServiceTaxValueTypeEnum string
 
 const (
 	ServiceTaxValueTypePercent    ServiceTaxValueTypeEnum = "Percent"
-	ServiceTaxValueTypeFixedCents                         = "FixedCents"
+	ServiceTaxValueTypeFixedCents ServiceTaxValueTypeEnum = "FixedCents"
 )
 
 type Service struct {
-	ID          string          `gorm:"primaryKey;not null;column:id" json:"id"`
-	CreatedDate time.Time       `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
-	UpdatedDate *time.Time      `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta        datatypes.Meta  `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata    *datatypes.JSON `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
-	CompanyID   string          `gorm:"not null;column:companyId" json:"companyId"`
-	LocationID  string          `gorm:"not null;column:locationId" json:"locationId"`
+	ID          string              `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        datatypes.Meta      `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
+	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID  string              `gorm:"not null;column:locationId" json:"locationId"`
 
 	AuthorizationStatus         ServiceAuthorizationStatusEnum   `gorm:"not null;column:authorizationStatus" json:"authorizationStatus"`
 	CalculatedDiscountCents     int64                            `gorm:"not null;column:calculatedDiscountCents" json:"calculatedDiscountCents"`
@@ -93,7 +92,7 @@ type Service struct {
 	CalculatedSubcontractsCents int64                            `gorm:"not null;column:calculatedSubcontractsCents" json:"calculatedSubcontractsCents"`
 	CalculatedTaxCents          int64                            `gorm:"not null;column:calculatedTaxCents" json:"calculatedTaxCents"`
 	CalculatedTiresCents        int64                            `gorm:"not null;column:calculatedTiresCents" json:"calculatedTiresCents"`
-	DeferredDate                *time.Time                       `gorm:"column:deferredDate" json:"deferredDate"`
+	DeferredDate                *datatypes.DateTime              `gorm:"column:deferredDate" json:"deferredDate"`
 	DeferredReason              *ServiceDeferredReasonEnum       `gorm:"column:deferredReason" json:"deferredReason"`
 	DiscountCents               int64                            `gorm:"not null;column:discountCents" json:"discountCents"`
 	DiscountPercent             float64                          `gorm:"not null;column:discountPercent" json:"discountPercent"`
@@ -138,22 +137,34 @@ func (m *Service) TableName() string {
 	return "service"
 }
 
+// String returns a string representation as JSON for this model
 func (m *Service) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
 }
 
 // NewService returns a new model instance from an encoded buffer
-func NewService(buf []byte, enctype EncodingType) (*Service, error) {
+func NewService(buf []byte) (*Service, error) {
 	var result Service
-	var handle codec.Handle
-	if enctype == JSONEncoding {
-		handle = &jsonHandle
-	} else {
-		handle = &msgpackHandle
+	err := json.Unmarshal(buf, &result)
+	if err != nil {
+		return nil, err
 	}
-	dec := codec.NewDecoderBytes(buf, handle)
-	err := dec.Decode(&result)
+	return &result, nil
+}
+
+// NewServiceFromChangeEvent returns a new model instance from an encoded buffer as change event
+func NewServiceFromChangeEvent(buf []byte, gzip bool) (*datatypes.ChangeEvent[Service], error) {
+	var result datatypes.ChangeEvent[Service]
+	var decompressed = buf
+	if gzip {
+		dec, err := datatypes.Gunzip(buf)
+		if err != nil {
+			return nil, err
+		}
+		decompressed = dec
+	}
+	err := json.Unmarshal(decompressed, &result)
 	if err != nil {
 		return nil, err
 	}

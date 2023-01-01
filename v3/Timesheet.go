@@ -3,54 +3,54 @@ package v3
 
 import (
 	"encoding/json"
-	codec "github.com/hashicorp/go-msgpack/v2/codec"
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
-	"time"
 )
 
 type TimesheetActivityEnum string
 
 const (
 	TimesheetActivityGeneral TimesheetActivityEnum = "General"
-	TimesheetActivityOrder                         = "Order"
-	TimesheetActivityService                       = "Service"
-	TimesheetActivityLabor                         = "Labor"
+	TimesheetActivityOrder   TimesheetActivityEnum = "Order"
+	TimesheetActivityService TimesheetActivityEnum = "Service"
+	TimesheetActivityLabor   TimesheetActivityEnum = "Labor"
 )
 
 type TimesheetClockInPlatformEnum string
 
 const (
 	TimesheetClockInPlatformWeb    TimesheetClockInPlatformEnum = "Web"
-	TimesheetClockInPlatformMobile                              = "Mobile"
+	TimesheetClockInPlatformMobile TimesheetClockInPlatformEnum = "Mobile"
+	TimesheetClockInPlatform       TimesheetClockInPlatformEnum = ""
 )
 
 type TimesheetClockOutPlatformEnum string
 
 const (
 	TimesheetClockOutPlatformWeb    TimesheetClockOutPlatformEnum = "Web"
-	TimesheetClockOutPlatformMobile                               = "Mobile"
+	TimesheetClockOutPlatformMobile TimesheetClockOutPlatformEnum = "Mobile"
+	TimesheetClockOutPlatform       TimesheetClockOutPlatformEnum = ""
 )
 
 type TimesheetTypeEnum string
 
 const (
 	TimesheetTypeTimeclock TimesheetTypeEnum = "Timeclock"
-	TimesheetTypeManual                      = "Manual"
+	TimesheetTypeManual    TimesheetTypeEnum = "Manual"
 )
 
 type Timesheet struct {
-	ID          string          `gorm:"primaryKey;not null;column:id" json:"id"`
-	CreatedDate time.Time       `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
-	UpdatedDate *time.Time      `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta        datatypes.Meta  `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata    *datatypes.JSON `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
-	CompanyID   string          `gorm:"not null;column:companyId" json:"companyId"`
-	LocationID  string          `gorm:"not null;column:locationId" json:"locationId"`
+	ID          string              `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        datatypes.Meta      `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
+	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID  string              `gorm:"not null;column:locationId" json:"locationId"`
 
 	Activity         TimesheetActivityEnum          `gorm:"not null;column:activity" json:"activity"`
-	ClockIn          time.Time                      `gorm:"not null;column:clockIn" json:"clockIn"`
+	ClockIn          datatypes.DateTime             `gorm:"not null;column:clockIn" json:"clockIn"`
 	ClockInPlatform  *TimesheetClockInPlatformEnum  `gorm:"column:clockInPlatform" json:"clockInPlatform"`
-	ClockOut         *time.Time                     `gorm:"column:clockOut" json:"clockOut"`
+	ClockOut         *datatypes.DateTime            `gorm:"column:clockOut" json:"clockOut"`
 	ClockOutPlatform *TimesheetClockOutPlatformEnum `gorm:"column:clockOutPlatform" json:"clockOutPlatform"`
 	Duration         *float64                       `gorm:"column:duration" json:"duration"`          // the amount of time clocked (in milliseconds)
 	FlatRate         bool                           `gorm:"not null;column:flatRate" json:"flatRate"` // if the technician uses a flat rate
@@ -72,22 +72,34 @@ func (m *Timesheet) TableName() string {
 	return "timesheet"
 }
 
+// String returns a string representation as JSON for this model
 func (m *Timesheet) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
 }
 
 // NewTimesheet returns a new model instance from an encoded buffer
-func NewTimesheet(buf []byte, enctype EncodingType) (*Timesheet, error) {
+func NewTimesheet(buf []byte) (*Timesheet, error) {
 	var result Timesheet
-	var handle codec.Handle
-	if enctype == JSONEncoding {
-		handle = &jsonHandle
-	} else {
-		handle = &msgpackHandle
+	err := json.Unmarshal(buf, &result)
+	if err != nil {
+		return nil, err
 	}
-	dec := codec.NewDecoderBytes(buf, handle)
-	err := dec.Decode(&result)
+	return &result, nil
+}
+
+// NewTimesheetFromChangeEvent returns a new model instance from an encoded buffer as change event
+func NewTimesheetFromChangeEvent(buf []byte, gzip bool) (*datatypes.ChangeEvent[Timesheet], error) {
+	var result datatypes.ChangeEvent[Timesheet]
+	var decompressed = buf
+	if gzip {
+		dec, err := datatypes.Gunzip(buf)
+		if err != nil {
+			return nil, err
+		}
+		decompressed = dec
+	}
+	err := json.Unmarshal(decompressed, &result)
 	if err != nil {
 		return nil, err
 	}

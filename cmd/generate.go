@@ -91,7 +91,7 @@ func toType(file *jen.File, modelName string, stmt *jen.Statement, name string, 
 	switch property.Type {
 	case "string":
 		if property.Format != nil && *property.Format == "date-time" {
-			_stmt = _stmt.Qual("time", "Time")
+			_stmt = _stmt.Qual("github.com/shopmonkeyus/go-datamodel/datatypes", "DateTime")
 			switch name {
 			case "createdDate", "updatedDate":
 				tags["gorm"] = "column:" + name
@@ -107,12 +107,8 @@ func toType(file *jen.File, modelName string, stmt *jen.Statement, name string, 
 			file.Type().Id(enumName).String()
 			file.Line()
 			vals := make([]jen.Code, 0)
-			for i, val := range *property.Enum {
-				if i == 0 {
-					vals = append(vals, jen.Id(enumPrefix+val).Op(enumName).Op("=").Lit(val))
-				} else if val != "" {
-					vals = append(vals, jen.Id(enumPrefix+val).Op("=").Lit(val))
-				}
+			for _, val := range *property.Enum {
+				vals = append(vals, jen.Id(enumPrefix+val).Op(enumName).Op("=").Lit(val))
 			}
 			file.Const().Defs(vals...)
 			return _stmt.Id(enumName)
@@ -207,39 +203,51 @@ Where v3 is the output folder to generate the files into.
 
 			initFile.Line()
 
-			initFile.Var().Id("jsonHandle").Qual("github.com/hashicorp/go-msgpack/v2/codec", "JsonHandle")
-			initFile.Var().Id("msgpackHandle").Qual("github.com/hashicorp/go-msgpack/v2/codec", "MsgpackHandle")
+			params := make([]jen.Code, 0)
+			params2 := make([]jen.Code, 0)
+			cases := make([]jen.Code, 0)
+			cases2 := make([]jen.Code, 0)
+			models := make([]string, 0)
+			modellist := make([]jen.Code, 0)
 
-			initFile.Line()
+			var count int
+			for name := range schema {
+				count++
+				models = append(models, name)
+				if count < len(schema) {
+					modellist = append(modellist, jen.Op(name).Op("|"))
+				} else {
+					modellist = append(modellist, jen.Op(name))
+				}
+			}
+			sort.Strings(models)
 
-			initFile.Type().Id("EncodingType").String()
-			initFile.Const().Defs(
-				jen.Id("JSONEncoding").Op("EncodingType").Op("=").Lit("json"),
-				jen.Id("MsgPackEncoding").Op("=").Lit("msgpack"),
+			initFile.Type().Id("DataModel").Interface(
+				modellist...,
 			)
 
 			initFile.Line()
 
-			params := make([]jen.Code, 0)
-			cases := make([]jen.Code, 0)
-			models := make([]string, 0)
-			for name := range schema {
-				models = append(models, name)
-			}
-			sort.Strings(models)
-
 			initFile.Comment("// ModelNames is an array of all the models defined in this package")
 			namesf := initFile.Var().Id("ModelNames").Op("=").Op("[]string{\n")
+			initFile.Line()
+
+			initFile.Comment("// TableNames is an array of all the tables defined in this package")
+			namest := initFile.Var().Id("TableNames").Op("=").Op("[]string{\n")
 			initFile.Line()
 
 			initFile.Comment("// ModelInstances is an array of an empty object for each model in this package")
 			intf := initFile.Var().Id("ModelInstances").Op("=").Op("[]interface{}{\n")
 
 			for _, name := range models {
+				prop := schema[name]
 				namesf.Op(`"` + name + `",` + "\n")
+				namest.Op(`"` + prop.DBName + `",` + "\n")
 				intf.Op("&" + name + "{},\n")
 			}
 			namesf.Op("}")
+			initFile.Line()
+			namest.Op("}")
 			initFile.Line()
 			intf.Op("}")
 
@@ -247,16 +255,28 @@ Where v3 is the output folder to generate the files into.
 
 			for _, name := range models {
 				prop := schema[name]
-				rt := jen.Return(jen.Op("New" + name).Params(jen.Op("buf, enctype")))
+				rt := jen.Return(jen.Op("New" + name).Params(jen.Op("buf")))
 				cases = append(cases, jen.Op("case").Lit(name).Op(",").Lit(prop.DBName).Op(":").Block(rt))
+
+				rt2 := jen.Return(jen.Op("New"+name+"FromChangeEvent").Params(jen.Op("buf"), jen.Op("gzip")))
+				cases2 = append(cases2, jen.Op("case").Lit(name).Op(",").Lit(prop.DBName).Op(":").Block(rt2))
 			}
 
 			params = append(params, jen.Op("switch").Id("name").Block(cases...))
 			params = append(params, jen.Line())
 			params = append(params, jen.Return(jen.Op("nil,").Qual("errors", "New").Params(jen.Lit("invalid model: ").Op("+").Op("name"))))
 
+			params2 = append(params2, jen.Op("switch").Id("name").Block(cases2...))
+			params2 = append(params2, jen.Line())
+			params2 = append(params2, jen.Return(jen.Op("nil,").Qual("errors", "New").Params(jen.Lit("invalid model: ").Op("+").Op("name"))))
+
 			initFile.Comment("NewFromModel will return a model from a model name and buffer encoded as EncodingType")
-			initFile.Func().Id("NewFromModel").Params(jen.Id("name").String().Op(",").Id("buf").Op("[]").Byte(), jen.Id("enctype").Op("EncodingType")).Op("(Model, error)").Block(params...)
+			initFile.Func().Id("NewFromModel").Params(jen.Id("name").String().Op(",").Id("buf").Op("[]").Byte()).Op("(Model, error)").Block(params...)
+			initFile.Line()
+
+			initFile.Comment("NewFromChangeEvent will return change event for model from a buffer encoded as EncodingType")
+			initFile.Func().Id("NewFromChangeEvent").Params(jen.Id("name").String().Op(",").Id("buf").Op("[]").Byte(), jen.Id("gzip").Op("bool")).Op("(any, error)").Block(params2...)
+			initFile.Line()
 		}
 
 		ifn := path.Join(outdir, "init.go")
@@ -359,32 +379,43 @@ Where v3 is the output folder to generate the files into.
 
 			f.Line()
 
+			f.Comment("String returns a string representation as JSON for this model")
 			f.Func().Params(
 				jen.Id("m").Op("*").Id(name),
 			).Id("String").Params().String().Block(
 				jen.Id("buf").Op(",").Id("_").Op(":=").Qual("encoding/json", "Marshal").Params(jen.Id("m")),
 				jen.Return(jen.String().Params(jen.Id("buf"))),
 			)
-
 			f.Line()
 
 			f.Comment("New" + name + " returns a new model instance from an encoded buffer")
 			f.Func().Id("New"+name).Params(
 				jen.Id("buf").Op("[]").Byte(),
-				jen.Id("enctype").Op("EncodingType"),
 			).Op("(*"+name+", error)").Block(
 				jen.Var().Id("result").Op(name),
-				jen.Var().Id("handle").Op("codec.Handle"),
-				jen.If(jen.Id("enctype").Op("==").Op("JSONEncoding")).Block(
-					jen.Op("handle").Op("=").Op("&jsonHandle"),
-				).Else().Block(
-					jen.Op("handle").Op("=").Op("&msgpackHandle"),
-				),
-				jen.Id("dec").Op(":=").Qual("github.com/hashicorp/go-msgpack/v2/codec", "NewDecoderBytes").Params(jen.Op("buf"), jen.Op("handle")),
-				jen.Id("err").Op(":=").Op("dec.Decode").Params(jen.Op("&").Op("result")),
+				jen.Id("err").Op(":=").Qual("encoding/json", "Unmarshal").Params(jen.Op("buf"), jen.Op("&result")),
 				jen.Op("if err != nil").Block(jen.Return(jen.Op("nil, err"))),
 				jen.Return(jen.Op("&result, nil")),
 			)
+			f.Line()
+
+			f.Comment("New" + name + "FromChangeEvent returns a new model instance from an encoded buffer as change event")
+			f.Func().Id("New"+name+"FromChangeEvent").Params(
+				jen.Id("buf").Op("[]").Byte(),
+				jen.Id("gzip").Bool(),
+			).Op("(*").Qual("github.com/shopmonkeyus/go-datamodel/datatypes", "ChangeEvent["+name+"]").Op(", error)").Block(
+				jen.Var().Id("result").Qual("github.com/shopmonkeyus/go-datamodel/datatypes", "ChangeEvent["+name+"]"),
+				jen.Var().Id("decompressed").Op("=").Op("buf"),
+				jen.If(jen.Op("gzip")).Block(
+					jen.Id("dec").Op(",").Id("err").Op(":=").Qual("github.com/shopmonkeyus/go-datamodel/datatypes", "Gunzip").Params(jen.Op("buf")),
+					jen.Op("if err != nil").Block(jen.Return(jen.Op("nil, err"))),
+					jen.Op("decompressed = dec"),
+				),
+				jen.Id("err").Op(":=").Qual("encoding/json", "Unmarshal").Params(jen.Op("decompressed"), jen.Op("&result")),
+				jen.Op("if err != nil").Block(jen.Return(jen.Op("nil, err"))),
+				jen.Return(jen.Op("&result, nil")),
+			)
+			f.Line()
 
 			fn := path.Join(outdir, name+".go")
 			if err := f.Save(fn); err != nil {

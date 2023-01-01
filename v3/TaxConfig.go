@@ -3,41 +3,39 @@ package v3
 
 import (
 	"encoding/json"
-	codec "github.com/hashicorp/go-msgpack/v2/codec"
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
-	"time"
 )
 
 type TaxConfigShopSuppliesConfigEnum string
 
 const (
 	TaxConfigShopSuppliesConfigNoCap    TaxConfigShopSuppliesConfigEnum = "NoCap"
-	TaxConfigShopSuppliesConfigOrderCap                                 = "OrderCap"
+	TaxConfigShopSuppliesConfigOrderCap TaxConfigShopSuppliesConfigEnum = "OrderCap"
 )
 
 type TaxConfigShopSuppliesServiceTypeEnum string
 
 const (
 	TaxConfigShopSuppliesServiceTypePercent    TaxConfigShopSuppliesServiceTypeEnum = "Percent"
-	TaxConfigShopSuppliesServiceTypeFixedCents                                      = "FixedCents"
+	TaxConfigShopSuppliesServiceTypeFixedCents TaxConfigShopSuppliesServiceTypeEnum = "FixedCents"
 )
 
 type TaxConfigTaxSystemEnum string
 
 const (
 	TaxConfigTaxSystemUS TaxConfigTaxSystemEnum = "US"
-	TaxConfigTaxSystemCA                        = "CA"
-	TaxConfigTaxSystemMX                        = "MX"
+	TaxConfigTaxSystemCA TaxConfigTaxSystemEnum = "CA"
+	TaxConfigTaxSystemMX TaxConfigTaxSystemEnum = "MX"
 )
 
 type TaxConfig struct {
-	ID          string          `gorm:"primaryKey;not null;column:id" json:"id"`
-	CreatedDate time.Time       `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
-	UpdatedDate *time.Time      `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta        datatypes.Meta  `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata    *datatypes.JSON `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
-	CompanyID   string          `gorm:"not null;column:companyId" json:"companyId"`
-	LocationID  string          `gorm:"not null;column:locationId" json:"locationId"`
+	ID          string              `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        datatypes.Meta      `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
+	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID  string              `gorm:"not null;column:locationId" json:"locationId"`
 
 	EpaPercent                       float64                              `gorm:"not null;column:epaPercent" json:"epaPercent"`
 	EpaTaxable                       bool                                 `gorm:"not null;column:epaTaxable" json:"epaTaxable"`
@@ -73,22 +71,34 @@ func (m *TaxConfig) TableName() string {
 	return "tax_config"
 }
 
+// String returns a string representation as JSON for this model
 func (m *TaxConfig) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
 }
 
 // NewTaxConfig returns a new model instance from an encoded buffer
-func NewTaxConfig(buf []byte, enctype EncodingType) (*TaxConfig, error) {
+func NewTaxConfig(buf []byte) (*TaxConfig, error) {
 	var result TaxConfig
-	var handle codec.Handle
-	if enctype == JSONEncoding {
-		handle = &jsonHandle
-	} else {
-		handle = &msgpackHandle
+	err := json.Unmarshal(buf, &result)
+	if err != nil {
+		return nil, err
 	}
-	dec := codec.NewDecoderBytes(buf, handle)
-	err := dec.Decode(&result)
+	return &result, nil
+}
+
+// NewTaxConfigFromChangeEvent returns a new model instance from an encoded buffer as change event
+func NewTaxConfigFromChangeEvent(buf []byte, gzip bool) (*datatypes.ChangeEvent[TaxConfig], error) {
+	var result datatypes.ChangeEvent[TaxConfig]
+	var decompressed = buf
+	if gzip {
+		dec, err := datatypes.Gunzip(buf)
+		if err != nil {
+			return nil, err
+		}
+		decompressed = dec
+	}
+	err := json.Unmarshal(decompressed, &result)
 	if err != nil {
 		return nil, err
 	}
