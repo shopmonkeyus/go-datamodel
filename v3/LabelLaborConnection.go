@@ -3,17 +3,15 @@ package v3
 
 import (
 	"encoding/json"
-	codec "github.com/hashicorp/go-msgpack/v2/codec"
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
-	"time"
 )
 
 type LabelLaborConnection struct {
-	CreatedDate time.Time       `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
-	UpdatedDate *time.Time      `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta        datatypes.Meta  `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata    *datatypes.JSON `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
-	CompanyID   string          `gorm:"not null;column:companyId" json:"companyId"`
+	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        datatypes.Meta      `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
+	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
 
 	LabelID string `gorm:"not null;column:labelId" json:"labelId"`
 	LaborID string `gorm:"not null;column:laborId" json:"laborId"`
@@ -26,22 +24,34 @@ func (m *LabelLaborConnection) TableName() string {
 	return "label_labor_connection"
 }
 
+// String returns a string representation as JSON for this model
 func (m *LabelLaborConnection) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
 }
 
 // NewLabelLaborConnection returns a new model instance from an encoded buffer
-func NewLabelLaborConnection(buf []byte, enctype EncodingType) (*LabelLaborConnection, error) {
+func NewLabelLaborConnection(buf []byte) (*LabelLaborConnection, error) {
 	var result LabelLaborConnection
-	var handle codec.Handle
-	if enctype == JSONEncoding {
-		handle = &jsonHandle
-	} else {
-		handle = &msgpackHandle
+	err := json.Unmarshal(buf, &result)
+	if err != nil {
+		return nil, err
 	}
-	dec := codec.NewDecoderBytes(buf, handle)
-	err := dec.Decode(&result)
+	return &result, nil
+}
+
+// NewLabelLaborConnectionFromChangeEvent returns a new model instance from an encoded buffer as change event
+func NewLabelLaborConnectionFromChangeEvent(buf []byte, gzip bool) (*datatypes.ChangeEvent[LabelLaborConnection], error) {
+	var result datatypes.ChangeEvent[LabelLaborConnection]
+	var decompressed = buf
+	if gzip {
+		dec, err := datatypes.Gunzip(buf)
+		if err != nil {
+			return nil, err
+		}
+		decompressed = dec
+	}
+	err := json.Unmarshal(decompressed, &result)
 	if err != nil {
 		return nil, err
 	}

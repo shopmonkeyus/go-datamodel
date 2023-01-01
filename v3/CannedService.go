@@ -3,68 +3,66 @@ package v3
 
 import (
 	"encoding/json"
-	codec "github.com/hashicorp/go-msgpack/v2/codec"
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
-	"time"
 )
 
 type CannedServiceDiscountValueTypeEnum string
 
 const (
 	CannedServiceDiscountValueTypePercent    CannedServiceDiscountValueTypeEnum = "Percent"
-	CannedServiceDiscountValueTypeFixedCents                                    = "FixedCents"
+	CannedServiceDiscountValueTypeFixedCents CannedServiceDiscountValueTypeEnum = "FixedCents"
 )
 
 type CannedServiceEpaValueTypeEnum string
 
 const (
 	CannedServiceEpaValueTypePercent    CannedServiceEpaValueTypeEnum = "Percent"
-	CannedServiceEpaValueTypeFixedCents                               = "FixedCents"
+	CannedServiceEpaValueTypeFixedCents CannedServiceEpaValueTypeEnum = "FixedCents"
 )
 
 type CannedServiceGstValueTypeEnum string
 
 const (
 	CannedServiceGstValueTypePercent    CannedServiceGstValueTypeEnum = "Percent"
-	CannedServiceGstValueTypeFixedCents                               = "FixedCents"
+	CannedServiceGstValueTypeFixedCents CannedServiceGstValueTypeEnum = "FixedCents"
 )
 
 type CannedServiceHstValueTypeEnum string
 
 const (
 	CannedServiceHstValueTypePercent    CannedServiceHstValueTypeEnum = "Percent"
-	CannedServiceHstValueTypeFixedCents                               = "FixedCents"
+	CannedServiceHstValueTypeFixedCents CannedServiceHstValueTypeEnum = "FixedCents"
 )
 
 type CannedServicePstValueTypeEnum string
 
 const (
 	CannedServicePstValueTypePercent    CannedServicePstValueTypeEnum = "Percent"
-	CannedServicePstValueTypeFixedCents                               = "FixedCents"
+	CannedServicePstValueTypeFixedCents CannedServicePstValueTypeEnum = "FixedCents"
 )
 
 type CannedServiceShopSuppliesValueTypeEnum string
 
 const (
 	CannedServiceShopSuppliesValueTypePercent    CannedServiceShopSuppliesValueTypeEnum = "Percent"
-	CannedServiceShopSuppliesValueTypeFixedCents                                        = "FixedCents"
+	CannedServiceShopSuppliesValueTypeFixedCents CannedServiceShopSuppliesValueTypeEnum = "FixedCents"
 )
 
 type CannedServiceTaxValueTypeEnum string
 
 const (
 	CannedServiceTaxValueTypePercent    CannedServiceTaxValueTypeEnum = "Percent"
-	CannedServiceTaxValueTypeFixedCents                               = "FixedCents"
+	CannedServiceTaxValueTypeFixedCents CannedServiceTaxValueTypeEnum = "FixedCents"
 )
 
 type CannedService struct {
-	ID          string          `gorm:"primaryKey;not null;column:id" json:"id"`
-	CreatedDate time.Time       `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
-	UpdatedDate *time.Time      `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta        datatypes.Meta  `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata    *datatypes.JSON `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
-	CompanyID   string          `gorm:"not null;column:companyId" json:"companyId"`
-	LocationID  string          `gorm:"not null;column:locationId" json:"locationId"`
+	ID          string              `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        datatypes.Meta      `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
+	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID  string              `gorm:"not null;column:locationId" json:"locationId"`
 
 	CalculatedDiscountCents     int64                                  `gorm:"not null;column:calculatedDiscountCents" json:"calculatedDiscountCents"`
 	CalculatedDiscountPercent   float64                                `gorm:"not null;column:calculatedDiscountPercent" json:"calculatedDiscountPercent"`
@@ -77,7 +75,7 @@ type CannedService struct {
 	CalculatedTaxCents          int64                                  `gorm:"not null;column:calculatedTaxCents" json:"calculatedTaxCents"`
 	CalculatedTiresCents        int64                                  `gorm:"not null;column:calculatedTiresCents" json:"calculatedTiresCents"`
 	Deleted                     bool                                   `gorm:"not null;column:deleted" json:"deleted"`    // if the record has been deleted
-	DeletedDate                 *time.Time                             `gorm:"column:deletedDate" json:"deletedDate"`     // the date that the record was deleted or null if not deleted
+	DeletedDate                 *datatypes.DateTime                    `gorm:"column:deletedDate" json:"deletedDate"`     // the date that the record was deleted or null if not deleted
 	DeletedReason               *string                                `gorm:"column:deletedReason" json:"deletedReason"` // the reason that the record was deleted
 	DeletedUserID               *string                                `gorm:"column:deletedUserId" json:"deletedUserId"` // the user that deleted the record or null if not deleted
 	DiscountCents               int64                                  `gorm:"not null;column:discountCents" json:"discountCents"`
@@ -116,22 +114,34 @@ func (m *CannedService) TableName() string {
 	return "canned_service"
 }
 
+// String returns a string representation as JSON for this model
 func (m *CannedService) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
 }
 
 // NewCannedService returns a new model instance from an encoded buffer
-func NewCannedService(buf []byte, enctype EncodingType) (*CannedService, error) {
+func NewCannedService(buf []byte) (*CannedService, error) {
 	var result CannedService
-	var handle codec.Handle
-	if enctype == JSONEncoding {
-		handle = &jsonHandle
-	} else {
-		handle = &msgpackHandle
+	err := json.Unmarshal(buf, &result)
+	if err != nil {
+		return nil, err
 	}
-	dec := codec.NewDecoderBytes(buf, handle)
-	err := dec.Decode(&result)
+	return &result, nil
+}
+
+// NewCannedServiceFromChangeEvent returns a new model instance from an encoded buffer as change event
+func NewCannedServiceFromChangeEvent(buf []byte, gzip bool) (*datatypes.ChangeEvent[CannedService], error) {
+	var result datatypes.ChangeEvent[CannedService]
+	var decompressed = buf
+	if gzip {
+		dec, err := datatypes.Gunzip(buf)
+		if err != nil {
+			return nil, err
+		}
+		decompressed = dec
+	}
+	err := json.Unmarshal(decompressed, &result)
 	if err != nil {
 		return nil, err
 	}

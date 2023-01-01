@@ -3,54 +3,54 @@ package v3
 
 import (
 	"encoding/json"
-	codec "github.com/hashicorp/go-msgpack/v2/codec"
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
-	"time"
 )
 
 type MessageAuthorTypeEnum string
 
 const (
 	MessageAuthorTypeCustomer MessageAuthorTypeEnum = "Customer"
-	MessageAuthorTypeUser                           = "User"
+	MessageAuthorTypeUser     MessageAuthorTypeEnum = "User"
 )
 
 type MessageEmailStatusEnum string
 
 const (
 	MessageEmailStatusPending MessageEmailStatusEnum = "Pending"
-	MessageEmailStatusSent                           = "Sent"
-	MessageEmailStatusRead                           = "Read"
-	MessageEmailStatusError                          = "Error"
+	MessageEmailStatusSent    MessageEmailStatusEnum = "Sent"
+	MessageEmailStatusRead    MessageEmailStatusEnum = "Read"
+	MessageEmailStatusError   MessageEmailStatusEnum = "Error"
+	MessageEmailStatus        MessageEmailStatusEnum = ""
 )
 
 type MessageOriginEnum string
 
 const (
 	MessageOriginWeb               MessageOriginEnum = "Web"
-	MessageOriginMobile                              = "Mobile"
-	MessageOriginCustomerOrderPage                   = "CustomerOrderPage"
-	MessageOriginSMS                                 = "SMS"
-	MessageOriginEmail                               = "Email"
+	MessageOriginMobile            MessageOriginEnum = "Mobile"
+	MessageOriginCustomerOrderPage MessageOriginEnum = "CustomerOrderPage"
+	MessageOriginSMS               MessageOriginEnum = "SMS"
+	MessageOriginEmail             MessageOriginEnum = "Email"
 )
 
 type MessageSmsStatusEnum string
 
 const (
 	MessageSmsStatusPending MessageSmsStatusEnum = "Pending"
-	MessageSmsStatusSent                         = "Sent"
-	MessageSmsStatusRead                         = "Read"
-	MessageSmsStatusError                        = "Error"
+	MessageSmsStatusSent    MessageSmsStatusEnum = "Sent"
+	MessageSmsStatusRead    MessageSmsStatusEnum = "Read"
+	MessageSmsStatusError   MessageSmsStatusEnum = "Error"
+	MessageSmsStatus        MessageSmsStatusEnum = ""
 )
 
 type Message struct {
-	ID          string          `gorm:"primaryKey;not null;column:id" json:"id"`
-	CreatedDate time.Time       `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
-	UpdatedDate *time.Time      `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta        datatypes.Meta  `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata    *datatypes.JSON `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
-	CompanyID   string          `gorm:"not null;column:companyId" json:"companyId"`
-	LocationID  string          `gorm:"not null;column:locationId" json:"locationId"`
+	ID          string              `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        datatypes.Meta      `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
+	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID  string              `gorm:"not null;column:locationId" json:"locationId"`
 
 	AuthorType     MessageAuthorTypeEnum   `gorm:"not null;column:authorType" json:"authorType"`
 	ConversationID string                  `gorm:"not null;column:conversationId" json:"conversationId"`
@@ -75,22 +75,34 @@ func (m *Message) TableName() string {
 	return "message"
 }
 
+// String returns a string representation as JSON for this model
 func (m *Message) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
 }
 
 // NewMessage returns a new model instance from an encoded buffer
-func NewMessage(buf []byte, enctype EncodingType) (*Message, error) {
+func NewMessage(buf []byte) (*Message, error) {
 	var result Message
-	var handle codec.Handle
-	if enctype == JSONEncoding {
-		handle = &jsonHandle
-	} else {
-		handle = &msgpackHandle
+	err := json.Unmarshal(buf, &result)
+	if err != nil {
+		return nil, err
 	}
-	dec := codec.NewDecoderBytes(buf, handle)
-	err := dec.Decode(&result)
+	return &result, nil
+}
+
+// NewMessageFromChangeEvent returns a new model instance from an encoded buffer as change event
+func NewMessageFromChangeEvent(buf []byte, gzip bool) (*datatypes.ChangeEvent[Message], error) {
+	var result datatypes.ChangeEvent[Message]
+	var decompressed = buf
+	if gzip {
+		dec, err := datatypes.Gunzip(buf)
+		if err != nil {
+			return nil, err
+		}
+		decompressed = dec
+	}
+	err := json.Unmarshal(decompressed, &result)
 	if err != nil {
 		return nil, err
 	}

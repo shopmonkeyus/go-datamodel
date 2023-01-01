@@ -3,41 +3,40 @@ package v3
 
 import (
 	"encoding/json"
-	codec "github.com/hashicorp/go-msgpack/v2/codec"
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
-	"time"
 )
 
 type CannedServiceLaborDiscountValueTypeEnum string
 
 const (
 	CannedServiceLaborDiscountValueTypePercent    CannedServiceLaborDiscountValueTypeEnum = "Percent"
-	CannedServiceLaborDiscountValueTypeFixedCents                                         = "FixedCents"
+	CannedServiceLaborDiscountValueTypeFixedCents CannedServiceLaborDiscountValueTypeEnum = "FixedCents"
 )
 
 type CannedServiceLaborMultiplierTypeEnum string
 
 const (
 	CannedServiceLaborMultiplierTypeHours CannedServiceLaborMultiplierTypeEnum = "Hours"
-	CannedServiceLaborMultiplierTypeRate                                       = "Rate"
+	CannedServiceLaborMultiplierTypeRate  CannedServiceLaborMultiplierTypeEnum = "Rate"
 )
 
 type CannedServiceLaborSkillRequiredEnum string
 
 const (
 	CannedServiceLaborSkillRequiredGeneral     CannedServiceLaborSkillRequiredEnum = "General"
-	CannedServiceLaborSkillRequiredMaintenance                                     = "Maintenance"
-	CannedServiceLaborSkillRequiredPrecision                                       = "Precision"
+	CannedServiceLaborSkillRequiredMaintenance CannedServiceLaborSkillRequiredEnum = "Maintenance"
+	CannedServiceLaborSkillRequiredPrecision   CannedServiceLaborSkillRequiredEnum = "Precision"
+	CannedServiceLaborSkillRequired            CannedServiceLaborSkillRequiredEnum = ""
 )
 
 type CannedServiceLabor struct {
-	ID          string          `gorm:"primaryKey;not null;column:id" json:"id"`
-	CreatedDate time.Time       `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
-	UpdatedDate *time.Time      `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta        datatypes.Meta  `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata    *datatypes.JSON `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
-	CompanyID   string          `gorm:"not null;column:companyId" json:"companyId"`
-	LocationID  string          `gorm:"not null;column:locationId" json:"locationId"`
+	ID          string              `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        datatypes.Meta      `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
+	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID  string              `gorm:"not null;column:locationId" json:"locationId"`
 
 	ApplicationID            *int64                                  `gorm:"column:applicationId" json:"applicationId"`
 	CannedServiceID          string                                  `gorm:"not null;column:cannedServiceId" json:"cannedServiceId"`
@@ -49,7 +48,7 @@ type CannedServiceLabor struct {
 	DiscountPercent          float64                                 `gorm:"not null;column:discountPercent" json:"discountPercent"`
 	DiscountValueType        CannedServiceLaborDiscountValueTypeEnum `gorm:"not null;column:discountValueType" json:"discountValueType"`
 	Hours                    float64                                 `gorm:"not null;column:hours" json:"hours"`
-	LaborMatrixDate          *time.Time                              `gorm:"column:laborMatrixDate" json:"laborMatrixDate"` // datetime when laborMatrixId was set, for determining if matrix has been changed
+	LaborMatrixDate          *datatypes.DateTime                     `gorm:"column:laborMatrixDate" json:"laborMatrixDate"` // datetime when laborMatrixId was set, for determining if matrix has been changed
 	LaborMatrixID            *string                                 `gorm:"column:laborMatrixId" json:"laborMatrixId"`
 	Multiplier               float64                                 `gorm:"not null;column:multiplier" json:"multiplier"`
 	MultiplierType           CannedServiceLaborMultiplierTypeEnum    `gorm:"not null;column:multiplierType" json:"multiplierType"`
@@ -73,22 +72,34 @@ func (m *CannedServiceLabor) TableName() string {
 	return "canned_service_labor"
 }
 
+// String returns a string representation as JSON for this model
 func (m *CannedServiceLabor) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
 }
 
 // NewCannedServiceLabor returns a new model instance from an encoded buffer
-func NewCannedServiceLabor(buf []byte, enctype EncodingType) (*CannedServiceLabor, error) {
+func NewCannedServiceLabor(buf []byte) (*CannedServiceLabor, error) {
 	var result CannedServiceLabor
-	var handle codec.Handle
-	if enctype == JSONEncoding {
-		handle = &jsonHandle
-	} else {
-		handle = &msgpackHandle
+	err := json.Unmarshal(buf, &result)
+	if err != nil {
+		return nil, err
 	}
-	dec := codec.NewDecoderBytes(buf, handle)
-	err := dec.Decode(&result)
+	return &result, nil
+}
+
+// NewCannedServiceLaborFromChangeEvent returns a new model instance from an encoded buffer as change event
+func NewCannedServiceLaborFromChangeEvent(buf []byte, gzip bool) (*datatypes.ChangeEvent[CannedServiceLabor], error) {
+	var result datatypes.ChangeEvent[CannedServiceLabor]
+	var decompressed = buf
+	if gzip {
+		dec, err := datatypes.Gunzip(buf)
+		if err != nil {
+			return nil, err
+		}
+		decompressed = dec
+	}
+	err := json.Unmarshal(decompressed, &result)
 	if err != nil {
 		return nil, err
 	}

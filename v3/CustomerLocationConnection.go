@@ -3,18 +3,16 @@ package v3
 
 import (
 	"encoding/json"
-	codec "github.com/hashicorp/go-msgpack/v2/codec"
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
-	"time"
 )
 
 type CustomerLocationConnection struct {
-	CreatedDate time.Time       `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
-	UpdatedDate *time.Time      `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta        datatypes.Meta  `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata    *datatypes.JSON `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
-	CompanyID   string          `gorm:"not null;column:companyId" json:"companyId"`
-	LocationID  string          `gorm:"not null;column:locationId" json:"locationId"`
+	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        datatypes.Meta      `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
+	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID  string              `gorm:"not null;column:locationId" json:"locationId"`
 
 	CustomerID string `gorm:"not null;column:customerId" json:"customerId"`
 }
@@ -26,22 +24,34 @@ func (m *CustomerLocationConnection) TableName() string {
 	return "customer_location_connection"
 }
 
+// String returns a string representation as JSON for this model
 func (m *CustomerLocationConnection) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
 }
 
 // NewCustomerLocationConnection returns a new model instance from an encoded buffer
-func NewCustomerLocationConnection(buf []byte, enctype EncodingType) (*CustomerLocationConnection, error) {
+func NewCustomerLocationConnection(buf []byte) (*CustomerLocationConnection, error) {
 	var result CustomerLocationConnection
-	var handle codec.Handle
-	if enctype == JSONEncoding {
-		handle = &jsonHandle
-	} else {
-		handle = &msgpackHandle
+	err := json.Unmarshal(buf, &result)
+	if err != nil {
+		return nil, err
 	}
-	dec := codec.NewDecoderBytes(buf, handle)
-	err := dec.Decode(&result)
+	return &result, nil
+}
+
+// NewCustomerLocationConnectionFromChangeEvent returns a new model instance from an encoded buffer as change event
+func NewCustomerLocationConnectionFromChangeEvent(buf []byte, gzip bool) (*datatypes.ChangeEvent[CustomerLocationConnection], error) {
+	var result datatypes.ChangeEvent[CustomerLocationConnection]
+	var decompressed = buf
+	if gzip {
+		dec, err := datatypes.Gunzip(buf)
+		if err != nil {
+			return nil, err
+		}
+		decompressed = dec
+	}
+	err := json.Unmarshal(decompressed, &result)
 	if err != nil {
 		return nil, err
 	}

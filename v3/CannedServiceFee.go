@@ -3,36 +3,35 @@ package v3
 
 import (
 	"encoding/json"
-	codec "github.com/hashicorp/go-msgpack/v2/codec"
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
-	"time"
 )
 
 type CannedServiceFeeFeeTypeEnum string
 
 const (
 	CannedServiceFeeFeeTypePercentLineItem CannedServiceFeeFeeTypeEnum = "PercentLineItem"
-	CannedServiceFeeFeeTypePercentService                              = "PercentService"
-	CannedServiceFeeFeeTypeFixedCents                                  = "FixedCents"
+	CannedServiceFeeFeeTypePercentService  CannedServiceFeeFeeTypeEnum = "PercentService"
+	CannedServiceFeeFeeTypeFixedCents      CannedServiceFeeFeeTypeEnum = "FixedCents"
 )
 
 type CannedServiceFeeLineItemEntityEnum string
 
 const (
 	CannedServiceFeeLineItemEntityLabor       CannedServiceFeeLineItemEntityEnum = "Labor"
-	CannedServiceFeeLineItemEntityPart                                           = "Part"
-	CannedServiceFeeLineItemEntitySubcontract                                    = "Subcontract"
-	CannedServiceFeeLineItemEntityTire                                           = "Tire"
+	CannedServiceFeeLineItemEntityPart        CannedServiceFeeLineItemEntityEnum = "Part"
+	CannedServiceFeeLineItemEntitySubcontract CannedServiceFeeLineItemEntityEnum = "Subcontract"
+	CannedServiceFeeLineItemEntityTire        CannedServiceFeeLineItemEntityEnum = "Tire"
+	CannedServiceFeeLineItemEntity            CannedServiceFeeLineItemEntityEnum = ""
 )
 
 type CannedServiceFee struct {
-	ID          string          `gorm:"primaryKey;not null;column:id" json:"id"`
-	CreatedDate time.Time       `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
-	UpdatedDate *time.Time      `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta        datatypes.Meta  `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata    *datatypes.JSON `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
-	CompanyID   string          `gorm:"not null;column:companyId" json:"companyId"`
-	LocationID  string          `gorm:"not null;column:locationId" json:"locationId"`
+	ID          string              `gorm:"primaryKey;not null;column:id" json:"id"`
+	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	Meta        datatypes.Meta      `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
+	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID  string              `gorm:"not null;column:locationId" json:"locationId"`
 
 	AmountCents     int64                               `gorm:"not null;column:amountCents" json:"amountCents"`
 	CannedServiceID string                              `gorm:"not null;column:cannedServiceId" json:"cannedServiceId"`
@@ -57,22 +56,34 @@ func (m *CannedServiceFee) TableName() string {
 	return "canned_service_fee"
 }
 
+// String returns a string representation as JSON for this model
 func (m *CannedServiceFee) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
 }
 
 // NewCannedServiceFee returns a new model instance from an encoded buffer
-func NewCannedServiceFee(buf []byte, enctype EncodingType) (*CannedServiceFee, error) {
+func NewCannedServiceFee(buf []byte) (*CannedServiceFee, error) {
 	var result CannedServiceFee
-	var handle codec.Handle
-	if enctype == JSONEncoding {
-		handle = &jsonHandle
-	} else {
-		handle = &msgpackHandle
+	err := json.Unmarshal(buf, &result)
+	if err != nil {
+		return nil, err
 	}
-	dec := codec.NewDecoderBytes(buf, handle)
-	err := dec.Decode(&result)
+	return &result, nil
+}
+
+// NewCannedServiceFeeFromChangeEvent returns a new model instance from an encoded buffer as change event
+func NewCannedServiceFeeFromChangeEvent(buf []byte, gzip bool) (*datatypes.ChangeEvent[CannedServiceFee], error) {
+	var result datatypes.ChangeEvent[CannedServiceFee]
+	var decompressed = buf
+	if gzip {
+		dec, err := datatypes.Gunzip(buf)
+		if err != nil {
+			return nil, err
+		}
+		decompressed = dec
+	}
+	err := json.Unmarshal(decompressed, &result)
 	if err != nil {
 		return nil, err
 	}
