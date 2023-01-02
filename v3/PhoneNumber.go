@@ -258,7 +258,6 @@ const (
 	PhoneNumberCountryYE PhoneNumberCountryEnum = "YE"
 	PhoneNumberCountryZM PhoneNumberCountryEnum = "ZM"
 	PhoneNumberCountryZW PhoneNumberCountryEnum = "ZW"
-	PhoneNumberCountry   PhoneNumberCountryEnum = ""
 )
 
 type PhoneNumberTypeEnum string
@@ -268,7 +267,6 @@ const (
 	PhoneNumberTypeLandline PhoneNumberTypeEnum = "Landline"
 	PhoneNumberTypeVoIP     PhoneNumberTypeEnum = "VoIP"
 	PhoneNumberTypeOther    PhoneNumberTypeEnum = "Other"
-	PhoneNumberType         PhoneNumberTypeEnum = ""
 )
 
 type PhoneNumberUserDefinedTypeEnum string
@@ -282,7 +280,6 @@ const (
 	PhoneNumberUserDefinedTypeVoIP     PhoneNumberUserDefinedTypeEnum = "VoIP"
 	PhoneNumberUserDefinedTypeLandline PhoneNumberUserDefinedTypeEnum = "Landline"
 	PhoneNumberUserDefinedTypeOther    PhoneNumberUserDefinedTypeEnum = "Other"
-	PhoneNumberUserDefinedType         PhoneNumberUserDefinedTypeEnum = ""
 )
 
 type PhoneNumber struct {

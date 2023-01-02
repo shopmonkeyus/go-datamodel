@@ -7,14 +7,14 @@ import (
 )
 
 type LabelCannedServiceLaborConnection struct {
-	LabelID string `gorm:"primaryKey;not null;column:labelId" json:"labelId"`
+	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
 
-	CannedServiceLaborID string              `gorm:"primaryKey;not null;column:cannedServiceLaborId" json:"cannedServiceLaborId"`
-	Meta                 *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata             *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
-	CreatedDate          datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
-	UpdatedDate          *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	CompanyID            string              `gorm:"not null;column:companyId" json:"companyId"`
+	CompanyID            string             `gorm:"not null;column:companyId" json:"companyId"`
+	LabelID              string             `gorm:"primaryKey;not null;column:labelId" json:"labelId"`
+	CannedServiceLaborID string             `gorm:"primaryKey;not null;column:cannedServiceLaborId" json:"cannedServiceLaborId"`
+	Meta                 *datatypes.JSON    `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
+	Metadata             *datatypes.JSON    `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	CreatedDate          datatypes.DateTime `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
 }
 
 var _ Model = (*LabelCannedServiceLaborConnection)(nil)

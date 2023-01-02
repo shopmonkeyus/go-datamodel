@@ -26,7 +26,6 @@ const (
 	LaborSkillRequiredGeneral     LaborSkillRequiredEnum = "General"
 	LaborSkillRequiredMaintenance LaborSkillRequiredEnum = "Maintenance"
 	LaborSkillRequiredPrecision   LaborSkillRequiredEnum = "Precision"
-	LaborSkillRequired            LaborSkillRequiredEnum = ""
 )
 
 type Labor struct {

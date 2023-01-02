@@ -19,7 +19,6 @@ const (
 	CannedServiceTireSeasonalitySummer     CannedServiceTireSeasonalityEnum = "Summer"
 	CannedServiceTireSeasonalityWinter     CannedServiceTireSeasonalityEnum = "Winter"
 	CannedServiceTireSeasonalityAllSeasons CannedServiceTireSeasonalityEnum = "AllSeasons"
-	CannedServiceTireSeasonality           CannedServiceTireSeasonalityEnum = ""
 )
 
 type CannedServiceTireSizeFormatEnum string

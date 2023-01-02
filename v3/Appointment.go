@@ -13,7 +13,6 @@ const (
 	AppointmentRecurringParamsFrequencyWeek  AppointmentRecurringParamsFrequencyEnum = "Week"
 	AppointmentRecurringParamsFrequencyMonth AppointmentRecurringParamsFrequencyEnum = "Month"
 	AppointmentRecurringParamsFrequencyYear  AppointmentRecurringParamsFrequencyEnum = "Year"
-	AppointmentRecurringParamsFrequency      AppointmentRecurringParamsFrequencyEnum = ""
 )
 
 type Appointment struct {

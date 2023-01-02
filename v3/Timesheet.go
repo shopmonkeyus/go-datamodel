@@ -20,7 +20,6 @@ type TimesheetClockInPlatformEnum string
 const (
 	TimesheetClockInPlatformWeb    TimesheetClockInPlatformEnum = "Web"
 	TimesheetClockInPlatformMobile TimesheetClockInPlatformEnum = "Mobile"
-	TimesheetClockInPlatform       TimesheetClockInPlatformEnum = ""
 )
 
 type TimesheetClockOutPlatformEnum string
@@ -28,7 +27,6 @@ type TimesheetClockOutPlatformEnum string
 const (
 	TimesheetClockOutPlatformWeb    TimesheetClockOutPlatformEnum = "Web"
 	TimesheetClockOutPlatformMobile TimesheetClockOutPlatformEnum = "Mobile"
-	TimesheetClockOutPlatform       TimesheetClockOutPlatformEnum = ""
 )
 
 type TimesheetTypeEnum string

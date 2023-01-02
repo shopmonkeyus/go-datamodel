@@ -19,7 +19,6 @@ const (
 	TireSeasonalitySummer     TireSeasonalityEnum = "Summer"
 	TireSeasonalityWinter     TireSeasonalityEnum = "Winter"
 	TireSeasonalityAllSeasons TireSeasonalityEnum = "AllSeasons"
-	TireSeasonality           TireSeasonalityEnum = ""
 )
 
 type TireSizeFormatEnum string

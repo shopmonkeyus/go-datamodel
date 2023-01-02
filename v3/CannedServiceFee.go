@@ -21,7 +21,6 @@ const (
 	CannedServiceFeeLineItemEntityPart        CannedServiceFeeLineItemEntityEnum = "Part"
 	CannedServiceFeeLineItemEntitySubcontract CannedServiceFeeLineItemEntityEnum = "Subcontract"
 	CannedServiceFeeLineItemEntityTire        CannedServiceFeeLineItemEntityEnum = "Tire"
-	CannedServiceFeeLineItemEntity            CannedServiceFeeLineItemEntityEnum = ""
 )
 
 type CannedServiceFee struct {

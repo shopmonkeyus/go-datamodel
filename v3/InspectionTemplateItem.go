@@ -13,7 +13,6 @@ const (
 	InspectionTemplateItemStatusYellow        InspectionTemplateItemStatusEnum = "Yellow"
 	InspectionTemplateItemStatusRed           InspectionTemplateItemStatusEnum = "Red"
 	InspectionTemplateItemStatusNotApplicable InspectionTemplateItemStatusEnum = "NotApplicable"
-	InspectionTemplateItemStatus              InspectionTemplateItemStatusEnum = ""
 )
 
 type InspectionTemplateItem struct {

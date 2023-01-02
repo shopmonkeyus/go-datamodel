@@ -21,7 +21,6 @@ const (
 	FeeLineItemEntityPart        FeeLineItemEntityEnum = "Part"
 	FeeLineItemEntitySubcontract FeeLineItemEntityEnum = "Subcontract"
 	FeeLineItemEntityTire        FeeLineItemEntityEnum = "Tire"
-	FeeLineItemEntity            FeeLineItemEntityEnum = ""
 )
 
 type Fee struct {

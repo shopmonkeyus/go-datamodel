@@ -258,7 +258,6 @@ const (
 	VendorCountryYE VendorCountryEnum = "YE"
 	VendorCountryZM VendorCountryEnum = "ZM"
 	VendorCountryZW VendorCountryEnum = "ZW"
-	VendorCountry   VendorCountryEnum = ""
 )
 
 type Vendor struct {

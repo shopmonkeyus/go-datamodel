@@ -258,7 +258,6 @@ const (
 	CustomerCountryYE CustomerCountryEnum = "YE"
 	CustomerCountryZM CustomerCountryEnum = "ZM"
 	CustomerCountryZW CustomerCountryEnum = "ZW"
-	CustomerCountry   CustomerCountryEnum = ""
 )
 
 type CustomerCustomerTypeEnum string
@@ -274,7 +273,6 @@ const (
 	CustomerPreferredContactMethodSMS   CustomerPreferredContactMethodEnum = "SMS"
 	CustomerPreferredContactMethodEmail CustomerPreferredContactMethodEnum = "Email"
 	CustomerPreferredContactMethodAll   CustomerPreferredContactMethodEnum = "All"
-	CustomerPreferredContactMethod      CustomerPreferredContactMethodEnum = ""
 )
 
 type Customer struct {

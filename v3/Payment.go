@@ -29,7 +29,6 @@ const (
 	PaymentProviderManual    PaymentProviderEnum = "Manual"
 	PaymentProviderFirstMile PaymentProviderEnum = "FirstMile"
 	PaymentProviderStripe    PaymentProviderEnum = "Stripe"
-	PaymentProvider          PaymentProviderEnum = ""
 )
 
 type PaymentTransactionTypeEnum string

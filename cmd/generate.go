@@ -118,7 +118,9 @@ func toType(file *jen.File, model Model, modelName string, stmt *jen.Statement, 
 			file.Line()
 			vals := make([]jen.Code, 0)
 			for _, val := range *property.Enum {
-				vals = append(vals, jen.Id(enumPrefix+val).Op(enumName).Op("=").Lit(val))
+				if val != "" {
+					vals = append(vals, jen.Id(enumPrefix+val).Op(enumName).Op("=").Lit(val))
+				}
 			}
 			file.Const().Defs(vals...)
 			return _stmt.Id(enumName)

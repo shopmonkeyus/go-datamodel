@@ -26,7 +26,6 @@ const (
 	CannedServiceLaborSkillRequiredGeneral     CannedServiceLaborSkillRequiredEnum = "General"
 	CannedServiceLaborSkillRequiredMaintenance CannedServiceLaborSkillRequiredEnum = "Maintenance"
 	CannedServiceLaborSkillRequiredPrecision   CannedServiceLaborSkillRequiredEnum = "Precision"
-	CannedServiceLaborSkillRequired            CannedServiceLaborSkillRequiredEnum = ""
 )
 
 type CannedServiceLabor struct {
