@@ -7,13 +7,13 @@ import (
 )
 
 type LabelFeeConnection struct {
-	CompanyID string `gorm:"not null;column:companyId" json:"companyId"`
+	LabelID string `gorm:"primaryKey;not null;column:labelId" json:"labelId"`
+	FeeID   string `gorm:"primaryKey;not null;column:feeId" json:"feeId"`
 
-	LabelID     string              `gorm:"primaryKey;not null;column:labelId" json:"labelId"`
-	FeeID       string              `gorm:"primaryKey;not null;column:feeId" json:"feeId"`
+	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
+	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
 	Meta        *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
 	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
-	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
 	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
 }
 

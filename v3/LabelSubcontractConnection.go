@@ -7,14 +7,14 @@ import (
 )
 
 type LabelSubcontractConnection struct {
-	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
+	LabelID       string `gorm:"primaryKey;not null;column:labelId" json:"labelId"`
+	SubcontractID string `gorm:"primaryKey;not null;column:subcontractId" json:"subcontractId"`
 
-	CompanyID     string             `gorm:"not null;column:companyId" json:"companyId"`
-	LabelID       string             `gorm:"primaryKey;not null;column:labelId" json:"labelId"`
-	SubcontractID string             `gorm:"primaryKey;not null;column:subcontractId" json:"subcontractId"`
-	Meta          *datatypes.JSON    `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata      *datatypes.JSON    `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
-	CreatedDate   datatypes.DateTime `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
+	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
+	Meta        *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
+	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
 }
 
 var _ Model = (*LabelSubcontractConnection)(nil)
