@@ -110,6 +110,9 @@ func toType(file *jen.File, model Model, modelName string, stmt *jen.Statement, 
 			return _stmt
 		} else if IsPrimaryKeyField(model, name) {
 			tags["gorm"] = "primaryKey"
+			if name == "id" {
+				tags["bson"] = "_id"
+			}
 		}
 		if property.Enum != nil {
 			enumPrefix := modelName + strcase.ToCamel(name)
@@ -299,6 +302,7 @@ Where v3 is the output folder to generate the files into.
 			}
 
 			var pos int
+			oldkeys := make([]string, 0)
 
 			// re-order these common fields after sorting the remaining
 			// columns by alphabetical
@@ -314,7 +318,6 @@ Where v3 is the output folder to generate the files into.
 				pos = ensurePosition(keys, "customFields", pos+1)
 
 				// figure out all the keys not included in the special list above
-				oldkeys := make([]string, 0)
 				for _, k := range keys {
 					switch k {
 					case "id", "createdDate", "updatedDate", "meta", "metadata", "companyId", "locationId", "customFields":
@@ -323,17 +326,30 @@ Where v3 is the output folder to generate the files into.
 						oldkeys = append(oldkeys, k)
 					}
 				}
-
-				// sort the remainder of the keys
-				sort.SliceStable(oldkeys, func(i, j int) bool {
-					return oldkeys[i] < oldkeys[j]
-				})
-
-				// add the old keys after our last special keys
-				for i, k := range oldkeys {
-					newindex := pos + i + 1
-					keys[newindex] = k
+			} else {
+				// make sure the primary keys are in the right order
+				// since that's how they will be created as a composite
+				pos = -1
+				for _, key := range model.PrimaryKeys {
+					pos = ensurePosition(keys, key, pos+1)
 				}
+				for _, k := range keys {
+					if IsPrimaryKeyField(model, k) {
+						continue
+					}
+					oldkeys = append(oldkeys, k)
+				}
+			}
+
+			// sort the remainder of the keys
+			sort.SliceStable(oldkeys, func(i, j int) bool {
+				return oldkeys[i] < oldkeys[j]
+			})
+
+			// add the old keys after our last special keys
+			for i, k := range oldkeys {
+				newindex := pos + i + 1
+				keys[newindex] = k
 			}
 
 			fields := make([]jen.Code, 0)

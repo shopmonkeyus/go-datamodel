@@ -7,7 +7,7 @@ import (
 )
 
 type InventoryLabor struct {
-	ID          string              `gorm:"primaryKey;not null;column:id" json:"id"`
+	ID          string              `bson:"_id" gorm:"primaryKey;not null;column:id" json:"id"`
 	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
 	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
 	Meta        *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
