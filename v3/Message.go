@@ -20,7 +20,6 @@ const (
 	MessageEmailStatusSent    MessageEmailStatusEnum = "Sent"
 	MessageEmailStatusRead    MessageEmailStatusEnum = "Read"
 	MessageEmailStatusError   MessageEmailStatusEnum = "Error"
-	MessageEmailStatus        MessageEmailStatusEnum = ""
 )
 
 type MessageOriginEnum string
@@ -40,7 +39,6 @@ const (
 	MessageSmsStatusSent    MessageSmsStatusEnum = "Sent"
 	MessageSmsStatusRead    MessageSmsStatusEnum = "Read"
 	MessageSmsStatusError   MessageSmsStatusEnum = "Error"
-	MessageSmsStatus        MessageSmsStatusEnum = ""
 )
 
 type Message struct {

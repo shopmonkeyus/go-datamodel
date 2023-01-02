@@ -12,7 +12,6 @@ const (
 	PurchaseOrderItemStatusAvailable    PurchaseOrderItemStatusEnum = "Available"
 	PurchaseOrderItemStatusNotAvailable PurchaseOrderItemStatusEnum = "NotAvailable"
 	PurchaseOrderItemStatusOrdered      PurchaseOrderItemStatusEnum = "Ordered"
-	PurchaseOrderItemStatus             PurchaseOrderItemStatusEnum = ""
 )
 
 type PurchaseOrderItemTypeEnum string

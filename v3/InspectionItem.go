@@ -21,7 +21,6 @@ const (
 	InspectionItemStatusYellow        InspectionItemStatusEnum = "Yellow"
 	InspectionItemStatusRed           InspectionItemStatusEnum = "Red"
 	InspectionItemStatusNotApplicable InspectionItemStatusEnum = "NotApplicable"
-	InspectionItemStatus              InspectionItemStatusEnum = ""
 )
 
 type InspectionItem struct {

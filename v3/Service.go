@@ -20,7 +20,6 @@ const (
 	ServiceDeferredReasonArchived              ServiceDeferredReasonEnum = "Archived"
 	ServiceDeferredReasonDeclined              ServiceDeferredReasonEnum = "Declined"
 	ServiceDeferredReasonInvoicedNotAuthorized ServiceDeferredReasonEnum = "InvoicedNotAuthorized"
-	ServiceDeferredReason                      ServiceDeferredReasonEnum = ""
 )
 
 type ServiceDiscountValueTypeEnum string

@@ -25,7 +25,6 @@ const (
 	VehicleColorPink     VehicleColorEnum = "Pink"
 	VehicleColorPurple   VehicleColorEnum = "Purple"
 	VehicleColorOther    VehicleColorEnum = "Other"
-	VehicleColor         VehicleColorEnum = ""
 )
 
 type VehicleDrivetrainEnum string
@@ -35,7 +34,6 @@ const (
 	VehicleDrivetrainFWD    VehicleDrivetrainEnum = "FWD"
 	VehicleDrivetrainFourWD VehicleDrivetrainEnum = "FourWD"
 	VehicleDrivetrainAWD    VehicleDrivetrainEnum = "AWD"
-	VehicleDrivetrain       VehicleDrivetrainEnum = ""
 )
 
 type VehicleLicensePlateCountryEnum string
@@ -314,7 +312,6 @@ const (
 	VehicleTransmissionManual              VehicleTransmissionEnum = "Manual"
 	VehicleTransmissionAutomaticCVT        VehicleTransmissionEnum = "AutomaticCVT"
 	VehicleTransmissionAutomaticDualClutch VehicleTransmissionEnum = "AutomaticDualClutch"
-	VehicleTransmission                    VehicleTransmissionEnum = ""
 )
 
 type VehicleTypeEnum string
@@ -334,7 +331,6 @@ const (
 	VehicleTypeMotorcycle  VehicleTypeEnum = "Motorcycle"
 	VehicleTypeTrailer     VehicleTypeEnum = "Trailer"
 	VehicleTypeOther       VehicleTypeEnum = "Other"
-	VehicleType            VehicleTypeEnum = ""
 )
 
 type Vehicle struct {

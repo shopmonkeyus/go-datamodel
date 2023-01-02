@@ -14,7 +14,6 @@ const (
 	PurchaseOrderProviderEpicor    PurchaseOrderProviderEnum = "Epicor"
 	PurchaseOrderProviderWorldpac  PurchaseOrderProviderEnum = "Worldpac"
 	PurchaseOrderProviderATD       PurchaseOrderProviderEnum = "ATD"
-	PurchaseOrderProvider          PurchaseOrderProviderEnum = ""
 )
 
 type PurchaseOrderStatusEnum string
