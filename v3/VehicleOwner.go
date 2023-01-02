@@ -7,14 +7,14 @@ import (
 )
 
 type VehicleOwner struct {
+	Meta *datatypes.JSON `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+
+	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
 	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
 	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta        datatypes.Meta      `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
 	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
-
-	CustomerID string `gorm:"not null;column:customerId" json:"customerId"`
-	VehicleID  string `gorm:"not null;column:vehicleId" json:"vehicleId"`
+	VehicleID   string              `gorm:"primaryKey;not null;column:vehicleId" json:"vehicleId"`
+	CustomerID  string              `gorm:"primaryKey;not null;column:customerId" json:"customerId"`
 }
 
 var _ Model = (*VehicleOwner)(nil)
@@ -22,6 +22,11 @@ var _ Model = (*VehicleOwner)(nil)
 // TableName returns the name of the table for this model which GORM will use when using this model
 func (m *VehicleOwner) TableName() string {
 	return "vehicle_owner"
+}
+
+// PrimaryKeys returns an array of the primary keys for this model
+func (m *VehicleOwner) PrimaryKeys() []string {
+	return []string{"vehicleId", "customerId"}
 }
 
 // String returns a string representation as JSON for this model

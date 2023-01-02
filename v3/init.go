@@ -5,82 +5,8 @@ import "errors"
 
 type Model interface {
 	TableName() string
+	PrimaryKeys() []string
 	String() string
-}
-
-type DataModel interface {
-	TaxConfig |
-		InventoryCategory |
-		TpiScanInspection |
-		CannedServiceTire |
-		LabelSubcontractConnection |
-		Payment |
-		LabelCannedServiceSubcontractConnection |
-		LabelCannedServiceConnection |
-		Timesheet |
-		CannedServiceSubcontract |
-		InspectionItem |
-		LabelCannedServiceFeeConnection |
-		Fee |
-		Inspection |
-		PhoneNumber |
-		CannedService |
-		Labor |
-		Part |
-		TpiScan |
-		CannedServiceLabor |
-		LabelCustomerConnection |
-		Vendor |
-		LaborRate |
-		LabelTireConnection |
-		LaborMatrixRange |
-		CoreCharge |
-		User |
-		LabelCannedServiceLaborConnection |
-		InventoryPart |
-		VehicleOwner |
-		PricingMatrixRange |
-		LabelPartConnection |
-		CustomerLocationConnection |
-		VehicleLocationConnection |
-		InventoryFee |
-		Order |
-		AuthorizationService |
-		Location |
-		ReferralSource |
-		PurchaseOrder |
-		PurchaseOrderItem |
-		WorkflowStatus |
-		Message |
-		Subcontract |
-		InspectionTemplateItem |
-		Customer |
-		Conversation |
-		Statement |
-		InventoryLabor |
-		Appointment |
-		PricingMatrix |
-		Brand |
-		Service |
-		InspectionItemQuickNote |
-		LabelCannedServiceTireConnection |
-		TirePressureLog |
-		LabelCannedServicePartConnection |
-		PaymentTerm |
-		Vehicle |
-		Email |
-		CannedServiceFee |
-		Label |
-		LabelFeeConnection |
-		LabelOrderConnection |
-		LabelVehicleConnection |
-		Tire |
-		Authorization |
-		CannedServicePart |
-		LaborMatrix |
-		InspectionTemplate |
-		LabelLaborConnection |
-		Reminder
 }
 
 // ModelNames is an array of all the models defined in this package

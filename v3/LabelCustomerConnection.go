@@ -7,14 +7,14 @@ import (
 )
 
 type LabelCustomerConnection struct {
+	CompanyID string `gorm:"not null;column:companyId" json:"companyId"`
+
+	LabelID     string              `gorm:"primaryKey;not null;column:labelId" json:"labelId"`
+	CustomerID  string              `gorm:"primaryKey;not null;column:customerId" json:"customerId"`
+	Meta        *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
+	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
 	CreatedDate *datatypes.DateTime `gorm:"column:createdDate;column:createdDate" json:"createdDate"`
 	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta        datatypes.Meta      `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
-	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
-
-	CustomerID string `gorm:"not null;column:customerId" json:"customerId"`
-	LabelID    string `gorm:"not null;column:labelId" json:"labelId"`
 }
 
 var _ Model = (*LabelCustomerConnection)(nil)
@@ -22,6 +22,11 @@ var _ Model = (*LabelCustomerConnection)(nil)
 // TableName returns the name of the table for this model which GORM will use when using this model
 func (m *LabelCustomerConnection) TableName() string {
 	return "label_customer_connection"
+}
+
+// PrimaryKeys returns an array of the primary keys for this model
+func (m *LabelCustomerConnection) PrimaryKeys() []string {
+	return []string{"labelId", "customerId"}
 }
 
 // String returns a string representation as JSON for this model

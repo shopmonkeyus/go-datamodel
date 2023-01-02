@@ -21,7 +21,11 @@ func (m *Meta) Value() (driver.Value, error) {
 	if m == nil {
 		return "{}", nil
 	}
-	return json.Marshal(m)
+	buf, err := json.Marshal(m)
+	if err != nil {
+		return nil, err
+	}
+	return string(buf), nil
 }
 
 // Scan scan value into Jsonb, implements sql.Scanner interface
