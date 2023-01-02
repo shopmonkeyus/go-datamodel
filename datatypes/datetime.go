@@ -1,6 +1,8 @@
 package datatypes
 
 import (
+	"database/sql/driver"
+	"fmt"
 	"time"
 )
 
@@ -28,24 +30,23 @@ func (t *DateTime) MarshalJSON() ([]byte, error) {
 	return []byte(`"` + tTime.Format(time.RFC3339) + `"`), nil
 }
 
-// func (t DateTime) Value() (driver.Value, error) {
-// 	fmt.Println("VALUE CALLED")
-// 	return t, nil
-// }
+func (t DateTime) Value() (driver.Value, error) {
+	tTime := time.Time(t)
+	return tTime, nil
+}
 
-// func (t *DateTime) Scan(v interface{}) error {
-// 	fmt.Println("SCAN CALLED", v)
-// 	if value, ok := v.(string); ok {
-// 		v, err := time.Parse(time.RFC3339, value)
-// 		if err != nil {
-// 			return err
-// 		}
-// 		*t = DateTime(v)
-// 		return nil
-// 	}
-// 	if value, ok := v.(time.Time); ok {
-// 		*t = DateTime(value)
-// 		return nil
-// 	}
-// 	return fmt.Errorf("cannot convert %v to timestamp", v)
-// }
+func (t *DateTime) Scan(v interface{}) error {
+	if value, ok := v.(string); ok {
+		v, err := time.Parse(time.RFC3339, value)
+		if err != nil {
+			return err
+		}
+		*t = DateTime(v)
+		return nil
+	}
+	if value, ok := v.(time.Time); ok {
+		*t = DateTime(value)
+		return nil
+	}
+	return fmt.Errorf("cannot convert %v to timestamp", v)
+}

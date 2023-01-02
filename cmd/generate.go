@@ -31,6 +31,7 @@ type Model struct {
 	Properties  map[string]Property `json:"properties"`
 	Description string              `json:"description"`
 	DBName      string              `json:"dbName"`
+	PrimaryKeys []string            `json:"primaryKeys"`
 }
 
 func stringContains(a []string, x string) bool {
@@ -78,7 +79,16 @@ func identifier(val string) string {
 	return newval
 }
 
-func toType(file *jen.File, modelName string, stmt *jen.Statement, name string, property Property, tags map[string]string) *jen.Statement {
+func IsPrimaryKeyField(model Model, name string) bool {
+	for _, pk := range model.PrimaryKeys {
+		if pk == name {
+			return true
+		}
+	}
+	return false
+}
+
+func toType(file *jen.File, model Model, modelName string, stmt *jen.Statement, name string, property Property, tags map[string]string) *jen.Statement {
 	_stmt := stmt
 
 	var isNullable bool
@@ -98,7 +108,7 @@ func toType(file *jen.File, modelName string, stmt *jen.Statement, name string, 
 			default:
 			}
 			return _stmt
-		} else if name == "id" {
+		} else if IsPrimaryKeyField(model, name) {
 			tags["gorm"] = "primaryKey"
 		}
 		if property.Enum != nil {
@@ -139,9 +149,6 @@ func toType(file *jen.File, modelName string, stmt *jen.Statement, name string, 
 	if name == "meta" || name == "metadata" {
 		tags["gorm"] = "column:" + name
 		tags["json"] = name + ",omitempty"
-		if name == "meta" {
-			return _stmt.Qual("github.com/shopmonkeyus/go-datamodel/datatypes", "Meta")
-		}
 		return _stmt.Op("*").Qual("github.com/shopmonkeyus/go-datamodel/datatypes", "JSON")
 	}
 	return stmt.Qual("github.com/shopmonkeyus/go-datamodel/datatypes", "JSON")
@@ -198,6 +205,7 @@ Where v3 is the output folder to generate the files into.
 
 			initFile.Type().Id("Model").Interface(
 				jen.Id("TableName").Params().String(),
+				jen.Id("PrimaryKeys").Params().Op("[]").String(),
 				jen.Id("String").Params().String(),
 			)
 
@@ -208,23 +216,11 @@ Where v3 is the output folder to generate the files into.
 			cases := make([]jen.Code, 0)
 			cases2 := make([]jen.Code, 0)
 			models := make([]string, 0)
-			modellist := make([]jen.Code, 0)
 
-			var count int
 			for name := range schema {
-				count++
 				models = append(models, name)
-				if count < len(schema) {
-					modellist = append(modellist, jen.Op(name).Op("|"))
-				} else {
-					modellist = append(modellist, jen.Op(name))
-				}
 			}
 			sort.Strings(models)
-
-			initFile.Type().Id("DataModel").Interface(
-				modellist...,
-			)
 
 			initFile.Line()
 
@@ -300,37 +296,42 @@ Where v3 is the output folder to generate the files into.
 				keys = append(keys, key)
 			}
 
+			var pos int
+
 			// re-order these common fields after sorting the remaining
 			// columns by alphabetical
-			pos := ensurePosition(keys, "id", 0)
-			pos = ensurePosition(keys, "createdDate", pos+1)
-			pos = ensurePosition(keys, "updatedDate", pos+1)
-			pos = ensurePosition(keys, "meta", pos+1)
-			pos = ensurePosition(keys, "metadata", pos+1)
-			pos = ensurePosition(keys, "companyId", pos+1)
-			pos = ensurePosition(keys, "locationId", pos+1)
-			pos = ensurePosition(keys, "customFields", pos+1)
+			// don't sort if we have multiple primary keys since the field order is important
+			if len(model.PrimaryKeys) == 1 && model.PrimaryKeys[0] == "id" {
+				pos = ensurePosition(keys, "id", 0)
+				pos = ensurePosition(keys, "createdDate", pos+1)
+				pos = ensurePosition(keys, "updatedDate", pos+1)
+				pos = ensurePosition(keys, "meta", pos+1)
+				pos = ensurePosition(keys, "metadata", pos+1)
+				pos = ensurePosition(keys, "companyId", pos+1)
+				pos = ensurePosition(keys, "locationId", pos+1)
+				pos = ensurePosition(keys, "customFields", pos+1)
 
-			// figure out all the keys not included in the special list above
-			oldkeys := make([]string, 0)
-			for _, k := range keys {
-				switch k {
-				case "id", "createdDate", "updatedDate", "meta", "metadata", "companyId", "locationId", "customFields":
-					continue
-				default:
-					oldkeys = append(oldkeys, k)
+				// figure out all the keys not included in the special list above
+				oldkeys := make([]string, 0)
+				for _, k := range keys {
+					switch k {
+					case "id", "createdDate", "updatedDate", "meta", "metadata", "companyId", "locationId", "customFields":
+						continue
+					default:
+						oldkeys = append(oldkeys, k)
+					}
 				}
-			}
 
-			// sort the remainder of the keys
-			sort.SliceStable(oldkeys, func(i, j int) bool {
-				return oldkeys[i] < oldkeys[j]
-			})
+				// sort the remainder of the keys
+				sort.SliceStable(oldkeys, func(i, j int) bool {
+					return oldkeys[i] < oldkeys[j]
+				})
 
-			// add the old keys after our last special keys
-			for i, k := range oldkeys {
-				newindex := pos + i + 1
-				keys[newindex] = k
+				// add the old keys after our last special keys
+				for i, k := range oldkeys {
+					newindex := pos + i + 1
+					keys[newindex] = k
+				}
 			}
 
 			fields := make([]jen.Code, 0)
@@ -338,7 +339,7 @@ Where v3 is the output folder to generate the files into.
 			for i, key := range keys {
 				prop := model.Properties[key]
 				tags := map[string]string{"json": key}
-				field := toType(f, name, jen.Id(identifier(key)), key, prop, tags)
+				field := toType(f, model, name, jen.Id(identifier(key)), key, prop, tags)
 				required := stringContains(model.Required, key)
 				gorm := tags["gorm"]
 				if required && (prop.Nullable == nil || !*prop.Nullable) {
@@ -376,7 +377,19 @@ Where v3 is the output folder to generate the files into.
 			).Id("TableName").Params().String().Block(
 				jen.Return(jen.Lit(model.DBName)),
 			)
+			f.Line()
 
+			pks := make([]string, 0)
+			for _, pk := range model.PrimaryKeys {
+				pks = append(pks, `"`+pk+`"`)
+			}
+
+			f.Comment("PrimaryKeys returns an array of the primary keys for this model")
+			f.Func().Params(
+				jen.Id("m").Op("*").Id(name),
+			).Id("PrimaryKeys").Params().Op("[]").String().Block(
+				jen.Return(jen.Op("[]string{" + strings.Join(pks, ",") + "}")),
+			)
 			f.Line()
 
 			f.Comment("String returns a string representation as JSON for this model")
