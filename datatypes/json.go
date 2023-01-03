@@ -20,6 +20,8 @@ func getJSONDataType(db *gorm.DB) string {
 		return "JSON"
 	case "postgres":
 		return "JSONB"
+	case "sqlserver":
+		return "TEXT"
 	}
 	return "JSON"
 

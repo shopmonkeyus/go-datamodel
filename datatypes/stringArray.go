@@ -3,8 +3,6 @@ package datatypes
 import (
 	"database/sql/driver"
 	"encoding/json"
-	"errors"
-	"fmt"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
@@ -13,12 +11,17 @@ import (
 type StringArray []string
 
 func (arr *StringArray) Scan(value interface{}) error {
-	bytes, ok := value.([]byte)
-	if !ok {
-		return errors.New(fmt.Sprint("Failed to unmarshal JSON value:", value))
+	var bytes []byte
+	switch v := value.(type) {
+	case []byte:
+		if len(v) > 0 {
+			bytes = make([]byte, len(v))
+			copy(bytes, v)
+		}
+	case string:
+		bytes = []byte(v)
 	}
-	err := json.Unmarshal(bytes, &arr)
-	return err
+	return json.Unmarshal(bytes, &arr)
 }
 
 var emptyStringArray = "[]"
@@ -27,25 +30,56 @@ func (arr StringArray) Value() (driver.Value, error) {
 	if len(arr) == 0 {
 		return emptyStringArray, nil
 	}
-	return json.Marshal(arr)
+	buf, err := json.Marshal(arr)
+	if err != nil {
+		return nil, err
+	}
+	return string(buf), nil
+}
+
+// MarshalJSON to output non base64 encoded []byte
+func (arr StringArray) MarshalJSON() ([]byte, error) {
+	sa := make([]string, len(arr))
+	copy(sa, arr)
+	return json.Marshal(sa)
+}
+
+// UnmarshalJSON to deserialize []byte
+func (arr *StringArray) UnmarshalJSON(b []byte) error {
+	sa := make([]string, 0)
+	err := json.Unmarshal(b, &sa)
+	if err != nil {
+		return err
+	}
+	*arr = sa
+	return nil
 }
 
 type NullableStringArray []string
 
 func (arr *NullableStringArray) Scan(value interface{}) error {
-	bytes, ok := value.([]byte)
-	if !ok {
-		return errors.New(fmt.Sprint("Failed to unmarshal JSON value:", value))
+	var bytes []byte
+	switch v := value.(type) {
+	case []byte:
+		if len(v) > 0 {
+			bytes = make([]byte, len(v))
+			copy(bytes, v)
+		}
+	case string:
+		bytes = []byte(v)
 	}
-	err := json.Unmarshal(bytes, &arr)
-	return err
+	return json.Unmarshal(bytes, &arr)
 }
 
 func (arr NullableStringArray) Value() (driver.Value, error) {
 	if len(arr) == 0 {
 		return nil, nil
 	}
-	return json.Marshal(arr)
+	buf, err := json.Marshal(arr)
+	if err != nil {
+		return nil, err
+	}
+	return string(buf), nil
 }
 
 // GormDBDataType gorm db data type
