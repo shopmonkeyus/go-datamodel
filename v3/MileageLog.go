@@ -6,8 +6,16 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
-// Inspection schema
-type Inspection struct {
+// MileageLog schema
+type MileageLogTypeEnum string
+
+const (
+	MileageLogTypeManualEntry MileageLogTypeEnum = "ManualEntry"
+	MileageLogTypeOrderIn     MileageLogTypeEnum = "OrderIn"
+	MileageLogTypeOrderOut    MileageLogTypeEnum = "OrderOut"
+)
+
+type MileageLog struct {
 	ID          string              `bson:"_id" gorm:"primaryKey;not null;column:id" json:"id"`
 	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
 	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
@@ -16,37 +24,34 @@ type Inspection struct {
 	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
 	LocationID  string              `gorm:"not null;column:locationId" json:"locationId"`
 
-	Completed     bool                `gorm:"not null;column:completed" json:"completed"`
-	CompletedByID *string             `gorm:"column:completedById" json:"completedById"`
-	CompletedDate *datatypes.DateTime `gorm:"column:completedDate" json:"completedDate"`
-	CreatedByID   *string             `gorm:"column:createdById" json:"createdById"`
-	Name          string              `gorm:"not null;column:name" json:"name"`
-	OrderID       string              `gorm:"not null;column:orderId" json:"orderId"`
-	Ordinal       float64             `gorm:"not null;column:ordinal" json:"ordinal"`
-	TemplateID    *string             `gorm:"column:templateId" json:"templateId"`
+	Mileage     float64            `gorm:"not null;column:mileage" json:"mileage"`
+	MileageDate datatypes.DateTime `gorm:"not null;column:mileageDate" json:"mileageDate"`
+	OrderID     *string            `gorm:"column:orderId" json:"orderId"`
+	Type        MileageLogTypeEnum `gorm:"not null;column:type" json:"type"`
+	VehicleID   string             `gorm:"not null;column:vehicleId" json:"vehicleId"`
 }
 
-var _ Model = (*Inspection)(nil)
+var _ Model = (*MileageLog)(nil)
 
 // TableName returns the name of the table for this model which GORM will use when using this model
-func (m *Inspection) TableName() string {
-	return "inspection"
+func (m *MileageLog) TableName() string {
+	return "mileage_log"
 }
 
 // PrimaryKeys returns an array of the primary keys for this model
-func (m *Inspection) PrimaryKeys() []string {
+func (m *MileageLog) PrimaryKeys() []string {
 	return []string{"id"}
 }
 
 // String returns a string representation as JSON for this model
-func (m *Inspection) String() string {
+func (m *MileageLog) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
 }
 
-// NewInspection returns a new model instance from an encoded buffer
-func NewInspection(buf []byte) (*Inspection, error) {
-	var result Inspection
+// NewMileageLog returns a new model instance from an encoded buffer
+func NewMileageLog(buf []byte) (*MileageLog, error) {
+	var result MileageLog
 	err := json.Unmarshal(buf, &result)
 	if err != nil {
 		return nil, err
@@ -54,9 +59,9 @@ func NewInspection(buf []byte) (*Inspection, error) {
 	return &result, nil
 }
 
-// NewInspectionFromChangeEvent returns a new model instance from an encoded buffer as change event
-func NewInspectionFromChangeEvent(buf []byte, gzip bool) (*datatypes.ChangeEvent[Inspection], error) {
-	var result datatypes.ChangeEvent[Inspection]
+// NewMileageLogFromChangeEvent returns a new model instance from an encoded buffer as change event
+func NewMileageLogFromChangeEvent(buf []byte, gzip bool) (*datatypes.ChangeEvent[MileageLog], error) {
+	var result datatypes.ChangeEvent[MileageLog]
 	var decompressed = buf
 	if gzip {
 		dec, err := datatypes.Gunzip(buf)

@@ -6,6 +6,7 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
+// Fee schema
 type FeeFeeTypeEnum string
 
 const (
@@ -45,7 +46,7 @@ type Fee struct {
 	ServiceID      string                 `gorm:"not null;column:serviceId" json:"serviceId"`
 	SourceItemID   *string                `gorm:"column:sourceItemId" json:"sourceItemId"`
 	SubcontractID  *string                `gorm:"column:subcontractId" json:"subcontractId"`
-	Subtotal       *int64                 `gorm:"column:subtotal" json:"subtotal"`
+	SubtotalCents  *int64                 `gorm:"column:subtotalCents" json:"subtotalCents"`
 	TireID         *string                `gorm:"column:tireId" json:"tireId"`
 }
 

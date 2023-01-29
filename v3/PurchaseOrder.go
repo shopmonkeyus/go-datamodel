@@ -6,6 +6,7 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
+// PurchaseOrder schema
 type PurchaseOrderProviderEnum string
 
 const (

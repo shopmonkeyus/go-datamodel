@@ -6,6 +6,7 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
+// InspectionItemQuickNote schema
 type InspectionItemQuickNote struct {
 	ID          string              `bson:"_id" gorm:"primaryKey;not null;column:id" json:"id"`
 	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`

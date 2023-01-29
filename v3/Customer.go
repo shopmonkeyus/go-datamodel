@@ -6,6 +6,7 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
+// Customer schema
 type CustomerCountryEnum string
 
 const (
@@ -292,18 +293,16 @@ type Customer struct {
 	Country                *CustomerCountryEnum                `gorm:"column:country" json:"country"`
 	CustomerType           CustomerCustomerTypeEnum            `gorm:"not null;column:customerType" json:"customerType"`
 	DeferredServiceCount   int64                               `gorm:"not null;column:deferredServiceCount" json:"deferredServiceCount"`
-	DiscountStatus         bool                                `gorm:"not null;column:discountStatus" json:"discountStatus"`
+	DiscountPercent        float64                             `gorm:"not null;column:discountPercent" json:"discountPercent"`
 	DotNumber              *string                             `gorm:"column:dotNumber" json:"dotNumber"`
 	FirstName              *string                             `gorm:"column:firstName" json:"firstName"`
 	FleetID                *string                             `gorm:"column:fleetId" json:"fleetId"`
 	LaborMatrixID          *string                             `gorm:"column:laborMatrixId" json:"laborMatrixId"`
-	LaborRateOverride      bool                                `gorm:"not null;column:laborRateOverride" json:"laborRateOverride"`
+	LaborRateID            *string                             `gorm:"column:laborRateId" json:"laborRateId"`
 	LastName               *string                             `gorm:"column:lastName" json:"lastName"`
 	LastTimeOrderWorked    *datatypes.DateTime                 `gorm:"column:lastTimeOrderWorked" json:"lastTimeOrderWorked"`
 	MarketingOptIn         bool                                `gorm:"not null;column:marketingOptIn" json:"marketingOptIn"`
 	MessageCount           int64                               `gorm:"not null;column:messageCount" json:"messageCount"`
-	NormalizedFirstName    *string                             `gorm:"column:normalizedFirstName" json:"normalizedFirstName"`
-	NormalizedLastName     *string                             `gorm:"column:normalizedLastName" json:"normalizedLastName"`
 	Note                   string                              `gorm:"not null;column:note" json:"note"`
 	PaymentTermID          string                              `gorm:"not null;column:paymentTermId" json:"paymentTermId"`
 	PostalCode             *string                             `gorm:"column:postalCode" json:"postalCode"`

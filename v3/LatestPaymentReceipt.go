@@ -6,8 +6,8 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
-// Inspection schema
-type Inspection struct {
+// LatestPaymentReceipt schema
+type LatestPaymentReceipt struct {
 	ID          string              `bson:"_id" gorm:"primaryKey;not null;column:id" json:"id"`
 	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
 	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
@@ -16,37 +16,30 @@ type Inspection struct {
 	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
 	LocationID  string              `gorm:"not null;column:locationId" json:"locationId"`
 
-	Completed     bool                `gorm:"not null;column:completed" json:"completed"`
-	CompletedByID *string             `gorm:"column:completedById" json:"completedById"`
-	CompletedDate *datatypes.DateTime `gorm:"column:completedDate" json:"completedDate"`
-	CreatedByID   *string             `gorm:"column:createdById" json:"createdById"`
-	Name          string              `gorm:"not null;column:name" json:"name"`
-	OrderID       string              `gorm:"not null;column:orderId" json:"orderId"`
-	Ordinal       float64             `gorm:"not null;column:ordinal" json:"ordinal"`
-	TemplateID    *string             `gorm:"column:templateId" json:"templateId"`
+	Number int64 `gorm:"not null;column:number" json:"number"`
 }
 
-var _ Model = (*Inspection)(nil)
+var _ Model = (*LatestPaymentReceipt)(nil)
 
 // TableName returns the name of the table for this model which GORM will use when using this model
-func (m *Inspection) TableName() string {
-	return "inspection"
+func (m *LatestPaymentReceipt) TableName() string {
+	return "latest_payment_receipt"
 }
 
 // PrimaryKeys returns an array of the primary keys for this model
-func (m *Inspection) PrimaryKeys() []string {
+func (m *LatestPaymentReceipt) PrimaryKeys() []string {
 	return []string{"id"}
 }
 
 // String returns a string representation as JSON for this model
-func (m *Inspection) String() string {
+func (m *LatestPaymentReceipt) String() string {
 	buf, _ := json.Marshal(m)
 	return string(buf)
 }
 
-// NewInspection returns a new model instance from an encoded buffer
-func NewInspection(buf []byte) (*Inspection, error) {
-	var result Inspection
+// NewLatestPaymentReceipt returns a new model instance from an encoded buffer
+func NewLatestPaymentReceipt(buf []byte) (*LatestPaymentReceipt, error) {
+	var result LatestPaymentReceipt
 	err := json.Unmarshal(buf, &result)
 	if err != nil {
 		return nil, err
@@ -54,9 +47,9 @@ func NewInspection(buf []byte) (*Inspection, error) {
 	return &result, nil
 }
 
-// NewInspectionFromChangeEvent returns a new model instance from an encoded buffer as change event
-func NewInspectionFromChangeEvent(buf []byte, gzip bool) (*datatypes.ChangeEvent[Inspection], error) {
-	var result datatypes.ChangeEvent[Inspection]
+// NewLatestPaymentReceiptFromChangeEvent returns a new model instance from an encoded buffer as change event
+func NewLatestPaymentReceiptFromChangeEvent(buf []byte, gzip bool) (*datatypes.ChangeEvent[LatestPaymentReceipt], error) {
+	var result datatypes.ChangeEvent[LatestPaymentReceipt]
 	var decompressed = buf
 	if gzip {
 		dec, err := datatypes.Gunzip(buf)

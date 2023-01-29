@@ -6,6 +6,7 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
+// Tire schema
 type TireDiscountValueTypeEnum string
 
 const (
@@ -50,9 +51,9 @@ type Tire struct {
 	OrderID               string                    `gorm:"not null;column:orderId" json:"orderId"`
 	Ordinal               float64                   `gorm:"not null;column:ordinal" json:"ordinal"`
 	PartNumber            *string                   `gorm:"column:partNumber" json:"partNumber"`
-	PricingMatrixDate     *datatypes.DateTime       `gorm:"column:pricingMatrixDate" json:"pricingMatrixDate"` // datetime when pricingMatrixId was set, for determining if matrix has been changed api_schema(calculated)
+	PricingMatrixDate     *datatypes.DateTime       `gorm:"column:pricingMatrixDate" json:"pricingMatrixDate"` // datetime when pricingMatrixId was set, for determining if matrix has been changed
 	PricingMatrixID       *string                   `gorm:"column:pricingMatrixId" json:"pricingMatrixId"`
-	Quantity              int64                     `gorm:"not null;column:quantity" json:"quantity"`
+	Quantity              float64                   `gorm:"not null;column:quantity" json:"quantity"`
 	ReduceInventoryCount  bool                      `gorm:"not null;column:reduceInventoryCount" json:"reduceInventoryCount"`
 	RetailCostCents       int64                     `gorm:"not null;column:retailCostCents" json:"retailCostCents"`
 	Seasonality           *TireSeasonalityEnum      `gorm:"column:seasonality" json:"seasonality"`

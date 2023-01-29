@@ -6,6 +6,7 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
+// Vehicle schema
 type VehicleColorEnum string
 
 const (
@@ -344,6 +345,7 @@ type Vehicle struct {
 
 	AppointmentCount     int64                          `gorm:"not null;column:appointmentCount" json:"appointmentCount"`
 	Color                *VehicleColorEnum              `gorm:"column:color" json:"color"`
+	CustomPhoto          bool                           `gorm:"not null;column:customPhoto" json:"customPhoto"`
 	DeferredServiceCount int64                          `gorm:"not null;column:deferredServiceCount" json:"deferredServiceCount"`
 	Drivetrain           *VehicleDrivetrainEnum         `gorm:"column:drivetrain" json:"drivetrain"`
 	Engine               *string                        `gorm:"column:engine" json:"engine"`
@@ -353,7 +355,7 @@ type Vehicle struct {
 	Make                 *string                        `gorm:"column:make" json:"make"`
 	MakeID               *int64                         `gorm:"column:makeId" json:"makeId"` // vcdb make id
 	MessageCount         int64                          `gorm:"not null;column:messageCount" json:"messageCount"`
-	Mileage              *int64                         `gorm:"column:mileage" json:"mileage"`
+	Mileage              *float64                       `gorm:"column:mileage" json:"mileage"`
 	MileageLogCount      int64                          `gorm:"not null;column:mileageLogCount" json:"mileageLogCount"`
 	MileageUnit          VehicleMileageUnitEnum         `gorm:"not null;column:mileageUnit" json:"mileageUnit"`
 	Model                *string                        `gorm:"column:model" json:"model"`
@@ -364,6 +366,7 @@ type Vehicle struct {
 	OwnerCount           int64                          `gorm:"not null;column:ownerCount" json:"ownerCount"`
 	ProductionDate       *string                        `gorm:"column:productionDate" json:"productionDate"`
 	Size                 VehicleSizeEnum                `gorm:"not null;column:size" json:"size"`
+	StockPhoto           *bool                          `gorm:"column:stockPhoto" json:"stockPhoto"`
 	Submodel             *string                        `gorm:"column:submodel" json:"submodel"`
 	SubmodelID           *int64                         `gorm:"column:submodelId" json:"submodelId"` // vcdb submodel id
 	TirePressureLogCount int64                          `gorm:"not null;column:tirePressureLogCount" json:"tirePressureLogCount"`

@@ -6,6 +6,7 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
+// Payment schema
 type PaymentCollectionTypeEnum string
 
 const (
@@ -51,7 +52,7 @@ type Payment struct {
 	Amount               int64                      `gorm:"not null;column:amount" json:"amount"`
 	Bulk                 bool                       `gorm:"not null;column:bulk" json:"bulk"`
 	CardConfirmation     *string                    `gorm:"column:cardConfirmation" json:"cardConfirmation"`
-	CardDigits           *int64                     `gorm:"column:cardDigits" json:"cardDigits"`
+	CardDigits           *string                    `gorm:"column:cardDigits" json:"cardDigits"`
 	CardName             *string                    `gorm:"column:cardName" json:"cardName"`
 	CardType             *string                    `gorm:"column:cardType" json:"cardType"`
 	ChargeFromPublicPage bool                       `gorm:"not null;column:chargeFromPublicPage" json:"chargeFromPublicPage"`
@@ -65,9 +66,9 @@ type Payment struct {
 	Provider             *PaymentProviderEnum       `gorm:"column:provider" json:"provider"`
 	ProviderData         datatypes.JSON             `gorm:"column:providerData" json:"providerData"`
 	ReceiptNumber        int64                      `gorm:"not null;column:receiptNumber" json:"receiptNumber"`
-	StatementID          string                     `gorm:"not null;column:statementId" json:"statementId"`
+	StatementID          *string                    `gorm:"column:statementId" json:"statementId"`
 	TransactionType      PaymentTransactionTypeEnum `gorm:"not null;column:transactionType" json:"transactionType"`
-	Userdata             datatypes.JSON             `gorm:"column:userdata" json:"userdata"`
+	UserData             datatypes.JSON             `gorm:"column:userData" json:"userData"`
 }
 
 var _ Model = (*Payment)(nil)

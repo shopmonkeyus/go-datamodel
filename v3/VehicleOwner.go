@@ -6,6 +6,7 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
+// VehicleOwner schema
 type VehicleOwner struct {
 	VehicleID  string `gorm:"primaryKey;not null;column:vehicleId" json:"vehicleId"`
 	CustomerID string `gorm:"primaryKey;not null;column:customerId" json:"customerId"`

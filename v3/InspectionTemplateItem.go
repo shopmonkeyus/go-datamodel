@@ -6,6 +6,7 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
+// InspectionTemplateItem schema
 type InspectionTemplateItemStatusEnum string
 
 const (

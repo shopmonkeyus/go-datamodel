@@ -6,19 +6,23 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
+// Label schema
 type LabelEntityEnum string
 
 const (
-	LabelEntityCannedService LabelEntityEnum = "CannedService"
-	LabelEntityCustomer      LabelEntityEnum = "Customer"
-	LabelEntityFee           LabelEntityEnum = "Fee"
-	LabelEntityLabor         LabelEntityEnum = "Labor"
-	LabelEntityOrder         LabelEntityEnum = "Order"
-	LabelEntityPart          LabelEntityEnum = "Part"
-	LabelEntityService       LabelEntityEnum = "Service"
-	LabelEntitySubcontract   LabelEntityEnum = "Subcontract"
-	LabelEntityTire          LabelEntityEnum = "Tire"
-	LabelEntityVehicle       LabelEntityEnum = "Vehicle"
+	LabelEntityCannedService            LabelEntityEnum = "CannedService"
+	LabelEntityCannedServiceFee         LabelEntityEnum = "CannedServiceFee"
+	LabelEntityCannedServiceLabor       LabelEntityEnum = "CannedServiceLabor"
+	LabelEntityCannedServicePart        LabelEntityEnum = "CannedServicePart"
+	LabelEntityCannedServiceSubcontract LabelEntityEnum = "CannedServiceSubcontract"
+	LabelEntityCustomer                 LabelEntityEnum = "Customer"
+	LabelEntityFee                      LabelEntityEnum = "Fee"
+	LabelEntityLabor                    LabelEntityEnum = "Labor"
+	LabelEntityOrder                    LabelEntityEnum = "Order"
+	LabelEntityPart                     LabelEntityEnum = "Part"
+	LabelEntityService                  LabelEntityEnum = "Service"
+	LabelEntitySubcontract              LabelEntityEnum = "Subcontract"
+	LabelEntityVehicle                  LabelEntityEnum = "Vehicle"
 )
 
 type Label struct {

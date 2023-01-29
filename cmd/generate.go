@@ -165,12 +165,12 @@ var generateCmd = &cobra.Command{
 	Long: `This command will process a JSON schema and generate Go datamodel
 files for each model. You can download the schema by accessing the API endpoint such as:
 
-curl https://api.shopmonkey.io/v3/schema -O schema.json
+curl https://api.shopmonkey.cloud/v3/schema -o schema.json
 
 Make sure you use the correct version to generate the schema.  Once you have the schema, you
 can now generate a set of go source files for each model:
 
-	$ go run . schema.json v3
+	$ go run . generate schema.json v3
 
 Where v3 is the output folder to generate the files into.
 `,

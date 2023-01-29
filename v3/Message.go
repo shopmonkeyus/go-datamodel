@@ -6,6 +6,7 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
+// Message schema
 type MessageAuthorTypeEnum string
 
 const (
@@ -52,8 +53,12 @@ type Message struct {
 
 	AuthorType     MessageAuthorTypeEnum   `gorm:"not null;column:authorType" json:"authorType"`
 	ConversationID string                  `gorm:"not null;column:conversationId" json:"conversationId"`
-	CustomerID     *string                 `gorm:"column:customerId" json:"customerId"` // the id of the customer that authored the message
-	EmailError     *string                 `gorm:"column:emailError" json:"emailError"` // error sending email, if any
+	CustomerID     *string                 `gorm:"column:customerId" json:"customerId"`       // the id of the customer that authored the message
+	Deleted        bool                    `gorm:"not null;column:deleted" json:"deleted"`    // if the record has been deleted
+	DeletedDate    *datatypes.DateTime     `gorm:"column:deletedDate" json:"deletedDate"`     // the date that the record was deleted or null if not deleted
+	DeletedReason  *string                 `gorm:"column:deletedReason" json:"deletedReason"` // the reason that the record was deleted
+	DeletedUserID  *string                 `gorm:"column:deletedUserId" json:"deletedUserId"` // the user that deleted the record or null if not deleted
+	EmailError     *string                 `gorm:"column:emailError" json:"emailError"`       // error sending email, if any
 	EmailStatus    *MessageEmailStatusEnum `gorm:"column:emailStatus" json:"emailStatus"`
 	Internal       *bool                   `gorm:"column:internal" json:"internal"` // true if internal note, is null if author is a Customer
 	Origin         MessageOriginEnum       `gorm:"not null;column:origin" json:"origin"`

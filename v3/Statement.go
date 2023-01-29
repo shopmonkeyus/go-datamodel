@@ -6,6 +6,7 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
+// Statement schema
 type Statement struct {
 	ID          string              `bson:"_id" gorm:"primaryKey;not null;column:id" json:"id"`
 	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
@@ -13,11 +14,19 @@ type Statement struct {
 	Meta        *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
 	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
 	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
+	LocationID  string              `gorm:"not null;column:locationId" json:"locationId"`
 
-	FromDate datatypes.DateTime  `gorm:"not null;column:fromDate" json:"fromDate"`
-	Name     string              `gorm:"not null;column:name" json:"name"`
-	SentDate *datatypes.DateTime `gorm:"column:sentDate" json:"sentDate"`
-	ToDate   datatypes.DateTime  `gorm:"not null;column:toDate" json:"toDate"`
+	CustomerID         string              `gorm:"not null;column:customerId" json:"customerId"`
+	FromDate           datatypes.DateTime  `gorm:"not null;column:fromDate" json:"fromDate"`
+	InvoicesCount      int64               `gorm:"not null;column:invoicesCount" json:"invoicesCount"`
+	Name               *string             `gorm:"column:name" json:"name"`
+	Paid               bool                `gorm:"not null;column:paid" json:"paid"`
+	PaidCostCents      int64               `gorm:"not null;column:paidCostCents" json:"paidCostCents"`
+	RemainingCostCents int64               `gorm:"not null;column:remainingCostCents" json:"remainingCostCents"`
+	Sent               bool                `gorm:"not null;column:sent" json:"sent"`
+	SentDate           *datatypes.DateTime `gorm:"column:sentDate" json:"sentDate"`
+	ToDate             datatypes.DateTime  `gorm:"not null;column:toDate" json:"toDate"`
+	TotalCostCents     int64               `gorm:"not null;column:totalCostCents" json:"totalCostCents"`
 }
 
 var _ Model = (*Statement)(nil)

@@ -6,6 +6,7 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
+// Part schema
 type PartDiscountValueTypeEnum string
 
 const (
@@ -35,7 +36,7 @@ type Part struct {
 	PartNumber           string                    `gorm:"not null;column:partNumber" json:"partNumber"`
 	PricingMatrixDate    *datatypes.DateTime       `gorm:"column:pricingMatrixDate" json:"pricingMatrixDate"` // datetime when pricingMatrixId was set, for determining if matrix has been changed
 	PricingMatrixID      *string                   `gorm:"column:pricingMatrixId" json:"pricingMatrixId"`
-	Quantity             int64                     `gorm:"not null;column:quantity" json:"quantity"`
+	Quantity             float64                   `gorm:"not null;column:quantity" json:"quantity"`
 	ReduceInventoryCount bool                      `gorm:"not null;column:reduceInventoryCount" json:"reduceInventoryCount"`
 	RetailCostCents      int64                     `gorm:"not null;column:retailCostCents" json:"retailCostCents"`
 	ServiceID            string                    `gorm:"not null;column:serviceId" json:"serviceId"`

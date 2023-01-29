@@ -6,6 +6,7 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
+// CustomerLocationConnection schema
 type CustomerLocationConnection struct {
 	CustomerID string `gorm:"primaryKey;not null;column:customerId" json:"customerId"`
 	LocationID string `gorm:"primaryKey;not null;column:locationId" json:"locationId"`

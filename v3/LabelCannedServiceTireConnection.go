@@ -6,6 +6,7 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
+// LabelCannedServiceTireConnection schema
 type LabelCannedServiceTireConnection struct {
 	LabelID             string `gorm:"primaryKey;not null;column:labelId" json:"labelId"`
 	CannedServiceTireID string `gorm:"primaryKey;not null;column:cannedServiceTireId" json:"cannedServiceTireId"`

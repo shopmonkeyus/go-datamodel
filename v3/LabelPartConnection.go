@@ -6,6 +6,7 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
+// LabelPartConnection schema
 type LabelPartConnection struct {
 	LabelID string `gorm:"primaryKey;not null;column:labelId" json:"labelId"`
 	PartID  string `gorm:"primaryKey;not null;column:partId" json:"partId"`

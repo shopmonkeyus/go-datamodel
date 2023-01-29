@@ -6,6 +6,7 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
+// PhoneNumber schema
 type PhoneNumberCountryEnum string
 
 const (

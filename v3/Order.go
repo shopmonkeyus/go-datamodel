@@ -6,6 +6,7 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
+// Order schema
 type OrderInspectionStatusEnum string
 
 const (
@@ -29,6 +30,7 @@ type Order struct {
 	AssignedTechnicianIds  datatypes.StringArray     `gorm:"not null;column:assignedTechnicianIds" json:"assignedTechnicianIds"`
 	Authorized             bool                      `gorm:"not null;column:authorized" json:"authorized"`
 	AuthorizedDate         *datatypes.DateTime       `gorm:"column:authorizedDate" json:"authorizedDate"`
+	CoalescedName          *string                   `gorm:"column:coalescedName" json:"coalescedName"`
 	Complaint              *string                   `gorm:"column:complaint" json:"complaint"`
 	CompletedDate          *datatypes.DateTime       `gorm:"column:completedDate" json:"completedDate"`
 	ConversationID         string                    `gorm:"not null;column:conversationId" json:"conversationId"`
@@ -44,6 +46,7 @@ type Order struct {
 	EmailID                *string                   `gorm:"column:emailId" json:"emailId"` // id of the email to use instead of the customer's default email
 	EpaCents               int64                     `gorm:"not null;column:epaCents" json:"epaCents"`
 	FeesCents              int64                     `gorm:"not null;column:feesCents" json:"feesCents"`
+	GeneratedCustomerName  *string                   `gorm:"column:generatedCustomerName" json:"generatedCustomerName"` // "[firstName] [lastName]" pulled from the customer, if any
 	GeneratedName          *string                   `gorm:"column:generatedName" json:"generatedName"`
 	GeneratedVehicleName   *string                   `gorm:"column:generatedVehicleName" json:"generatedVehicleName"` // "[year] [make] [model] [submodel]" pulled from the vehicle, if any
 	GstCents               int64                     `gorm:"not null;column:gstCents" json:"gstCents"`
@@ -54,8 +57,8 @@ type Order struct {
 	InvoicedDate           *datatypes.DateTime       `gorm:"column:invoicedDate" json:"invoicedDate"`
 	LaborCents             int64                     `gorm:"not null;column:laborCents" json:"laborCents"`
 	MessageCount           int64                     `gorm:"not null;column:messageCount" json:"messageCount"`
-	MileageIn              *int64                    `gorm:"column:mileageIn" json:"mileageIn"`
-	MileageOut             *int64                    `gorm:"column:mileageOut" json:"mileageOut"`
+	MileageIn              *float64                  `gorm:"column:mileageIn" json:"mileageIn"`
+	MileageOut             *float64                  `gorm:"column:mileageOut" json:"mileageOut"`
 	Name                   *string                   `gorm:"column:name" json:"name"`
 	Number                 int64                     `gorm:"not null;column:number" json:"number"`
 	OrderCreatedDate       datatypes.DateTime        `gorm:"not null;column:orderCreatedDate" json:"orderCreatedDate"` // allow user to override created date
@@ -75,6 +78,7 @@ type Order struct {
 	ServiceWriterID        *string                   `gorm:"column:serviceWriterId" json:"serviceWriterId"`
 	ShopSuppliesCents      int64                     `gorm:"not null;column:shopSuppliesCents" json:"shopSuppliesCents"`
 	ShopUnreadMessageCount int64                     `gorm:"not null;column:shopUnreadMessageCount" json:"shopUnreadMessageCount"`
+	StatementID            *string                   `gorm:"column:statementId" json:"statementId"` // a statement this order included in
 	SubcontractsCents      int64                     `gorm:"not null;column:subcontractsCents" json:"subcontractsCents"`
 	TaxCents               int64                     `gorm:"not null;column:taxCents" json:"taxCents"`
 	TaxConfigID            string                    `gorm:"not null;column:taxConfigId" json:"taxConfigId"`

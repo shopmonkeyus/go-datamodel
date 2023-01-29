@@ -6,13 +6,13 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
+// Reminder schema
 type ReminderTypeEnum string
 
 const (
-	ReminderTypeDays   ReminderTypeEnum = "Days"
-	ReminderTypeWeeks  ReminderTypeEnum = "Weeks"
-	ReminderTypeMonths ReminderTypeEnum = "Months"
-	ReminderTypeYears  ReminderTypeEnum = "Years"
+	ReminderTypeHours ReminderTypeEnum = "Hours"
+	ReminderTypeDays  ReminderTypeEnum = "Days"
+	ReminderTypeWeeks ReminderTypeEnum = "Weeks"
 )
 
 type Reminder struct {

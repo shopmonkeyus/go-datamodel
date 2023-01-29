@@ -36,6 +36,7 @@ var ModelNames = []string{
 	"InventoryFee",
 	"InventoryLabor",
 	"InventoryPart",
+	"InventoryTire",
 	"Label",
 	"LabelCannedServiceConnection",
 	"LabelCannedServiceFeeConnection",
@@ -55,8 +56,10 @@ var ModelNames = []string{
 	"LaborMatrix",
 	"LaborMatrixRange",
 	"LaborRate",
+	"LatestPaymentReceipt",
 	"Location",
 	"Message",
+	"MileageLog",
 	"Order",
 	"Part",
 	"Payment",
@@ -112,6 +115,7 @@ var TableNames = []string{
 	"inventory_fee",
 	"inventory_labor",
 	"inventory_part",
+	"inventory_tire",
 	"label",
 	"label_canned_service",
 	"label_canned_service_fee_connection",
@@ -131,8 +135,10 @@ var TableNames = []string{
 	"labor_matrix",
 	"labor_matrix_range",
 	"labor_rate",
+	"latest_payment_receipt",
 	"location",
 	"message",
+	"mileage_log",
 	"order",
 	"part",
 	"payment",
@@ -188,6 +194,7 @@ var ModelInstances = []interface{}{
 	&InventoryFee{},
 	&InventoryLabor{},
 	&InventoryPart{},
+	&InventoryTire{},
 	&Label{},
 	&LabelCannedServiceConnection{},
 	&LabelCannedServiceFeeConnection{},
@@ -207,8 +214,10 @@ var ModelInstances = []interface{}{
 	&LaborMatrix{},
 	&LaborMatrixRange{},
 	&LaborRate{},
+	&LatestPaymentReceipt{},
 	&Location{},
 	&Message{},
+	&MileageLog{},
 	&Order{},
 	&Part{},
 	&Payment{},
@@ -340,6 +349,10 @@ func NewFromModel(name string, buf []byte) (Model, error) {
 		{
 			return NewInventoryPart(buf)
 		}
+	case "InventoryTire", "inventory_tire":
+		{
+			return NewInventoryTire(buf)
+		}
 	case "Label", "label":
 		{
 			return NewLabel(buf)
@@ -416,6 +429,10 @@ func NewFromModel(name string, buf []byte) (Model, error) {
 		{
 			return NewLaborRate(buf)
 		}
+	case "LatestPaymentReceipt", "latest_payment_receipt":
+		{
+			return NewLatestPaymentReceipt(buf)
+		}
 	case "Location", "location":
 		{
 			return NewLocation(buf)
@@ -423,6 +440,10 @@ func NewFromModel(name string, buf []byte) (Model, error) {
 	case "Message", "message":
 		{
 			return NewMessage(buf)
+		}
+	case "MileageLog", "mileage_log":
+		{
+			return NewMileageLog(buf)
 		}
 	case "Order", "order":
 		{
@@ -636,6 +657,10 @@ func NewFromChangeEvent(name string, buf []byte, gzip bool) (any, error) {
 		{
 			return NewInventoryPartFromChangeEvent(buf, gzip)
 		}
+	case "InventoryTire", "inventory_tire":
+		{
+			return NewInventoryTireFromChangeEvent(buf, gzip)
+		}
 	case "Label", "label":
 		{
 			return NewLabelFromChangeEvent(buf, gzip)
@@ -712,6 +737,10 @@ func NewFromChangeEvent(name string, buf []byte, gzip bool) (any, error) {
 		{
 			return NewLaborRateFromChangeEvent(buf, gzip)
 		}
+	case "LatestPaymentReceipt", "latest_payment_receipt":
+		{
+			return NewLatestPaymentReceiptFromChangeEvent(buf, gzip)
+		}
 	case "Location", "location":
 		{
 			return NewLocationFromChangeEvent(buf, gzip)
@@ -719,6 +748,10 @@ func NewFromChangeEvent(name string, buf []byte, gzip bool) (any, error) {
 	case "Message", "message":
 		{
 			return NewMessageFromChangeEvent(buf, gzip)
+		}
+	case "MileageLog", "mileage_log":
+		{
+			return NewMileageLogFromChangeEvent(buf, gzip)
 		}
 	case "Order", "order":
 		{

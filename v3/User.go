@@ -6,7 +6,7 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
-// user is a model for users that have access to the system
+// User schema
 type User struct {
 	ID           string              `bson:"_id" gorm:"primaryKey;not null;column:id" json:"id"`
 	CreatedDate  datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
@@ -17,8 +17,9 @@ type User struct {
 	LocationID   *string             `gorm:"column:locationId" json:"locationId"`
 	CustomFields datatypes.JSON      `gorm:"column:customFields" json:"customFields"` // custom field values
 
-	FirstName *string `gorm:"column:firstName" json:"firstName"`
-	LastName  *string `gorm:"column:lastName" json:"lastName"`
+	CalendarColor *string `gorm:"column:calendarColor" json:"calendarColor"`
+	FirstName     *string `gorm:"column:firstName" json:"firstName"`
+	LastName      *string `gorm:"column:lastName" json:"lastName"`
 }
 
 var _ Model = (*User)(nil)

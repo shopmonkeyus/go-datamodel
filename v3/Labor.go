@@ -6,6 +6,7 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
+// Labor schema
 type LaborDiscountValueTypeEnum string
 
 const (

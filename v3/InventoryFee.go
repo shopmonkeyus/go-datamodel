@@ -6,6 +6,7 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
+// InventoryFee schema
 type InventoryFeeFeeTypeEnum string
 
 const (

@@ -6,6 +6,7 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
+// Conversation schema
 type Conversation struct {
 	ID          string              `bson:"_id" gorm:"primaryKey;not null;column:id" json:"id"`
 	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
@@ -15,8 +16,13 @@ type Conversation struct {
 	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
 	LocationID  string              `gorm:"not null;column:locationId" json:"locationId"`
 
-	Archived   bool    `gorm:"not null;column:archived" json:"archived"`
-	CustomerID *string `gorm:"column:customerId" json:"customerId"`
+	UPGRADEOrderID *string             `gorm:"column:UPGRADE_orderId" json:"UPGRADE_orderId"` // Boolean /// if the record has been deleted
+	Archived       bool                `gorm:"not null;column:archived" json:"archived"`
+	CustomerID     *string             `gorm:"column:customerId" json:"customerId"`
+	Deleted        bool                `gorm:"not null;column:deleted" json:"deleted"`    // if the record has been deleted
+	DeletedDate    *datatypes.DateTime `gorm:"column:deletedDate" json:"deletedDate"`     // the date that the record was deleted or null if not deleted
+	DeletedReason  *string             `gorm:"column:deletedReason" json:"deletedReason"` // the reason that the record was deleted
+	DeletedUserID  *string             `gorm:"column:deletedUserId" json:"deletedUserId"` // the user that deleted the record or null if not deleted
 }
 
 var _ Model = (*Conversation)(nil)

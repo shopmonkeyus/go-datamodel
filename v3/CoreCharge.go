@@ -6,6 +6,7 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
+// CoreCharge schema
 type CoreChargeStatusEnum string
 
 const (

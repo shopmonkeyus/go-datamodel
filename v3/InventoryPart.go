@@ -6,6 +6,7 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
+// InventoryPart schema
 type InventoryPart struct {
 	ID          string              `bson:"_id" gorm:"primaryKey;not null;column:id" json:"id"`
 	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
@@ -24,7 +25,7 @@ type InventoryPart struct {
 	Name               string              `gorm:"not null;column:name" json:"name"`
 	Note               *string             `gorm:"column:note" json:"note"`
 	Number             string              `gorm:"not null;column:number" json:"number"`
-	Quantity           int64               `gorm:"not null;column:quantity" json:"quantity"`
+	Quantity           float64             `gorm:"not null;column:quantity" json:"quantity"`
 	RetailCostCents    int64               `gorm:"not null;column:retailCostCents" json:"retailCostCents"`
 	Taxable            bool                `gorm:"not null;column:taxable" json:"taxable"`
 	UserID             *string             `gorm:"column:userId" json:"userId"`

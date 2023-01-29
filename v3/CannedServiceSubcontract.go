@@ -6,6 +6,7 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
+// CannedServiceSubcontract schema
 type CannedServiceSubcontractDiscountValueTypeEnum string
 
 const (

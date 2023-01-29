@@ -6,6 +6,29 @@ import (
 	datatypes "github.com/shopmonkeyus/go-datamodel/datatypes"
 )
 
+// InventoryLabor schema
+type InventoryLaborDiscountValueTypeEnum string
+
+const (
+	InventoryLaborDiscountValueTypePercent    InventoryLaborDiscountValueTypeEnum = "Percent"
+	InventoryLaborDiscountValueTypeFixedCents InventoryLaborDiscountValueTypeEnum = "FixedCents"
+)
+
+type InventoryLaborMultiplierTypeEnum string
+
+const (
+	InventoryLaborMultiplierTypeHours InventoryLaborMultiplierTypeEnum = "Hours"
+	InventoryLaborMultiplierTypeRate  InventoryLaborMultiplierTypeEnum = "Rate"
+)
+
+type InventoryLaborSkillRequiredEnum string
+
+const (
+	InventoryLaborSkillRequiredGeneral     InventoryLaborSkillRequiredEnum = "General"
+	InventoryLaborSkillRequiredMaintenance InventoryLaborSkillRequiredEnum = "Maintenance"
+	InventoryLaborSkillRequiredPrecision   InventoryLaborSkillRequiredEnum = "Precision"
+)
+
 type InventoryLabor struct {
 	ID          string              `bson:"_id" gorm:"primaryKey;not null;column:id" json:"id"`
 	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
@@ -15,16 +38,32 @@ type InventoryLabor struct {
 	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
 	LocationID  string              `gorm:"not null;column:locationId" json:"locationId"`
 
-	CategoryID     *string             `gorm:"column:categoryId" json:"categoryId"`
-	Deleted        bool                `gorm:"not null;column:deleted" json:"deleted"`    // if the record has been deleted
-	DeletedDate    *datatypes.DateTime `gorm:"column:deletedDate" json:"deletedDate"`     // the date that the record was deleted or null if not deleted
-	DeletedReason  *string             `gorm:"column:deletedReason" json:"deletedReason"` // the reason that the record was deleted
-	DeletedUserID  *string             `gorm:"column:deletedUserId" json:"deletedUserId"` // the user that deleted the record or null if not deleted
-	Name           string              `gorm:"not null;column:name" json:"name"`
-	RateID         *string             `gorm:"column:rateId" json:"rateId"`
-	Taxable        bool                `gorm:"not null;column:taxable" json:"taxable"`
-	TotalCostCents *int64              `gorm:"column:totalCostCents" json:"totalCostCents"`
-	UserID         *string             `gorm:"column:userId" json:"userId"`
+	CategoryID               *string                             `gorm:"column:categoryId" json:"categoryId"`
+	CostHours                *float64                            `gorm:"column:costHours" json:"costHours"`
+	CostRateCents            *int64                              `gorm:"column:costRateCents" json:"costRateCents"`
+	Deleted                  bool                                `gorm:"not null;column:deleted" json:"deleted"`    // if the record has been deleted
+	DeletedDate              *datatypes.DateTime                 `gorm:"column:deletedDate" json:"deletedDate"`     // the date that the record was deleted or null if not deleted
+	DeletedReason            *string                             `gorm:"column:deletedReason" json:"deletedReason"` // the reason that the record was deleted
+	DeletedUserID            *string                             `gorm:"column:deletedUserId" json:"deletedUserId"` // the user that deleted the record or null if not deleted
+	DiscountCents            int64                               `gorm:"not null;column:discountCents" json:"discountCents"`
+	DiscountPercent          float64                             `gorm:"not null;column:discountPercent" json:"discountPercent"`
+	DiscountValueType        InventoryLaborDiscountValueTypeEnum `gorm:"not null;column:discountValueType" json:"discountValueType"`
+	Hours                    float64                             `gorm:"not null;column:hours" json:"hours"`
+	LaborMatrixDate          *datatypes.DateTime                 `gorm:"column:laborMatrixDate" json:"laborMatrixDate"` // datetime when laborMatrixId was set, for determining if matrix has been changed
+	LaborMatrixID            *string                             `gorm:"column:laborMatrixId" json:"laborMatrixId"`
+	Multiplier               float64                             `gorm:"not null;column:multiplier" json:"multiplier"`
+	MultiplierType           InventoryLaborMultiplierTypeEnum    `gorm:"not null;column:multiplierType" json:"multiplierType"`
+	Name                     string                              `gorm:"not null;column:name" json:"name"`
+	Note                     string                              `gorm:"not null;column:note" json:"note"`
+	RateCents                int64                               `gorm:"not null;column:rateCents" json:"rateCents"`
+	RateID                   *string                             `gorm:"column:rateId" json:"rateId"`
+	ShowHours                bool                                `gorm:"not null;column:showHours" json:"showHours"`
+	ShowNote                 bool                                `gorm:"not null;column:showNote" json:"showNote"`
+	SkillRequired            *InventoryLaborSkillRequiredEnum    `gorm:"column:skillRequired" json:"skillRequired"`
+	SkillRequiredDescription *string                             `gorm:"column:skillRequiredDescription" json:"skillRequiredDescription"`
+	Taxable                  bool                                `gorm:"not null;column:taxable" json:"taxable"`
+	TotalCostCents           *int64                              `gorm:"column:totalCostCents" json:"totalCostCents"`
+	UserID                   *string                             `gorm:"column:userId" json:"userId"`
 }
 
 var _ Model = (*InventoryLabor)(nil)
