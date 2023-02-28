@@ -33,8 +33,8 @@ type Tire struct {
 	ID          string              `bson:"_id" gorm:"primaryKey;not null;column:id" json:"id"`
 	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
 	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta        *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	Meta        *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"`
 	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
 	LocationID  string              `gorm:"not null;column:locationId" json:"locationId"`
 
@@ -45,6 +45,7 @@ type Tire struct {
 	DiscountPercent       float64                   `gorm:"not null;column:discountPercent" json:"discountPercent"`
 	DiscountValueType     TireDiscountValueTypeEnum `gorm:"not null;column:discountValueType" json:"discountValueType"`
 	FederalExciseTaxCents int64                     `gorm:"not null;column:federalExciseTaxCents" json:"federalExciseTaxCents"`
+	InventoryTireID       *string                   `gorm:"column:inventoryTireId" json:"inventoryTireId"`
 	Model                 *string                   `gorm:"column:model" json:"model"`
 	Name                  string                    `gorm:"not null;column:name" json:"name"`
 	Note                  *string                   `gorm:"column:note" json:"note"`

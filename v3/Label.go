@@ -7,6 +7,21 @@ import (
 )
 
 // Label schema
+type LabelColorEnum string
+
+const (
+	LabelColoraqua   LabelColorEnum = "aqua"
+	LabelColorblack  LabelColorEnum = "black"
+	LabelColorblue   LabelColorEnum = "blue"
+	LabelColorbrown  LabelColorEnum = "brown"
+	LabelColorgray   LabelColorEnum = "gray"
+	LabelColorgreen  LabelColorEnum = "green"
+	LabelColororange LabelColorEnum = "orange"
+	LabelColorpurple LabelColorEnum = "purple"
+	LabelColorred    LabelColorEnum = "red"
+	LabelColoryellow LabelColorEnum = "yellow"
+)
+
 type LabelEntityEnum string
 
 const (
@@ -29,12 +44,12 @@ type Label struct {
 	ID          string              `bson:"_id" gorm:"primaryKey;not null;column:id" json:"id"`
 	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
 	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta        *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	Meta        *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"`
 	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
 	LocationID  string              `gorm:"not null;column:locationId" json:"locationId"`
 
-	Color  string          `gorm:"not null;column:color" json:"color"`
+	Color  LabelColorEnum  `gorm:"not null;column:color" json:"color"`
 	Entity LabelEntityEnum `gorm:"not null;column:entity" json:"entity"`
 	Name   string          `gorm:"not null;column:name" json:"name"`
 	Saved  bool            `gorm:"not null;column:saved" json:"saved"`

@@ -7,19 +7,36 @@ import (
 )
 
 // User schema
+type UserColorEnum string
+
+const (
+	UserColoraqua   UserColorEnum = "aqua"
+	UserColorblue   UserColorEnum = "blue"
+	UserColorbrown  UserColorEnum = "brown"
+	UserColorgreen  UserColorEnum = "green"
+	UserColororange UserColorEnum = "orange"
+	UserColorpurple UserColorEnum = "purple"
+	UserColorred    UserColorEnum = "red"
+	UserColoryellow UserColorEnum = "yellow"
+)
+
 type User struct {
 	ID           string              `bson:"_id" gorm:"primaryKey;not null;column:id" json:"id"`
 	CreatedDate  datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
 	UpdatedDate  *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta         *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata     *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	Meta         *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata     *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"`
 	CompanyID    string              `gorm:"not null;column:companyId" json:"companyId"`
 	LocationID   *string             `gorm:"column:locationId" json:"locationId"`
-	CustomFields datatypes.JSON      `gorm:"column:customFields" json:"customFields"` // custom field values
+	CustomFields datatypes.JSON      `gorm:"column:customFields" json:"customFields"`
 
-	CalendarColor *string `gorm:"column:calendarColor" json:"calendarColor"`
-	FirstName     *string `gorm:"column:firstName" json:"firstName"`
-	LastName      *string `gorm:"column:lastName" json:"lastName"`
+	Active      bool          `gorm:"not null;column:active" json:"active"`
+	Color       UserColorEnum `gorm:"not null;column:color" json:"color"`
+	Email       *string       `gorm:"column:email" json:"email"`
+	FirstName   *string       `gorm:"column:firstName" json:"firstName"`
+	LaborRateID *string       `gorm:"column:laborRateId" json:"laborRateId"`
+	LastName    *string       `gorm:"column:lastName" json:"lastName"`
+	Phone       *string       `gorm:"column:phone" json:"phone"`
 }
 
 var _ Model = (*User)(nil)

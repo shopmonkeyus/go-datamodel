@@ -11,17 +11,18 @@ type InventoryPart struct {
 	ID          string              `bson:"_id" gorm:"primaryKey;not null;column:id" json:"id"`
 	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
 	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta        *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	Meta        *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"`
 	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
 	LocationID  string              `gorm:"not null;column:locationId" json:"locationId"`
 
 	BinLocation        *string             `gorm:"column:binLocation" json:"binLocation"`
 	CategoryID         *string             `gorm:"column:categoryId" json:"categoryId"`
-	Deleted            bool                `gorm:"not null;column:deleted" json:"deleted"`    // if the record has been deleted
-	DeletedDate        *datatypes.DateTime `gorm:"column:deletedDate" json:"deletedDate"`     // the date that the record was deleted or null if not deleted
-	DeletedReason      *string             `gorm:"column:deletedReason" json:"deletedReason"` // the reason that the record was deleted
-	DeletedUserID      *string             `gorm:"column:deletedUserId" json:"deletedUserId"` // the user that deleted the record or null if not deleted
+	ComputedFullText   *string             `gorm:"column:computed_fullText" json:"computed_fullText"` // api_schema(calculated)
+	Deleted            bool                `gorm:"not null;column:deleted" json:"deleted"`            // if the record has been deleted
+	DeletedDate        *datatypes.DateTime `gorm:"column:deletedDate" json:"deletedDate"`             // the date that the record was deleted or null if not deleted
+	DeletedReason      *string             `gorm:"column:deletedReason" json:"deletedReason"`         // the reason that the record was deleted
+	DeletedUserID      *string             `gorm:"column:deletedUserId" json:"deletedUserId"`         // the user that deleted the record or null if not deleted
 	Name               string              `gorm:"not null;column:name" json:"name"`
 	Note               *string             `gorm:"column:note" json:"note"`
 	Number             string              `gorm:"not null;column:number" json:"number"`
