@@ -64,7 +64,6 @@ var ModelNames = []string{
 	"Part",
 	"Payment",
 	"PaymentTerm",
-	"PaymentTerminalOrder",
 	"PhoneNumber",
 	"PricingMatrix",
 	"PricingMatrixRange",
@@ -144,7 +143,6 @@ var TableNames = []string{
 	"part",
 	"payment",
 	"payment_term",
-	"payment_terminal_order",
 	"phone_number",
 	"pricing_matrix",
 	"pricing_matrix_range",
@@ -224,7 +222,6 @@ var ModelInstances = []interface{}{
 	&Part{},
 	&Payment{},
 	&PaymentTerm{},
-	&PaymentTerminalOrder{},
 	&PhoneNumber{},
 	&PricingMatrix{},
 	&PricingMatrixRange{},
@@ -463,10 +460,6 @@ func NewFromModel(name string, buf []byte) (Model, error) {
 	case "PaymentTerm", "payment_term":
 		{
 			return NewPaymentTerm(buf)
-		}
-	case "PaymentTerminalOrder", "payment_terminal_order":
-		{
-			return NewPaymentTerminalOrder(buf)
 		}
 	case "PhoneNumber", "phone_number":
 		{
@@ -775,10 +768,6 @@ func NewFromChangeEvent(name string, buf []byte, gzip bool) (any, error) {
 	case "PaymentTerm", "payment_term":
 		{
 			return NewPaymentTermFromChangeEvent(buf, gzip)
-		}
-	case "PaymentTerminalOrder", "payment_terminal_order":
-		{
-			return NewPaymentTerminalOrderFromChangeEvent(buf, gzip)
 		}
 	case "PhoneNumber", "phone_number":
 		{
