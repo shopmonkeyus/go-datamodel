@@ -19,11 +19,11 @@ type Order struct {
 	ID           string              `bson:"_id" gorm:"primaryKey;not null;column:id" json:"id"`
 	CreatedDate  datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
 	UpdatedDate  *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta         *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata     *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	Meta         *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata     *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"`
 	CompanyID    string              `gorm:"not null;column:companyId" json:"companyId"`
 	LocationID   string              `gorm:"not null;column:locationId" json:"locationId"`
-	CustomFields datatypes.JSON      `gorm:"column:customFields" json:"customFields"` // custom field values
+	CustomFields datatypes.JSON      `gorm:"column:customFields" json:"customFields"`
 
 	AppointmentDates       datatypes.StringArray     `gorm:"not null;column:appointmentDates" json:"appointmentDates"`
 	Archived               bool                      `gorm:"not null;column:archived" json:"archived"`
@@ -46,6 +46,7 @@ type Order struct {
 	EmailID                *string                   `gorm:"column:emailId" json:"emailId"` // id of the email to use instead of the customer's default email
 	EpaCents               int64                     `gorm:"not null;column:epaCents" json:"epaCents"`
 	FeesCents              int64                     `gorm:"not null;column:feesCents" json:"feesCents"`
+	FullyPaidDate          *datatypes.DateTime       `gorm:"column:fullyPaidDate" json:"fullyPaidDate"`
 	GeneratedCustomerName  *string                   `gorm:"column:generatedCustomerName" json:"generatedCustomerName"` // "[firstName] [lastName]" pulled from the customer, if any
 	GeneratedName          *string                   `gorm:"column:generatedName" json:"generatedName"`
 	GeneratedVehicleName   *string                   `gorm:"column:generatedVehicleName" json:"generatedVehicleName"` // "[year] [make] [model] [submodel]" pulled from the vehicle, if any
@@ -57,6 +58,7 @@ type Order struct {
 	InvoicedDate           *datatypes.DateTime       `gorm:"column:invoicedDate" json:"invoicedDate"`
 	LaborCents             int64                     `gorm:"not null;column:laborCents" json:"laborCents"`
 	MessageCount           int64                     `gorm:"not null;column:messageCount" json:"messageCount"`
+	MessagedDate           *datatypes.DateTime       `gorm:"column:messagedDate" json:"messagedDate"`
 	MileageIn              *float64                  `gorm:"column:mileageIn" json:"mileageIn"`
 	MileageOut             *float64                  `gorm:"column:mileageOut" json:"mileageOut"`
 	Name                   *string                   `gorm:"column:name" json:"name"`
@@ -65,7 +67,8 @@ type Order struct {
 	Paid                   bool                      `gorm:"not null;column:paid" json:"paid"`
 	PaidCostCents          int64                     `gorm:"not null;column:paidCostCents" json:"paidCostCents"`
 	PartsCents             int64                     `gorm:"not null;column:partsCents" json:"partsCents"`
-	PhoneNumberID          *string                   `gorm:"column:phoneNumberId" json:"phoneNumberId"` // id of the phone number to use instead of the customer's default number
+	PaymentTermID          string                    `gorm:"not null;column:paymentTermId" json:"paymentTermId"` // id of the payment term for the order
+	PhoneNumberID          *string                   `gorm:"column:phoneNumberId" json:"phoneNumberId"`          // id of the phone number to use instead of the customer's default number
 	Profitability          datatypes.JSON            `gorm:"column:profitability" json:"profitability"`
 	PstCents               int64                     `gorm:"not null;column:pstCents" json:"pstCents"`
 	PublicID               string                    `gorm:"not null;column:publicId" json:"publicId"`

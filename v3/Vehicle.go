@@ -338,13 +338,14 @@ type Vehicle struct {
 	ID           string              `bson:"_id" gorm:"primaryKey;not null;column:id" json:"id"`
 	CreatedDate  datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
 	UpdatedDate  *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta         *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata     *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	Meta         *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata     *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"`
 	CompanyID    string              `gorm:"not null;column:companyId" json:"companyId"`
-	CustomFields datatypes.JSON      `gorm:"column:customFields" json:"customFields"` // custom field values
+	CustomFields datatypes.JSON      `gorm:"column:customFields" json:"customFields"`
 
 	AppointmentCount     int64                          `gorm:"not null;column:appointmentCount" json:"appointmentCount"`
 	Color                *VehicleColorEnum              `gorm:"column:color" json:"color"`
+	ComputedYmm          *string                        `gorm:"column:computed_ymm" json:"computed_ymm"`
 	CustomPhoto          bool                           `gorm:"not null;column:customPhoto" json:"customPhoto"`
 	DeferredServiceCount int64                          `gorm:"not null;column:deferredServiceCount" json:"deferredServiceCount"`
 	Drivetrain           *VehicleDrivetrainEnum         `gorm:"column:drivetrain" json:"drivetrain"`

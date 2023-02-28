@@ -280,10 +280,10 @@ type Customer struct {
 	ID           string              `bson:"_id" gorm:"primaryKey;not null;column:id" json:"id"`
 	CreatedDate  datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
 	UpdatedDate  *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta         *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata     *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	Meta         *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata     *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"`
 	CompanyID    string              `gorm:"not null;column:companyId" json:"companyId"`
-	CustomFields datatypes.JSON      `gorm:"column:customFields" json:"customFields"` // custom field values
+	CustomFields datatypes.JSON      `gorm:"column:customFields" json:"customFields"`
 
 	Address1               *string                             `gorm:"column:address1" json:"address1"`
 	Address2               *string                             `gorm:"column:address2" json:"address2"`
@@ -304,7 +304,7 @@ type Customer struct {
 	MarketingOptIn         bool                                `gorm:"not null;column:marketingOptIn" json:"marketingOptIn"`
 	MessageCount           int64                               `gorm:"not null;column:messageCount" json:"messageCount"`
 	Note                   string                              `gorm:"not null;column:note" json:"note"`
-	PaymentTermID          string                              `gorm:"not null;column:paymentTermId" json:"paymentTermId"`
+	PaymentTermID          *string                             `gorm:"column:paymentTermId" json:"paymentTermId"`
 	PostalCode             *string                             `gorm:"column:postalCode" json:"postalCode"`
 	PreferredContactMethod *CustomerPreferredContactMethodEnum `gorm:"column:preferredContactMethod" json:"preferredContactMethod"`
 	PricingMatrixID        *string                             `gorm:"column:pricingMatrixId" json:"pricingMatrixId"`

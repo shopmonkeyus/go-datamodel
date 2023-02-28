@@ -265,22 +265,24 @@ type Location struct {
 	ID          string              `bson:"_id" gorm:"primaryKey;not null;column:id" json:"id"`
 	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
 	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta        *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	Meta        *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"`
 	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
 
-	Address1              string              `gorm:"not null;column:address1" json:"address1"`
-	Address2              *string             `gorm:"column:address2" json:"address2"`
-	City                  string              `gorm:"not null;column:city" json:"city"`
-	ContactName           *string             `gorm:"column:contactName" json:"contactName"` // the location contact name
-	Country               LocationCountryEnum `gorm:"not null;column:country" json:"country"`
-	Email                 *string             `gorm:"column:email" json:"email"`                                 // the location email for generic inqueries
-	LocationPhoneNumberID *string             `gorm:"column:locationPhoneNumberId" json:"locationPhoneNumberId"` // the location phone number
-	Name                  string              `gorm:"not null;column:name" json:"name"`
-	PostalCode            string              `gorm:"not null;column:postalCode" json:"postalCode"`
-	State                 string              `gorm:"not null;column:state" json:"state"`
-	Timezone              string              `gorm:"not null;column:timezone" json:"timezone"`
-	Website               *string             `gorm:"column:website" json:"website"`
+	Address1            string              `gorm:"not null;column:address1" json:"address1"`
+	Address2            *string             `gorm:"column:address2" json:"address2"`
+	Certifications      datatypes.JSON      `gorm:"column:certifications" json:"certifications"`
+	City                string              `gorm:"not null;column:city" json:"city"`
+	ContactName         *string             `gorm:"column:contactName" json:"contactName"`
+	Country             LocationCountryEnum `gorm:"not null;column:country" json:"country"`
+	Email               *string             `gorm:"column:email" json:"email"`
+	Name                string              `gorm:"not null;column:name" json:"name"`
+	Phone               *string             `gorm:"column:phone" json:"phone"`
+	PostalCode          string              `gorm:"not null;column:postalCode" json:"postalCode"`
+	ShowNameOnDocuments bool                `gorm:"not null;column:showNameOnDocuments" json:"showNameOnDocuments"`
+	State               string              `gorm:"not null;column:state" json:"state"`
+	Timezone            string              `gorm:"not null;column:timezone" json:"timezone"`
+	Website             *string             `gorm:"column:website" json:"website"`
 }
 
 var _ Model = (*Location)(nil)

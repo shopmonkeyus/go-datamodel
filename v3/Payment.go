@@ -7,12 +7,12 @@ import (
 )
 
 // Payment schema
-type PaymentCollectionTypeEnum string
+type PaymentPaymentModeEnum string
 
 const (
-	PaymentCollectionTypeManual   PaymentCollectionTypeEnum = "Manual"
-	PaymentCollectionTypeOnline   PaymentCollectionTypeEnum = "Online"
-	PaymentCollectionTypeInPerson PaymentCollectionTypeEnum = "InPerson"
+	PaymentPaymentModeManual   PaymentPaymentModeEnum = "Manual"
+	PaymentPaymentModeOnline   PaymentPaymentModeEnum = "Online"
+	PaymentPaymentModeInPerson PaymentPaymentModeEnum = "InPerson"
 )
 
 type PaymentPaymentTypeEnum string
@@ -32,6 +32,14 @@ const (
 	PaymentProviderStripe    PaymentProviderEnum = "Stripe"
 )
 
+type PaymentRefundReasonEnum string
+
+const (
+	PaymentRefundReasonDuplicate           PaymentRefundReasonEnum = "Duplicate"
+	PaymentRefundReasonFraudulent          PaymentRefundReasonEnum = "Fraudulent"
+	PaymentRefundReasonRequestedByCustomer PaymentRefundReasonEnum = "RequestedByCustomer"
+)
+
 type PaymentTransactionTypeEnum string
 
 const (
@@ -44,28 +52,34 @@ type Payment struct {
 	ID          string              `bson:"_id" gorm:"primaryKey;not null;column:id" json:"id"`
 	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
 	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta        *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	Meta        *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"`
 	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
 	LocationID  string              `gorm:"not null;column:locationId" json:"locationId"`
 
-	Amount               int64                      `gorm:"not null;column:amount" json:"amount"`
+	AmountCents          int64                      `gorm:"not null;column:amountCents" json:"amountCents"` // amount charged or refuned
 	Bulk                 bool                       `gorm:"not null;column:bulk" json:"bulk"`
 	CardConfirmation     *string                    `gorm:"column:cardConfirmation" json:"cardConfirmation"`
 	CardDigits           *string                    `gorm:"column:cardDigits" json:"cardDigits"`
 	CardName             *string                    `gorm:"column:cardName" json:"cardName"`
 	CardType             *string                    `gorm:"column:cardType" json:"cardType"`
 	ChargeFromPublicPage bool                       `gorm:"not null;column:chargeFromPublicPage" json:"chargeFromPublicPage"`
-	CollectionType       PaymentCollectionTypeEnum  `gorm:"not null;column:collectionType" json:"collectionType"`
+	ChargeID             *string                    `gorm:"column:chargeId" json:"chargeId"` // reference for original payment if transaction type is different from charge
+	CheckNumber          *string                    `gorm:"column:checkNumber" json:"checkNumber"`
 	DebitCard            bool                       `gorm:"not null;column:debitCard" json:"debitCard"`
 	Deposit              bool                       `gorm:"not null;column:deposit" json:"deposit"`
 	Note                 string                     `gorm:"not null;column:note" json:"note"`
 	OrderID              string                     `gorm:"not null;column:orderId" json:"orderId"`
 	PayerID              *string                    `gorm:"column:payerId" json:"payerId"`
+	PaymentMode          PaymentPaymentModeEnum     `gorm:"not null;column:paymentMode" json:"paymentMode"`
 	PaymentType          PaymentPaymentTypeEnum     `gorm:"not null;column:paymentType" json:"paymentType"`
 	Provider             *PaymentProviderEnum       `gorm:"column:provider" json:"provider"`
 	ProviderData         datatypes.JSON             `gorm:"column:providerData" json:"providerData"`
 	ReceiptNumber        int64                      `gorm:"not null;column:receiptNumber" json:"receiptNumber"`
+	RecordedDate         *datatypes.DateTime        `gorm:"column:recordedDate" json:"recordedDate"` // the date that the payment was recorded
+	RefundReason         *PaymentRefundReasonEnum   `gorm:"column:refundReason" json:"refundReason"`
+	Refunded             *bool                      `gorm:"column:refunded" json:"refunded"`
+	RefundedAmountCents  *int64                     `gorm:"column:refundedAmountCents" json:"refundedAmountCents"` // amount refunded for charge transactions
 	StatementID          *string                    `gorm:"column:statementId" json:"statementId"`
 	TransactionType      PaymentTransactionTypeEnum `gorm:"not null;column:transactionType" json:"transactionType"`
 	UserData             datatypes.JSON             `gorm:"column:userData" json:"userData"`

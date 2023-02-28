@@ -7,13 +7,6 @@ import (
 )
 
 // InventoryTire schema
-type InventoryTireCrossUnitEnum string
-
-const (
-	InventoryTireCrossUnitmm InventoryTireCrossUnitEnum = "mm"
-	InventoryTireCrossUnitin InventoryTireCrossUnitEnum = "in"
-)
-
 type InventoryTireDiscountValueTypeEnum string
 
 const (
@@ -28,19 +21,19 @@ const (
 	InventoryTireOuterDiameterUnitin InventoryTireOuterDiameterUnitEnum = "in"
 )
 
-type InventoryTireRimUnitEnum string
-
-const (
-	InventoryTireRimUnitmm InventoryTireRimUnitEnum = "mm"
-	InventoryTireRimUnitin InventoryTireRimUnitEnum = "in"
-)
-
 type InventoryTireSeasonalityEnum string
 
 const (
 	InventoryTireSeasonalitySummer     InventoryTireSeasonalityEnum = "Summer"
 	InventoryTireSeasonalityWinter     InventoryTireSeasonalityEnum = "Winter"
 	InventoryTireSeasonalityAllSeasons InventoryTireSeasonalityEnum = "AllSeasons"
+)
+
+type InventoryTireSectionWidthUnitEnum string
+
+const (
+	InventoryTireSectionWidthUnitmm InventoryTireSectionWidthUnitEnum = "mm"
+	InventoryTireSectionWidthUnitin InventoryTireSectionWidthUnitEnum = "in"
 )
 
 type InventoryTireSizeFormatEnum string
@@ -57,23 +50,27 @@ const (
 	InventoryTireTreadDepthUnitin InventoryTireTreadDepthUnitEnum = "in"
 )
 
+type InventoryTireWheelDiameterUnitEnum string
+
+const (
+	InventoryTireWheelDiameterUnitmm InventoryTireWheelDiameterUnitEnum = "mm"
+	InventoryTireWheelDiameterUnitin InventoryTireWheelDiameterUnitEnum = "in"
+)
+
 type InventoryTire struct {
 	ID          string              `bson:"_id" gorm:"primaryKey;not null;column:id" json:"id"`
 	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
 	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta        *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	Meta        *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"`
 	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
 	LocationID  string              `gorm:"not null;column:locationId" json:"locationId"`
 
-	AspectValue           *float64                           `gorm:"column:aspectValue" json:"aspectValue"`
 	BinLocation           *string                            `gorm:"column:binLocation" json:"binLocation"`
 	BrandID               *string                            `gorm:"column:brandId" json:"brandId"`
 	CategoryID            *string                            `gorm:"column:categoryId" json:"categoryId"`
 	CategoryType          *string                            `gorm:"column:categoryType" json:"categoryType"`
 	Construction          *string                            `gorm:"column:construction" json:"construction"`
-	CrossUnit             InventoryTireCrossUnitEnum         `gorm:"not null;column:crossUnit" json:"crossUnit"`
-	CrossValue            *float64                           `gorm:"column:crossValue" json:"crossValue"`
 	Deleted               bool                               `gorm:"not null;column:deleted" json:"deleted"`    // if the record has been deleted
 	DeletedDate           *datatypes.DateTime                `gorm:"column:deletedDate" json:"deletedDate"`     // the date that the record was deleted or null if not deleted
 	DeletedReason         *string                            `gorm:"column:deletedReason" json:"deletedReason"` // the reason that the record was deleted
@@ -98,13 +95,14 @@ type InventoryTire struct {
 	PricingMatrixID       *string                            `gorm:"column:pricingMatrixId" json:"pricingMatrixId"`
 	Quantity              int64                              `gorm:"not null;column:quantity" json:"quantity"`
 	RetailCostCents       int64                              `gorm:"not null;column:retailCostCents" json:"retailCostCents"`
-	RimUnit               InventoryTireRimUnitEnum           `gorm:"not null;column:rimUnit" json:"rimUnit"`
-	RimValue              *float64                           `gorm:"column:rimValue" json:"rimValue"`
 	Seasonality           *InventoryTireSeasonalityEnum      `gorm:"column:seasonality" json:"seasonality"`
+	SectionWidthUnit      InventoryTireSectionWidthUnitEnum  `gorm:"not null;column:sectionWidthUnit" json:"sectionWidthUnit"`
+	SectionWidthValue     *float64                           `gorm:"column:sectionWidthValue" json:"sectionWidthValue"`
 	ServiceType           *string                            `gorm:"column:serviceType" json:"serviceType"`
 	ShowNote              bool                               `gorm:"not null;column:showNote" json:"showNote"`
 	ShowPartNumber        bool                               `gorm:"not null;column:showPartNumber" json:"showPartNumber"`
 	ShowPriceAndQuantity  bool                               `gorm:"not null;column:showPriceAndQuantity" json:"showPriceAndQuantity"`
+	SidewallAspectValue   *float64                           `gorm:"column:sidewallAspectValue" json:"sidewallAspectValue"`
 	Size                  *string                            `gorm:"column:size" json:"size"`
 	SizeFormat            InventoryTireSizeFormatEnum        `gorm:"not null;column:sizeFormat" json:"sizeFormat"`
 	SpeedRating           *string                            `gorm:"column:speedRating" json:"speedRating"`
@@ -116,7 +114,9 @@ type InventoryTire struct {
 	TreadWearUTQG         *float64                           `gorm:"column:treadWear_UTQG" json:"treadWear_UTQG"`
 	UserID                *string                            `gorm:"column:userId" json:"userId"`
 	VendorID              *string                            `gorm:"column:vendorId" json:"vendorId"`
-	WasteTireFee          int64                              `gorm:"not null;column:wasteTireFee" json:"wasteTireFee"`
+	WasteTireFeeCents     int64                              `gorm:"not null;column:wasteTireFeeCents" json:"wasteTireFeeCents"`
+	WheelDiameterUnit     InventoryTireWheelDiameterUnitEnum `gorm:"not null;column:wheelDiameterUnit" json:"wheelDiameterUnit"`
+	WheelDiameterValue    *float64                           `gorm:"column:wheelDiameterValue" json:"wheelDiameterValue"`
 	WholesaleCostCents    *int64                             `gorm:"column:wholesaleCostCents" json:"wholesaleCostCents"`
 }
 

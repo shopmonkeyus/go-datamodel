@@ -7,35 +7,50 @@ import (
 )
 
 // Appointment schema
+type AppointmentColorEnum string
+
+const (
+	AppointmentColoraqua   AppointmentColorEnum = "aqua"
+	AppointmentColorblack  AppointmentColorEnum = "black"
+	AppointmentColorblue   AppointmentColorEnum = "blue"
+	AppointmentColorbrown  AppointmentColorEnum = "brown"
+	AppointmentColorgray   AppointmentColorEnum = "gray"
+	AppointmentColorgreen  AppointmentColorEnum = "green"
+	AppointmentColororange AppointmentColorEnum = "orange"
+	AppointmentColorpurple AppointmentColorEnum = "purple"
+	AppointmentColorred    AppointmentColorEnum = "red"
+	AppointmentColoryellow AppointmentColorEnum = "yellow"
+)
+
 type Appointment struct {
 	ID          string              `bson:"_id" gorm:"primaryKey;not null;column:id" json:"id"`
 	CreatedDate datatypes.DateTime  `gorm:"column:createdDate;not null;column:createdDate" json:"createdDate"`
 	UpdatedDate *datatypes.DateTime `gorm:"column:updatedDate;column:updatedDate" json:"updatedDate"`
-	Meta        *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"`    // the metadata about the most recent change to the row
-	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"` // metadata reserved for customers to control
+	Meta        *datatypes.JSON     `gorm:"column:meta;not null;column:meta" json:"meta,omitempty"` // the metadata about the most recent change to the row
+	Metadata    *datatypes.JSON     `gorm:"column:metadata;column:metadata" json:"metadata,omitempty"`
 	CompanyID   string              `gorm:"not null;column:companyId" json:"companyId"`
 	LocationID  string              `gorm:"not null;column:locationId" json:"locationId"`
 
-	AllDay                bool               `gorm:"not null;column:allDay" json:"allDay"`
-	CancelationNote       *string            `gorm:"column:cancelationNote" json:"cancelationNote"` // if the appointment was canceled
-	Color                 string             `gorm:"not null;column:color" json:"color"`            // Color for the appointment
-	Confirmed             bool               `gorm:"not null;column:confirmed" json:"confirmed"`
-	CustomerEmailID       *string            `gorm:"column:customerEmailId" json:"customerEmailId"`
-	CustomerID            *string            `gorm:"column:customerId" json:"customerId"`
-	CustomerPhoneNumberID *string            `gorm:"column:customerPhoneNumberId" json:"customerPhoneNumberId"`
-	EndDate               datatypes.DateTime `gorm:"not null;column:endDate" json:"endDate"` // end date and time of the appointment
-	Name                  string             `gorm:"not null;column:name" json:"name"`       // name of the appointment like 'Oil change'
-	Note                  string             `gorm:"not null;column:note" json:"note"`       // notes for the appointment
-	OrderID               *string            `gorm:"column:orderId" json:"orderId"`
-	PendingConfirmation   bool               `gorm:"not null;column:pendingConfirmation" json:"pendingConfirmation"`
-	RemovedFromRecurrency bool               `gorm:"not null;column:removedFromRecurrency" json:"removedFromRecurrency"`
-	Rruleset              *string            `gorm:"column:rruleset" json:"rruleset"`
-	SendConfirmation      bool               `gorm:"not null;column:sendConfirmation" json:"sendConfirmation"` // Send confirmation notification at the moment of saving the appointment
-	SendReminder          bool               `gorm:"not null;column:sendReminder" json:"sendReminder"`         // Send reminder will send a notification one day before the apponintment. This would need some sort of scheduling mecanism to fire at the right time.
-	StartDate             datatypes.DateTime `gorm:"not null;column:startDate" json:"startDate"`               // start date and time of the appointment
-	UseEmail              bool               `gorm:"not null;column:useEmail" json:"useEmail"`                 // In case we want to use email to send confirmation and/or reminder
-	UseSMS                bool               `gorm:"not null;column:useSMS" json:"useSMS"`                     // In case we want to use email to send confirmation and/or reminder
-	VehicleID             *string            `gorm:"column:vehicleId" json:"vehicleId"`
+	AllDay                bool                 `gorm:"not null;column:allDay" json:"allDay"`
+	CancelationNote       *string              `gorm:"column:cancelationNote" json:"cancelationNote"` // if the appointment was canceled
+	Color                 AppointmentColorEnum `gorm:"not null;column:color" json:"color"`
+	Confirmed             bool                 `gorm:"not null;column:confirmed" json:"confirmed"`
+	CustomerEmailID       *string              `gorm:"column:customerEmailId" json:"customerEmailId"`
+	CustomerID            *string              `gorm:"column:customerId" json:"customerId"`
+	CustomerPhoneNumberID *string              `gorm:"column:customerPhoneNumberId" json:"customerPhoneNumberId"`
+	EndDate               datatypes.DateTime   `gorm:"not null;column:endDate" json:"endDate"` // end date and time of the appointment
+	Name                  string               `gorm:"not null;column:name" json:"name"`       // name of the appointment like 'Oil change'
+	Note                  string               `gorm:"not null;column:note" json:"note"`       // notes for the appointment
+	OrderID               *string              `gorm:"column:orderId" json:"orderId"`
+	PendingConfirmation   bool                 `gorm:"not null;column:pendingConfirmation" json:"pendingConfirmation"`
+	RemovedFromRecurrency bool                 `gorm:"not null;column:removedFromRecurrency" json:"removedFromRecurrency"`
+	Rruleset              *string              `gorm:"column:rruleset" json:"rruleset"`
+	SendConfirmation      bool                 `gorm:"not null;column:sendConfirmation" json:"sendConfirmation"` // Send confirmation notification at the moment of saving the appointment
+	SendReminder          bool                 `gorm:"not null;column:sendReminder" json:"sendReminder"`         // Send reminder will send a notification one day before the apponintment. This would need some sort of scheduling mecanism to fire at the right time.
+	StartDate             datatypes.DateTime   `gorm:"not null;column:startDate" json:"startDate"`               // start date and time of the appointment
+	UseEmail              bool                 `gorm:"not null;column:useEmail" json:"useEmail"`                 // In case we want to use email to send confirmation and/or reminder
+	UseSMS                bool                 `gorm:"not null;column:useSMS" json:"useSMS"`                     // In case we want to use email to send confirmation and/or reminder
+	VehicleID             *string              `gorm:"column:vehicleId" json:"vehicleId"`
 }
 
 var _ Model = (*Appointment)(nil)
