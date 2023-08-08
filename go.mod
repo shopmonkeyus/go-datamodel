@@ -3,7 +3,7 @@ module github.com/shopmonkeyus/go-datamodel
 go 1.19
 
 require (
-	github.com/dave/jennifer v1.6.0
+	github.com/dave/jennifer v1.7.0
 	github.com/iancoleman/strcase v0.2.0
 	github.com/spf13/cobra v1.6.1
 )
